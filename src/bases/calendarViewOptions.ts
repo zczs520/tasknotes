@@ -6,14 +6,16 @@ import { isNoteFileOrFormulaProperty } from "./propertyFilters";
 type CalendarOptionsConfig = Pick<BasesViewConfig, "get">;
 type Translate = (key: string) => string;
 
-const CALENDAR_VIEW_OPTIONS: Record<string, string> = {
-	dayGridMonth: "Month",
-	timeGridWeek: "Week",
-	timeGridCustom: "Custom days",
-	timeGridDay: "Day",
-	listWeek: "List",
-	multiMonthYear: "Year",
-};
+function buildCalendarViewDropdownOptions(t: Translate): Record<string, string> {
+	return {
+		dayGridMonth: t("layout.calendarViewMonth"),
+		timeGridWeek: t("layout.calendarViewWeek"),
+		timeGridCustom: t("layout.calendarViewCustomDays"),
+		timeGridDay: t("layout.calendarViewDay"),
+		listWeek: t("layout.calendarViewList"),
+		multiMonthYear: t("layout.calendarViewYear"),
+	};
+}
 
 function translateCalendarSetting(plugin: TaskNotesPlugin): Translate {
 	return (key: string) => plugin.i18n.translate(`views.basesCalendar.settings.${key}`);
@@ -279,7 +281,7 @@ function buildCalendarViewModeOptions(
 				key: "calendarView",
 				displayName: t("layout.calendarView"),
 				default: defaultView,
-				options: CALENDAR_VIEW_OPTIONS,
+				options: buildCalendarViewDropdownOptions(t),
 			},
 			{
 				type: "slider",
@@ -592,8 +594,8 @@ export function buildMiniCalendarViewOptions(plugin: TaskNotesPlugin): BasesAllO
 		{
 			type: "property",
 			key: "dateProperty",
-			displayName: "Date Property",
-			placeholder: "Select property to show on calendar",
+			displayName: t("miniCalendar.dateProperty"),
+			placeholder: t("miniCalendar.datePropertyPlaceholder"),
 			default: "file.ctime",
 			filter: (prop: string) =>
 				prop.startsWith("note.") || prop.startsWith("file.") || prop.startsWith("task."),
@@ -601,15 +603,15 @@ export function buildMiniCalendarViewOptions(plugin: TaskNotesPlugin): BasesAllO
 		{
 			type: "property",
 			key: "titleProperty",
-			displayName: "Title Property",
-			placeholder: "Select property to use as title",
+			displayName: t("miniCalendar.titleProperty"),
+			placeholder: t("miniCalendar.titlePropertyPlaceholder"),
 			default: "file.name",
 			filter: (prop: string) => isNoteFileOrFormulaProperty(prop),
 		},
 		{
 			type: "slider",
 			key: "heatMapMaxCount",
-			displayName: "Max color note count",
+			displayName: t("miniCalendar.maxColorNoteCount"),
 			default: DEFAULT_MINI_CALENDAR_HEAT_MAP_MAX_COUNT,
 			min: 1,
 			max: 20,

@@ -70,7 +70,6 @@ describe("kanbanCreationDefaults", () => {
 			{ groupKey: "None" },
 			{ propertyId: "file.name", groupKey: "Task File" },
 			{ propertyId: "formula.overdue", groupKey: "true" },
-			{ propertyId: "note.unknown", groupKey: "Research" },
 		];
 
 		for (const options of cases) {
@@ -118,6 +117,15 @@ describe("kanbanCreationDefaults", () => {
 		expect(duplicateFrontmatter).toEqual({ tags: "work" });
 	});
 
+	it("maps the writable Bases file.tags property to task tags", () => {
+		expect(
+			applyDefault({
+				propertyId: "file.tags",
+				groupKey: "项目/产品经理/PartnerShare",
+			})
+		).toEqual({ tags: ["项目/产品经理/PartnerShare"] });
+	});
+
 	it("writes configured user fields and preserves list semantics for list user fields", () => {
 		const scalar = applyDefault({
 			propertyId: "note.workstream",
@@ -134,6 +142,15 @@ describe("kanbanCreationDefaults", () => {
 
 		expect(scalar).toEqual({ workstream: "Research Team" });
 		expect(list).toEqual({ reviewers: ["Grace", "Ada"] });
+	});
+
+	it("inherits arbitrary writable note properties even when they are not configured user fields", () => {
+		expect(
+			applyDefault({
+				propertyId: "note.department",
+				groupKey: "Growth",
+			})
+		).toEqual({ department: "Growth" });
 	});
 
 	it("uses Obsidian list-property detection after confirming a property is writable", () => {

@@ -20,6 +20,7 @@ jest.mock("../../../src/modals/TaskCreationModal", () => ({
 import { BasesViewBase } from "../../../src/bases/BasesViewBase";
 import { TaskCreationModal } from "../../../src/modals/TaskCreationModal";
 import type { TaskInfo } from "../../../src/types";
+import { TFile } from "obsidian";
 
 class TestBasesView extends BasesViewBase {
 	type = "tasknotesTest";
@@ -132,6 +133,78 @@ describe("Issue #1466: current-file subtask Base creation defaults", () => {
 			expect.anything(),
 			expect.objectContaining({
 				prePopulatedValues: {},
+			})
+		);
+	});
+
+	it("uses the relationships host task as parent and inherits its tags", async () => {
+		const relationshipWidget = document.createElement("div");
+		relationshipWidget.className = "tasknotes-relationships-widget";
+		relationshipWidget.dataset.relationshipSourcePath = "Tasks/Alpha.md";
+		const container = document.createElement("div");
+		relationshipWidget.appendChild(container);
+		document.body.appendChild(relationshipWidget);
+
+		const parentFile = new TFile("Tasks/Alpha.md");
+		const parentTask = {
+			title: "Alpha",
+			status: "open",
+			priority: "normal",
+			path: parentFile.path,
+			archived: false,
+			projects: ["[[Projects/Roadmap]]"],
+			tags: ["task", "project-a", "urgent"],
+			contexts: [],
+		} satisfies TaskInfo;
+		const plugin = createMockPlugin(null) as any;
+		plugin.app.vault = {
+			getAbstractFileByPath: jest.fn(() => parentFile),
+		};
+		plugin.app.metadataCache = {
+			fileToLinktext: jest.fn((file: TFile) => file.basename),
+			getFirstLinkpathDest: jest.fn(() => null),
+		};
+		plugin.app.fileManager.generateMarkdownLink = jest.fn(
+			(file: TFile) => `[[${file.basename}]]`
+		);
+		plugin.cacheManager = {
+			getTaskInfo: jest.fn(async () => parentTask),
+		};
+		plugin.settings = {
+			...plugin.settings,
+			taskIdentificationMethod: "tag",
+			useFrontmatterMarkdownLinks: false,
+			hideIdentifyingTagsMode: "show",
+			taskCreationDefaults: {
+				inheritParentTaskProperties: true,
+			},
+		};
+
+		const view = new TestBasesView({}, container, plugin);
+		(view as any).config = {
+			filters: {
+				conjunction: "and",
+				filters: [
+					{ rule: { text: 'file.hasTag("task")' } },
+					{
+						rule: {
+							text: "file.hasLink(this.file) && list(note.projects).contains(this.file.asLink())",
+						},
+					},
+				],
+			},
+		};
+
+		await view.createFileForView("New Task");
+
+		expect(TaskCreationModal).toHaveBeenCalledWith(
+			expect.anything(),
+			expect.anything(),
+			expect.objectContaining({
+				prePopulatedValues: expect.objectContaining({
+					projects: ["[[Projects/Roadmap]]", "[[Alpha]]"],
+					tags: ["task", "project-a", "urgent"],
+				}),
 			})
 		);
 	});

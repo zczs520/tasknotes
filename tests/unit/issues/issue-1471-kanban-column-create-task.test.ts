@@ -134,6 +134,29 @@ describe("Issue #1471: create tasks from Kanban columns", () => {
 		);
 	});
 
+	it("maps a file.tags swimlane to the task tags field", async () => {
+		const view = createView();
+		(view as any).config = {};
+		(view as any).swimLanePropertyId = "file.tags";
+
+		await (view as any).openTaskCreationForKanbanCell(
+			"task.status",
+			"open",
+			"项目/产品经理/PartnerShare"
+		);
+
+		expect(TaskCreationModal).toHaveBeenCalledWith(
+			expect.anything(),
+			expect.anything(),
+			expect.objectContaining({
+				prePopulatedValues: expect.objectContaining({
+					status: "open",
+					tags: ["项目/产品经理/PartnerShare"],
+				}),
+			})
+		);
+	});
+
 	it("passes custom grouped properties through custom frontmatter", async () => {
 		const view = createView();
 		(view as any).config = {};

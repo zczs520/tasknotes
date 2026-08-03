@@ -117,6 +117,13 @@
     white-space: nowrap;
 }
 
+.tasknotes-plugin .task-card__metadata-state--in-progress {
+    color: var(--text-accent);
+    font-size: var(--tn-font-size-sm);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
 .tasknotes-plugin .task-card__metadata-property {
     display: inline-flex;
     align-items: center;
@@ -491,6 +498,64 @@ body.is-mobile .tasknotes-plugin .task-card.task-card--drag-handle-only .task-ca
 /* Hide badges container when empty */
 .tasknotes-plugin .task-card__badges:empty {
     display: none;
+}
+
+.tasknotes-plugin .task-card__time-tracking-control {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 26px;
+    padding: 3px 8px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: var(--radius-s);
+    background: var(--background-primary);
+    color: var(--text-muted);
+    font: inherit;
+    font-size: var(--tn-font-size-sm);
+    line-height: 1.2;
+    white-space: nowrap;
+    cursor: var(--cursor-link, pointer);
+    transition: background-color var(--tn-transition-fast), border-color var(--tn-transition-fast), color var(--tn-transition-fast);
+}
+
+.tasknotes-plugin .task-card__time-tracking-control:hover {
+    background: var(--background-modifier-hover);
+    border-color: var(--background-modifier-border-hover);
+    color: var(--text-normal);
+}
+
+.tasknotes-plugin .task-card__time-tracking-control:disabled {
+    cursor: progress;
+    opacity: 0.55;
+}
+
+.tasknotes-plugin .task-card__time-tracking-control svg {
+    width: 13px;
+    height: 13px;
+    flex: 0 0 auto;
+}
+
+.tasknotes-plugin .task-card__time-tracking-control--active {
+    background: color-mix(in srgb, var(--tn-color-info) 12%, var(--background-primary));
+    border-color: color-mix(in srgb, var(--tn-color-info) 45%, var(--background-modifier-border));
+    color: var(--text-normal);
+}
+
+.tasknotes-plugin .task-card__time-tracking-control--active svg {
+    color: var(--tn-color-info);
+    fill: currentColor;
+}
+
+.tasknotes-plugin .task-card__time-tracking-status {
+    color: var(--text-normal);
+    font-weight: 500;
+}
+
+.tasknotes-plugin .task-card__time-tracking-control--active .task-card__time-tracking-action-label {
+    padding-inline-start: 6px;
+    border-inline-start: 1px solid color-mix(in srgb, var(--tn-color-info) 35%, transparent);
+    color: var(--text-muted);
 }
 
 .tasknotes-plugin .task-card__recurring-indicator {
@@ -983,19 +1048,10 @@ body.is-mobile .tasknotes-plugin .task-card__context-menu svg {
     background-color: transparent;
 }
 
-/* Active Time Tracking */
+/* Active time tracking is expressed by the explicit card control instead of
+   outlining the entire card. This keeps compact and inline cards visually stable. */
 .tasknotes-plugin .task-card--actively-tracked {
     position: relative;
-}
-
-.tasknotes-plugin .task-card--actively-tracked::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    margin: 2px;
-    border: 2px solid var(--tn-color-info);
-    border-radius: var(--tn-radius-xs);
-    opacity: 0.65;
 }
 
 /* Recurring Task */
@@ -2029,4 +2085,46 @@ body.is-mobile .tasknotes-plugin .task-card--layout-inline .task-card__context-m
 /* Primary selected kanban card wrapper gets a border */
 .tasknotes-plugin .kanban-view__card-wrapper--selected-primary {
     box-shadow: inset 0 0 0 2px var(--interactive-accent);
+}
+
+/* Human-readable system metadata in Obsidian's Properties panel. The stored
+   ISO timestamps and time-entry objects remain unchanged underneath. */
+.metadata-property-value.tasknotes-system-property__value > :not(.tasknotes-system-property__summary) {
+    display: none;
+}
+
+.tasknotes-system-property__summary {
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
+    max-width: 100%;
+    color: var(--text-normal);
+    font-variant-numeric: tabular-nums;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tasknotes-system-property__summary[role="button"] {
+    padding: 3px 7px;
+    margin: -3px -7px;
+    border-radius: var(--radius-s);
+    color: var(--text-accent);
+    cursor: var(--cursor-link, pointer);
+}
+
+.tasknotes-system-property__summary[role="button"]:hover {
+    background: var(--background-modifier-hover);
+    color: var(--text-accent-hover);
+}
+
+.tasknotes-system-property__summary[role="button"]:focus-visible {
+    outline: 2px solid var(--background-modifier-border-focus);
+    outline-offset: 2px;
+}
+
+@container tn-task-card (max-width: 420px) {
+    .tasknotes-plugin .task-card__time-tracking-action-label {
+        display: none;
+    }
 }

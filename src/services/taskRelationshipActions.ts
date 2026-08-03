@@ -2,7 +2,6 @@ import { TFile } from "obsidian";
 import type TaskNotesPlugin from "../main";
 import type { TaskInfo } from "../types";
 import { generateLink, parseLinkToPath } from "../utils/linkUtils";
-import { filterTaskIdentificationTags } from "../utils/taskTagFiltering";
 import { publishUserNotice } from "../core/userNotices";
 
 function translate(
@@ -156,16 +155,7 @@ export function buildSubtaskCreationPrePopulatedValues(
 				)
 			: []
 		: [];
-	const inheritedTags =
-		shouldInheritParentProperties
-			? plugin.settings.taskIdentificationMethod === "tag"
-				? filterTaskIdentificationTags(
-						parentTags,
-						plugin.settings.taskTag,
-						plugin.settings.hideIdentifyingTagsMode
-					)
-				: [...parentTags]
-			: [];
+	const inheritedTags = [...parentTags];
 	const values: Partial<TaskInfo> = {
 		projects: uniqueNonEmptyStrings([...parentProjects, projectReference]),
 	};

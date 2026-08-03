@@ -69,3 +69,147 @@
     background: var(--background-modifier-hover);
     color: var(--text-normal);
 }
+
+/* Global active-task control. It is anchored to Obsidian's workspace so it
+   remains visible while notes and views change without using fixed positioning. */
+.tasknotes-active-task-control {
+    position: absolute;
+    top: calc(var(--header-height, 40px) + var(--size-4-2, 8px));
+    right: max(var(--size-4-3, 12px), env(safe-area-inset-right));
+    z-index: var(--tn-z-dropdown);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: min(360px, calc(100% - 24px));
+    max-height: min(40vh, 320px);
+    padding: 6px;
+    overflow-y: auto;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: var(--radius-m);
+    background: var(--background-primary);
+    box-shadow: var(--tn-shadow-medium);
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+}
+
+.tasknotes-active-task-control.is-dragging {
+    cursor: grabbing;
+}
+
+.tasknotes-active-task-control[hidden] {
+    display: none;
+}
+
+.tasknotes-active-task-control__summary {
+    padding: 2px 6px;
+    color: var(--text-muted);
+    font-size: var(--font-ui-smaller);
+    font-weight: var(--font-medium);
+}
+
+.tasknotes-active-task-control__task {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    min-height: 34px;
+    padding: 4px 6px;
+    border-radius: var(--radius-s);
+}
+
+.tasknotes-active-task-control__task:hover {
+    background: var(--background-modifier-hover);
+}
+
+.tasknotes-active-task-control__task[aria-busy="true"] {
+    opacity: 0.65;
+}
+
+.tasknotes-active-task-control__marker {
+    width: 8px;
+    height: 8px;
+    flex: 0 0 auto;
+    border-radius: 2px;
+    background: var(--interactive-accent);
+}
+
+.tasknotes-active-task-control__open,
+.tasknotes-active-task-control__end {
+    appearance: none;
+    min-width: 0;
+    margin: 0;
+    border: 0;
+    box-shadow: none;
+    font: inherit;
+}
+
+.tasknotes-active-task-control__open {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: 10px;
+    padding: 3px 4px;
+    background: transparent;
+    color: var(--text-normal);
+    text-align: start;
+    cursor: grab;
+}
+
+.tasknotes-active-task-control__open:hover {
+    background: transparent;
+}
+
+.tasknotes-active-task-control__title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: var(--font-ui-small);
+    font-weight: var(--font-medium);
+}
+
+.tasknotes-active-task-control__elapsed {
+    color: var(--text-muted);
+    font-family: var(--font-monospace);
+    font-size: var(--font-ui-smaller);
+    font-variant-numeric: tabular-nums;
+}
+
+.tasknotes-active-task-control__end {
+    flex: 0 0 auto;
+    padding: 4px 7px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: var(--radius-s);
+    background: var(--background-secondary);
+    color: var(--text-muted);
+    font-size: var(--font-ui-smaller);
+    white-space: nowrap;
+    cursor: var(--cursor-link, pointer);
+}
+
+.tasknotes-active-task-control__end:hover {
+    border-color: var(--interactive-accent);
+    background: var(--interactive-accent);
+    color: var(--text-on-accent);
+}
+
+.tasknotes-active-task-control__open:focus-visible,
+.tasknotes-active-task-control__end:focus-visible {
+    outline: 2px solid var(--background-modifier-border-focus);
+    outline-offset: 1px;
+}
+
+.tasknotes-active-task-control:focus-visible {
+    outline: 2px solid var(--background-modifier-border-focus);
+    outline-offset: 2px;
+}
+
+@media (max-width: 600px) {
+    .tasknotes-active-task-control {
+        top: calc(var(--header-height, 44px) + var(--size-4-2, 8px));
+        right: var(--size-4-2, 8px);
+        width: calc(100% - 16px);
+        max-height: 32vh;
+    }
+}

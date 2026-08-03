@@ -208,6 +208,14 @@ export function registerRibbonIcons(plugin: TaskNotesPlugin): void {
 	);
 
 	plugin.addRibbonIcon(
+		"chart-no-axes-column",
+		plugin.i18n.translate("commands.openStatisticsView"),
+		async () => {
+			await plugin.openBasesFileForCommand("open-statistics");
+		}
+	);
+
+	plugin.addRibbonIcon(
 		"tasknotes-simple",
 		plugin.i18n.translate("commands.createNewTask"),
 		() => {
@@ -450,14 +458,17 @@ export function initializeServicesLazily(plugin: TaskNotesPlugin): void {
 				const { createInstantConvertButtons } = await import(
 					"../editor/InstantConvertButtons"
 				);
-				plugin.registerEditorExtension(createInstantConvertButtons(plugin));
+				if (!plugin.instantConvertEditorExtensionRegistered) {
+					plugin.registerEditorExtension(createInstantConvertButtons(plugin));
+					plugin.instantConvertEditorExtensionRegistered = true;
+				}
 
 				plugin.taskUpdateListenerForEditor = plugin.emitter.on(
 					EVENT_TASK_UPDATED,
 					(data: { path?: string; updatedTask?: TaskInfo }) => {
 						plugin.app.workspace.iterateRootLeaves((leaf) => {
 							if (leaf.view && leaf.view.getViewType() === "markdown") {
-									const editor = (leaf.view as MarkdownView).editor;
+								const editor = (leaf.view as MarkdownView).editor;
 								const cm = getCodeMirrorEditor(editor);
 								if (cm) {
 									const taskPath = data?.path || data?.updatedTask?.path;
@@ -472,7 +483,7 @@ export function initializeServicesLazily(plugin: TaskNotesPlugin): void {
 					plugin.app.workspace.on("active-leaf-change", (leaf) => {
 						window.setTimeout(() => {
 							if (leaf && leaf.view && leaf.view.getViewType() === "markdown") {
-									const editor = (leaf.view as MarkdownView).editor;
+								const editor = (leaf.view as MarkdownView).editor;
 								const cm = getCodeMirrorEditor(editor);
 								if (cm) {
 									dispatchTaskUpdate(cm as EditorView);

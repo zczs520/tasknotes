@@ -49,7 +49,9 @@ describe("defaultBasesFiles", () => {
 		const template = generateBasesFileTemplate("open-kanban-view", createMockPlugin() as any);
 
 		expect(template).toContain('name: "Kanban Board"');
-		expect(template).toContain("sort:\n      - column: tasknotes_manual_order\n        direction: DESC");
+		expect(template).toContain(
+			"sort:\n      - column: tasknotes_manual_order\n        direction: DESC"
+		);
 		expect(template).toContain("groupBy:\n      property: status");
 	});
 
@@ -57,10 +59,14 @@ describe("defaultBasesFiles", () => {
 		const template = generateBasesFileTemplate("open-tasks-view", createMockPlugin() as any);
 
 		expect(template).toContain('name: "Manual Order"');
-		expect(template).toContain("sort:\n      - column: tasknotes_manual_order\n        direction: DESC");
+		expect(template).toContain(
+			"sort:\n      - column: tasknotes_manual_order\n        direction: DESC"
+		);
 		expect(template).toContain("groupBy:\n      property: status");
 		expect(template).toContain('name: "Not Blocked"');
-		expect(template).toContain("sort:\n      - column: formula.urgencyScore\n        direction: DESC");
+		expect(template).toContain(
+			"sort:\n      - column: formula.urgencyScore\n        direction: DESC"
+		);
 	});
 
 	it("adds manual-order sorting to relationship views that render tasks", () => {
@@ -86,7 +92,10 @@ describe("defaultBasesFiles", () => {
 	});
 
 	it("normalizes dependency entries in generated Bases filters before comparing links", () => {
-		const tasksTemplate = generateBasesFileTemplate("open-tasks-view", createMockPlugin() as any);
+		const tasksTemplate = generateBasesFileTemplate(
+			"open-tasks-view",
+			createMockPlugin() as any
+		);
 		const relationshipsTemplate = generateBasesFileTemplate(
 			"relationships",
 			createMockPlugin() as any
@@ -268,11 +277,15 @@ describe("defaultBasesFiles", () => {
 		const template = generateBasesFileTemplate("open-tasks-view", createMockPlugin() as any);
 
 		// Today and This Week view filters
-		expect(template).toContain('date(due).format("YYYY-MM-DD") == today().format("YYYY-MM-DD")');
+		expect(template).toContain(
+			'date(due).format("YYYY-MM-DD") == today().format("YYYY-MM-DD")'
+		);
 		expect(template).toContain(
 			'date(scheduled).format("YYYY-MM-DD") == today().format("YYYY-MM-DD")'
 		);
-		expect(template).toContain('date(due).format("YYYY-MM-DD") >= today().format("YYYY-MM-DD")');
+		expect(template).toContain(
+			'date(due).format("YYYY-MM-DD") >= today().format("YYYY-MM-DD")'
+		);
 		expect(template).toContain(
 			'date(due).format("YYYY-MM-DD") <= (today() + "7 days").format("YYYY-MM-DD")'
 		);
@@ -361,7 +374,10 @@ describe("defaultBasesFiles", () => {
 	});
 
 	it("generates a Pomodoro statistics Base from daily-note Pomodoro frontmatter", () => {
-		const template = generateBasesFileTemplate("pomodoro-stats-base", createMockPlugin() as any);
+		const template = generateBasesFileTemplate(
+			"pomodoro-stats-base",
+			createMockPlugin() as any
+		);
 
 		expect(template).toContain("# Pomodoro statistics");
 		expect(template).toContain('file.hasProperty("pomodoros")');
@@ -372,5 +388,22 @@ describe("defaultBasesFiles", () => {
 		expect(template).toContain("formula.completedPomos: Sum");
 		expect(template).toContain("formula.focusMinutes: Sum");
 		expect(template).not.toContain('file.hasTag("task")');
+	});
+
+	it("generates a task time statistics Base using the configured task identifier", () => {
+		const template = generateBasesFileTemplate(
+			"open-statistics",
+			createMockPlugin({
+				taskIdentificationMethod: "property",
+				taskPropertyName: "kind",
+				taskPropertyValue: "task",
+			}) as any
+		);
+
+		expect(template).toContain("# Time statistics");
+		expect(template).toContain('note["kind"] == "task"');
+		expect(template).toContain("type: tasknotesTimeStatistics");
+		expect(template).toContain('name: "Time Statistics"');
+		expect(template).not.toContain("pomodoros");
 	});
 });

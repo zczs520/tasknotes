@@ -4,7 +4,6 @@ import type {
 	ModalFieldConfig,
 	FieldGroup,
 	TaskModalFieldsConfig,
-	UserMappedField,
 } from "../../types/settings";
 import {
 	createCard,
@@ -12,6 +11,51 @@ import {
 	createCardSelect,
 	createCardToggle,
 } from "./CardComponent";
+import type { TranslationKey } from "../../i18n";
+
+const GROUP_TRANSLATION_KEYS: Partial<Record<FieldGroup, TranslationKey>> = {
+	basic: "settings.modalFields.groups.basic",
+	metadata: "settings.modalFields.groups.metadata",
+	organization: "settings.modalFields.groups.organization",
+	dependencies: "settings.modalFields.groups.dependencies",
+	custom: "settings.modalFields.groups.custom",
+};
+
+const FIELD_TRANSLATION_KEYS: Record<string, TranslationKey> = {
+	title: "settings.modalFields.fields.title",
+	details: "settings.modalFields.fields.details",
+	contexts: "settings.modalFields.fields.contexts",
+	tags: "settings.modalFields.fields.tags",
+	"time-estimate": "settings.modalFields.fields.timeEstimate",
+	projects: "settings.modalFields.fields.projects",
+	subtasks: "settings.modalFields.fields.subtasks",
+	"blocked-by": "settings.modalFields.fields.blockedBy",
+	blocking: "settings.modalFields.fields.blocking",
+};
+
+function translate(
+	plugin: TaskNotesPlugin,
+	key: TranslationKey,
+	params?: Record<string, string | number>
+): string {
+	return plugin.i18n.translate(key, params);
+}
+
+function getGroupLabel(
+	plugin: TaskNotesPlugin,
+	group: TaskModalFieldsConfig["groups"][number]
+): string {
+	const key = GROUP_TRANSLATION_KEYS[group.id];
+	return key ? translate(plugin, key) : group.displayName;
+}
+
+function getFieldLabel(plugin: TaskNotesPlugin, field: ModalFieldConfig): string {
+	if (field.fieldType === "user") {
+		return field.displayName;
+	}
+	const key = FIELD_TRANSLATION_KEYS[field.id];
+	return key ? translate(plugin, key) : field.displayName;
+}
 
 /**
  * Creates the field manager UI component for configuring modal fields
@@ -29,7 +73,7 @@ export function createFieldManager(
 	// Safety check
 	if (!config || !config.groups || !config.fields) {
 		container.createDiv({
-			text: "Error: Invalid field configuration. Please reset to defaults.",
+			text: translate(plugin, "settings.modalFields.errors.invalid"),
 		});
 		return;
 	}
@@ -47,7 +91,7 @@ export function createFieldManager(
 		if (index === 0) {
 			tab.addClass("field-manager__tab--active");
 		}
-		tab.setText(group.displayName);
+		tab.setText(getGroupLabel(plugin, group));
 		tab.onclick = () => {
 			// Update active tab
 			tabsContainer.querySelectorAll(".field-manager__tab").forEach((t) => {
@@ -86,7 +130,7 @@ function renderFieldGroup(
 
 	if (groupFields.length === 0) {
 		const emptyState = container.createDiv({ cls: "field-manager__empty" });
-		emptyState.setText("No fields in this group");
+		emptyState.setText(translate(plugin, "settings.modalFields.emptyGroup"));
 		return;
 	}
 
@@ -116,7 +160,10 @@ function createFieldCard(
 	const typeBadge = activeDocument.createElement("span");
 	typeBadge.classList.add("field-card__type");
 	typeBadge.classList.add(`field-card__type--${field.fieldType}`);
-	typeBadge.textContent = field.fieldType;
+	typeBadge.textContent = translate(
+		plugin,
+		`settings.modalFields.fieldTypes.${field.fieldType}`
+	);
 
 	// Create toggle switches with callbacks
 	const enabledToggle = createCardToggle(field.enabled, (value) => {
@@ -169,7 +216,7 @@ function createFieldCard(
 
 	// Create group selector
 	const groupSelect = createCardSelect(
-		config.groups.map((g) => ({ value: g.id, label: g.displayName })),
+		config.groups.map((group) => ({ value: group.id, label: getGroupLabel(plugin, group) })),
 		field.group
 	);
 	groupSelect.onchange = () => {
@@ -196,22 +243,46 @@ function createFieldCard(
 		id: field.id,
 		draggable: canReorder,
 		header: {
-			primaryText: field.displayName,
-			secondaryText: getFieldSecondaryText(field, plugin.settings.userFields),
+			primaryText: getFieldLabel(plugin, field),
+			secondaryText: getFieldSecondaryText(field, plugin),
 			meta: [typeBadge],
 		},
 		content: {
 			sections: [
 				{
-					rows: [{ label: "Enabled:", input: enabledToggle }],
+					rows: [
+						{
+							label: translate(plugin, "settings.modalFields.controls.enabled"),
+							input: enabledToggle,
+						},
+					],
 				},
 				...(field.enabled
 					? [
 							{
 								rows: [
-									{ label: "Show in Creation:", input: creationToggle },
-									{ label: "Show in Edit:", input: editToggle },
-									{ label: "Group:", input: groupSelect, fullWidth: true },
+									{
+										label: translate(
+											plugin,
+											"settings.modalFields.controls.showInCreation"
+										),
+										input: creationToggle,
+									},
+									{
+										label: translate(
+											plugin,
+											"settings.modalFields.controls.showInEdit"
+										),
+										input: editToggle,
+									},
+									{
+										label: translate(
+											plugin,
+											"settings.modalFields.controls.group"
+										),
+										input: groupSelect,
+										fullWidth: true,
+									},
 								],
 							},
 						]
@@ -263,16 +334,17 @@ function createFieldCard(
 	}
 }
 
-function getFieldSecondaryText(
-	field: ModalFieldConfig,
-	userFields: UserMappedField[] | undefined
-): string {
+function getFieldSecondaryText(field: ModalFieldConfig, plugin: TaskNotesPlugin): string {
 	if (field.fieldType !== "user") {
-		return `ID: ${field.id}`;
+		return translate(plugin, "settings.modalFields.secondary.id", { id: field.id });
 	}
 
-	const userField = userFields?.find((candidate) => candidate.id === field.id);
-	return userField?.key ? `Key: ${userField.key}` : "No key set";
+	const userField = plugin.settings.userFields?.find(
+		(candidate) => candidate.id === field.id
+	);
+	return userField?.key
+		? translate(plugin, "settings.modalFields.secondary.key", { key: userField.key })
+		: translate(plugin, "settings.modalFields.secondary.noKey");
 }
 
 /**

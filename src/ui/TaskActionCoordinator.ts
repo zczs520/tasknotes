@@ -72,7 +72,23 @@ export class TaskActionCoordinator {
 				}
 			}
 
-			showNotice("Time tracking started");
+			const inProgressStatus = this.plugin.statusManager
+				.getAllStatuses()
+				.find((status) => status.id === "in-progress");
+			if (
+				inProgressStatus &&
+				this.plugin.statusManager.normalizeStatusValue(updatedTask.status) !==
+					this.plugin.statusManager.normalizeStatusValue(inProgressStatus.value)
+			) {
+				updatedTask = await this.plugin.updateTaskProperty(
+					updatedTask,
+					"status",
+					inProgressStatus.value,
+					{ silent: true }
+				);
+			}
+
+			showNotice(this.plugin.i18n.translate("modals.timeTracking.startedSimple"));
 			this.requestStatusBarUpdate();
 			return updatedTask;
 		} catch (error: unknown) {
@@ -85,9 +101,9 @@ export class TaskActionCoordinator {
 				error instanceof Error &&
 				error.message === "Time tracking is already active for this task"
 			) {
-				showNotice("Time tracking is already active for this task");
+				showNotice(this.plugin.i18n.translate("modals.timeTracking.alreadyActive"));
 			} else {
-				showNotice("Failed to start time tracking");
+				showNotice(this.plugin.i18n.translate("modals.timeTracking.startFailed"));
 			}
 			throw error;
 		}
@@ -96,7 +112,7 @@ export class TaskActionCoordinator {
 	async stopTimeTracking(task: TaskInfo): Promise<TaskInfo> {
 		try {
 			const updatedTask = await this.plugin.taskService.stopTimeTracking(task);
-			showNotice("Time tracking stopped");
+			showNotice(this.plugin.i18n.translate("modals.timeTracking.stopped"));
 			this.requestStatusBarUpdate();
 			return updatedTask;
 		} catch (error: unknown) {
@@ -109,12 +125,56 @@ export class TaskActionCoordinator {
 				error instanceof Error &&
 				error.message === "No active time tracking session for this task"
 			) {
-				showNotice("No active time tracking session for this task");
+				showNotice(this.plugin.i18n.translate("modals.timeTracking.noActiveSession"));
 			} else {
-				showNotice("Failed to stop time tracking");
+				showNotice(this.plugin.i18n.translate("modals.timeTracking.stopFailed"));
 			}
 			throw error;
 		}
+	}
+
+	/**
+	 * Start the user-facing task workflow.
+	 *
+	 * Time tracking remains the source of truth for whether a task is active,
+	 * and startTimeTracking synchronizes the configured in-progress status
+	 * before returning.
+	 */
+	async startTask(task: TaskInfo): Promise<TaskInfo> {
+		return this.startTimeTracking(task);
+	}
+
+	/**
+	 * End the user-facing task workflow shared by task cards and the floating
+	 * active-task control: stop the timer first, then complete the task.
+	 */
+	async endTask(task: TaskInfo): Promise<TaskInfo> {
+		let updatedTask = task;
+		if (this.plugin.getActiveTimeSession(updatedTask)) {
+			updatedTask = await this.stopTimeTracking(updatedTask);
+		}
+
+		if (updatedTask.recurrence) {
+			return this.plugin.toggleRecurringTaskComplete(updatedTask);
+		}
+
+		const completedStatuses = this.plugin.statusManager
+			.getAllStatuses()
+			.filter((status) => status.isCompleted && !status.isSkipped)
+			.sort((first, second) => first.order - second.order);
+		const completedStatus =
+			completedStatuses.find((status) => status.id === "done") ?? completedStatuses[0];
+
+		if (!completedStatus) {
+			return updatedTask;
+		}
+
+		return this.plugin.updateTaskProperty(
+			updatedTask,
+			"status",
+			completedStatus.value,
+			{ silent: true }
+		);
 	}
 
 	async openTaskSelectorForTimeTracking(): Promise<void> {

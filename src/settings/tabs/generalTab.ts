@@ -284,6 +284,11 @@ export function renderGeneralTab(
 			defaultPath: "TaskNotes/Views/agenda-default.base",
 		},
 		{
+			id: "open-statistics",
+			nameKey: "timeStatistics" as const,
+			defaultPath: "TaskNotes/Views/time-statistics.base",
+		},
+		{
 			id: "pomodoro-stats-base",
 			nameKey: "pomodoroStats" as const,
 			defaultPath: "TaskNotes/Views/pomodoro-stats.base",
@@ -556,7 +561,11 @@ export function renderGeneralTab(
 											isDestructive: false,
 										});
 										if (!confirmed) return;
-										await modifyVaultFile(plugin.app, existingFile, basesContent);
+										await modifyVaultFile(
+											plugin.app,
+											existingFile,
+											basesContent
+										);
 									} else {
 										await createVaultFile(plugin.app, filePath, basesContent);
 									}

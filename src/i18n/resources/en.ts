@@ -285,6 +285,12 @@ export const en: TranslationTree = {
 					dayMaxEvents: "Max events per day (month view, 0 = auto)",
 					dayMaxEventRows: "Max event rows per day (month view, 0 = unlimited)",
 					spanScheduledToDue: "Span tasks between scheduled and due dates",
+					calendarViewMonth: "Month",
+					calendarViewWeek: "Week",
+					calendarViewCustomDays: "Custom days",
+					calendarViewDay: "Day",
+					calendarViewList: "List",
+					calendarViewYear: "Year",
 				},
 				propertyBasedEvents: {
 					startDateProperty: "Start date property",
@@ -293,6 +299,13 @@ export const en: TranslationTree = {
 					endDatePropertyPlaceholder: "Select property for end date/time",
 					titleProperty: "Title property (optional)",
 					titlePropertyPlaceholder: "Select property for event title",
+				},
+				miniCalendar: {
+					dateProperty: "Date property",
+					datePropertyPlaceholder: "Select a property to show on the calendar",
+					titleProperty: "Title property",
+					titlePropertyPlaceholder: "Select a property to use as the title",
+					maxColorNoteCount: "Maximum note count for color scale",
 				},
 			},
 			notices: {
@@ -329,6 +342,35 @@ export const en: TranslationTree = {
 					"Cannot move tasks between formula-based swimlanes. Formula values are computed and cannot be directly modified.",
 			},
 			columnTitle: "Untitled",
+			toggleSwimLane: 'Toggle swim lane "{swimLane}"',
+			reorderSwimLane: 'Drag to reorder swim lane "{swimLane}"',
+			tagsLabel: "Tags",
+			timeFilter: {
+				ariaLabel: "Filter by {field}",
+				fieldButtonLabel: "Date field: {field}",
+				fields: {
+					scheduled: "Scheduled date",
+					created: "Creation time",
+					completed: "Completion date",
+				},
+				thisWeek: "This week",
+				lastWeek: "Last week",
+				all: "All",
+				custom: "Custom",
+				customTitle: "Custom {field} range",
+				startDate: "Start date",
+				endDate: "End date",
+				apply: "Apply",
+				invalidRange: "Choose a valid start and end date.",
+				openFailed: "Could not open the custom date range.",
+				thisMonth: "This month",
+				lastMonth: "Last month",
+				recentThreeMonths: "Recent 3 months",
+				previousMonth: "Previous month",
+				nextMonth: "Next month",
+				chooseDate: "Choose date",
+				selectEnd: "Choose end date",
+			},
 		},
 		pomodoro: {
 			title: "Pomodoro",
@@ -488,6 +530,74 @@ export const en: TranslationTree = {
 			noTasks: "No tasks found",
 			loading: "Loading...",
 		},
+		timeStatistics: {
+			title: "Time statistics",
+			subtitle: "See task and tag effort together in one view",
+			dimensions: {
+				tasks: "Tasks",
+				tags: "Tags",
+			},
+			periods: {
+				day: "Day",
+				week: "Week",
+				month: "Month",
+				year: "Year",
+			},
+			navigation: {
+				previous: "Previous period",
+				next: "Next period",
+				current: {
+					day: "Back to today",
+					week: "Back to this week",
+					month: "Back to this month",
+					year: "Back to this year",
+				},
+			},
+			summary: {
+				day: "Time today",
+				week: "Time this week",
+				month: "Time this month",
+				year: "Time this year",
+				tasksLabel: "Tasks involved",
+				recordsLabel: "Time entries",
+				averageLabel: "Average per active day",
+				taskCount: "{count} tasks",
+				recordCount: "{count} time entries",
+				tagCount: "{count} tags",
+			},
+			running: "Tracking",
+			chart: {
+				title: "Activity",
+				dayHint: "Timeline by time of day",
+				barHint: "Total time by period",
+				monthHint: "Daily activity intensity",
+			},
+			ranking: {
+				title: "Task ranking",
+			},
+			distribution: {
+				title: "Tag distribution",
+			},
+			records: {
+				title: "Time entries",
+				hint: "Latest {count} entries",
+			},
+			timelineTitle: "Task timeline",
+			tagsTitle: "Time by tag",
+			sortLabel: "Most time first",
+			overlapNote:
+				"Tasks can have multiple tags. Tag durations may overlap, so their sum can exceed total tracked time.",
+			untagged: "Untagged",
+			involvedTasks: "{count} tasks",
+			empty: {
+				title: "No time entries in this period",
+				description:
+					"Start tracking time on a task and its timeline will appear here automatically.",
+			},
+			error: {
+				title: "Could not load time statistics",
+			},
+		},
 		releaseNotes: {
 			title: "What's new in TaskNotes {version}",
 			header: "What's new in TaskNotes {version}",
@@ -496,6 +606,55 @@ export const en: TranslationTree = {
 				"We really appreciate all feedback. If something does not feel right, please let us know on GitHub. If you find TaskNotes useful, please consider giving it a star.",
 			baseFilesNotice:
 				"> [!info] About default `.base` files\n> Updates to default generated `.base` templates do not overwrite your existing `.base` files, so your customizations stay safe.\n> If you want the newest template improvements, regenerate base files in **Settings → TaskNotes → General → Views & base files → Create files**.",
+		},
+		basesViewSettings: {
+			viewNames: {
+				taskList: "TaskNotes task list",
+				kanban: "TaskNotes Kanban",
+				calendar: "TaskNotes calendar",
+				miniCalendar: "TaskNotes mini calendar",
+				timeStatistics: "TaskNotes time statistics",
+			},
+			common: {
+				enableSearch: "Enable search box",
+				expandedRelationships: "Expanded relationships",
+				hideTopLevelSubtasks: "Hide top-level subtasks",
+			},
+			options: {
+				default: "Default",
+				compact: "Compact",
+				expanded: "Expanded",
+				collapsed: "Collapsed",
+				inherit: "Inherit",
+				showAll: "Show all",
+			},
+			taskList: {
+				subGroupBy: "Sub-group by",
+				subGroupByPlaceholder: "Select property for sub-grouping (optional)",
+				defaultCollapsedState: "Default collapsed state",
+			},
+			kanban: {
+				enableSearchAndTimeFilter: "Enable search box and date filters",
+				boardFullWidth: "Use full board width",
+				boardWidth: "Overall board width",
+				boardSideMargin: "Board side margin",
+				swimLane: "Swim lane",
+				swimLanePlaceholder: "Select property for swim lanes (optional)",
+				visibleSwimLanes: "Visible swim lanes",
+				columnWidth: "Column width",
+				maxSwimlaneHeight: "Maximum swimlane height",
+				hideEmptyColumns: "Hide empty columns",
+				pinnedColumns: "Pinned columns",
+				pinnedColumnsPlaceholder: "Comma-separated column values to keep visible",
+				hideEmptySwimlanes: "Hide empty swimlanes",
+				showItemsInMultipleColumns: "Show items in multiple columns",
+				showStatusIconInHeaderOnly: "Show status icon in column header only",
+				cardLayout: "Card layout",
+				columnOrderAdvanced: "Column order (advanced)",
+				columnOrderPlaceholder: "Automatically managed when dragging columns",
+				swimLaneOrderAdvanced: "Swimlane order (advanced)",
+				swimLaneOrderPlaceholder: "JSON object keyed by swimlane property",
+			},
 		},
 	},
 	settings: {
@@ -511,6 +670,79 @@ export const en: TranslationTree = {
 			appearance: "Appearance & UI",
 			features: "Features",
 			integrations: "Integrations",
+		},
+		modalFields: {
+			heading: "Task modal fields configuration",
+			description:
+				"Configure which fields appear in task creation and edit modals. Drag fields to reorder them within each group.",
+			splitLayout: {
+				name: "Split layout on wide screens",
+				description:
+					"When enabled, the details editor appears in a right column on screens 900px or wider. When disabled, the modal uses a stacked layout.",
+			},
+			tabMovesFocus: {
+				name: "Tab moves focus in details editor",
+				description:
+					"When enabled, Tab moves from the details editor to the next modal field and Shift+Tab moves to the previous field. When disabled, Tab and Shift+Tab use the Markdown editor's indentation behavior.",
+			},
+			sync: {
+				name: "Sync user fields",
+				description:
+					"Sync custom user fields from task property settings into this configuration.",
+				button: "Sync user fields",
+				success: "User fields synced",
+			},
+			reset: {
+				name: "Reset to defaults",
+				description:
+					"Reset all field configurations to their default values. This removes any custom configuration.",
+				button: "Reset to defaults",
+				confirmTitle: "Reset modal fields?",
+				confirmMessage:
+					"This resets all modal field configuration and removes custom changes.",
+				confirm: "Reset",
+				success: "Modal fields reset to defaults",
+			},
+			groups: {
+				basic: "Basic information",
+				metadata: "Metadata",
+				organization: "Organization",
+				dependencies: "Dependencies",
+				custom: "Custom fields",
+			},
+			fields: {
+				title: "Title",
+				details: "Details",
+				contexts: "Contexts",
+				tags: "Tags",
+				timeEstimate: "Time estimate",
+				projects: "Projects",
+				subtasks: "Subtasks",
+				blockedBy: "Blocked by",
+				blocking: "Blocking",
+			},
+			fieldTypes: {
+				core: "Core",
+				user: "User",
+				dependency: "Dependency",
+				organization: "Organization",
+			},
+			controls: {
+				enabled: "Enabled:",
+				showInCreation: "Show in creation:",
+				showInEdit: "Show in edit:",
+				group: "Group:",
+			},
+			secondary: {
+				id: "ID: {id}",
+				key: "Key: {key}",
+				noKey: "No key set",
+			},
+			emptyGroup: "No fields in this group",
+			errors: {
+				invalid: "Invalid field configuration. Reset to defaults and try again.",
+				initialize: "Unable to initialize field configuration.",
+			},
 		},
 		features: {
 			inlineTasks: {
@@ -1745,6 +1977,7 @@ export const en: TranslationTree = {
 						tasks: "Open tasks view",
 						advancedCalendar: "Open advanced calendar view",
 						agenda: "Open agenda view",
+						timeStatistics: "Time statistics",
 						pomodoroStats: "Pomodoro statistics base",
 						relationships: "Relationships widget",
 					},
@@ -1937,7 +2170,8 @@ export const en: TranslationTree = {
 				},
 				requireDueDate: {
 					name: "Require due date",
-					description: "When enabled, only tasks with a due date are included in ICS exports.",
+					description:
+						"When enabled, only tasks with a due date are included in ICS exports.",
 				},
 				requireScheduledDate: {
 					name: "Require scheduled date",
@@ -2391,7 +2625,7 @@ export const en: TranslationTree = {
 		openKanbanView: "Open Kanban board",
 		updateDefaultBaseFiles: "Update default base files",
 		openPomodoroStats: "Open Pomodoro statistics",
-		openStatisticsView: "Open task & project statistics",
+		openStatisticsView: "Open time statistics",
 		createNewTask: "Create new task",
 		convertCurrentNoteToTask: {
 			name: "Convert current note to task",
@@ -2918,7 +3152,12 @@ export const en: TranslationTree = {
 		timeTracking: {
 			noTasksAvailable: "No tasks available to track time for",
 			started: "Started tracking time for: {taskTitle}",
+			startedSimple: "Time tracking started",
+			stopped: "Time tracking stopped",
+			alreadyActive: "Time tracking is already active for this task",
+			noActiveSession: "No active time tracking session for this task",
 			startFailed: "Failed to start time tracking",
+			stopFailed: "Failed to stop time tracking",
 		},
 		timeEntry: {
 			mustHaveSpecificTime:
@@ -2962,6 +3201,7 @@ export const en: TranslationTree = {
 			renameTitle: "Rename file",
 			renamePlaceholder: "Enter new name",
 			delete: "Delete",
+			deleteTask: "Delete task",
 			deleteTitle: "Delete file",
 			deleteMessage: 'Are you sure you want to delete "{name}"?',
 			deleteConfirm: "Delete",
@@ -3226,8 +3466,7 @@ export const en: TranslationTree = {
 				templateNotFound: "Task body template not found: {path}",
 				templateReadError: "Error reading task body template: {template}",
 				occurrenceTemplateNotFound: "Occurrence note template not found: {path}",
-				occurrenceTemplateReadError:
-					"Error reading occurrence note template: {template}",
+				occurrenceTemplateReadError: "Error reading occurrence note template: {template}",
 				moveTaskFailed: "Failed to move {operation} task: {error}",
 			},
 		},
@@ -3292,6 +3531,18 @@ export const en: TranslationTree = {
 			blockingEmpty: "No dependent tasks",
 			blockingLoadError: "Failed to load dependencies",
 			googleCalendarSyncTooltip: "Synced to Google Calendar",
+			trackingActive: "Tracking now",
+			timeEntriesSummary: "{count} sessions · {duration}",
+			timeEntriesActiveSummary: "{count} sessions · Tracking now · {duration}",
+			editTimeEntriesTooltip: "Edit time entries",
+			scheduledPicker: {
+				thisFriday: "This Friday",
+				thisSunday: "This Sunday",
+				fridayPassed: "This Friday has already passed.",
+				previousMonth: "Previous month",
+				nextMonth: "Next month",
+				chooseDate: "Choose scheduled date",
+			},
 		},
 		propertyEventCard: {
 			unknownFile: "Unknown file",
@@ -3395,6 +3646,14 @@ export const en: TranslationTree = {
 			notices: {
 				propertiesMenuFailed: "Failed to show properties menu",
 			},
+		},
+		activeTaskControl: {
+			regionLabel: "Active tasks",
+			dragHint: "Drag to move. Use arrow keys when focused.",
+			multipleLabel: "{count} active tasks",
+			openTask: "Open task: {title}",
+			endTask: "End task: {title}",
+			endAction: "End task",
 		},
 	},
 	components: {

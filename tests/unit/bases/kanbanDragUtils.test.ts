@@ -9,6 +9,7 @@ import {
 	planKanbanStatusDerivativeUpdate,
 	planKanbanTaskDropUpdate,
 	reconstructKanbanDropTargetFromContainer,
+	resolveKanbanAuthoritativeDropSource,
 	resolveKanbanContainerDropTarget,
 	updateKanbanDropMarker,
 	type KanbanDropTarget,
@@ -299,6 +300,52 @@ describe("kanbanDragUtils", () => {
 		expect(plan.needsSwimlaneUpdate).toBe(false);
 		expect(kanbanDropPlanNeedsWrite(plan, false)).toBe(false);
 		expect(kanbanDropPlanNeedsWrite(plan, true)).toBe(true);
+	});
+
+	it("uses task data as the source when the optimistically moved card has a stale column", () => {
+		const sourceColumn = resolveKanbanAuthoritativeDropSource({
+			task: createTask({ status: "in-progress" }),
+			taskProp: "status",
+			propertyId: "task.status",
+			fallbackSource: "open",
+			isListProperty: false,
+			canonicalize: (value) => value,
+		});
+		const plan = planKanbanTaskDropUpdate({
+			path: "Tasks/a.md",
+			sourceColumn,
+			sourceSwimlane: null,
+			newGroupValue: "open",
+			newSwimLaneValue: null,
+			groupByPropertyId: "task.status",
+			swimLanePropertyId: null,
+			groupByTaskProp: "status",
+			swimlaneTaskProp: null,
+			isGroupByListProperty: false,
+			isSwimlaneListProperty: false,
+		});
+		const frontmatter = { status: "in-progress" };
+
+		applyKanbanTaskDropFrontmatterPlan(frontmatter, plan, {
+			coerceGroupValue: (_frontmatterKey, groupKey) => groupKey,
+		});
+
+		expect(sourceColumn).toBe("in-progress");
+		expect(plan.needsGroupUpdate).toBe(true);
+		expect(frontmatter.status).toBe("open");
+	});
+
+	it("keeps the DOM source fallback for list-valued properties", () => {
+		expect(
+			resolveKanbanAuthoritativeDropSource({
+				task: createTask({ projects: ["work"] }),
+				taskProp: "projects",
+				propertyId: "task.projects",
+				fallbackSource: "work",
+				isListProperty: true,
+				canonicalize: (value) => value,
+			})
+		).toBe("work");
 	});
 
 	it("updates scalar group and swimlane properties through a single plan", () => {

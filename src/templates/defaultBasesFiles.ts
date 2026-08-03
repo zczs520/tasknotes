@@ -97,7 +97,7 @@ function generateTaskFilterConditions(settings: TaskNotesSettings): string[] {
  */
 function formatFilterAsYAML(conditions: string | string[]): string {
 	const conditionArray = Array.isArray(conditions) ? conditions : [conditions];
-	const formattedConditions = conditionArray.map(c => `    - ${c}`).join('\n');
+	const formattedConditions = conditionArray.map((c) => `    - ${c}`).join("\n");
 	return `filters:
   and:
 ${formattedConditions}`;
@@ -108,7 +108,7 @@ ${formattedConditions}`;
  * e.g., "note.projects" -> "projects", "file.ctime" -> "ctime"
  */
 function getPropertyName(fullPath: string): string {
-	return fullPath.replace(/^(note\.|file\.|task\.|formula\.)/, '');
+	return fullPath.replace(/^(note\.|file\.|task\.|formula\.)/, "");
 }
 
 function formatBasesDateDayExpression(dateExpression: string): string {
@@ -133,7 +133,7 @@ function mapPropertyToBasesProperty(property: string, plugin: TaskNotesPlugin): 
 	// Handle user-defined fields (format: "user:field_xxx")
 	if (property.startsWith("user:")) {
 		const fieldId = property.substring(5); // Remove "user:" prefix
-		const userField = plugin.settings.userFields?.find(f => f.id === fieldId);
+		const userField = plugin.settings.userFields?.find((f) => f.id === fieldId);
 		if (userField) {
 			return userField.key;
 		}
@@ -193,7 +193,7 @@ function generateOrderArray(plugin: TaskNotesPlugin): string[] {
 
 	// Map to Bases property names, filtering out null/empty values
 	const basesProperties = visibleProperties
-		.map(prop => mapPropertyToBasesProperty(prop, plugin))
+		.map((prop) => mapPropertyToBasesProperty(prop, plugin))
 		.filter((prop): prop is string => !!prop);
 
 	// Add essential properties that should always be in the order
@@ -231,7 +231,7 @@ function generateOrderArray(plugin: TaskNotesPlugin): string[] {
  * Format the order array as YAML
  */
 function formatOrderArray(orderArray: string[]): string {
-	return orderArray.map(prop => `      - ${prop}`).join('\n');
+	return orderArray.map((prop) => `      - ${prop}`).join("\n");
 }
 
 function insertOrderPropertyAfterOrAppend(
@@ -262,19 +262,19 @@ function insertOrderPropertyAfterOrAppend(
  */
 function generatePriorityWeightFormula(plugin: TaskNotesPlugin): string {
 	const settings = plugin.settings;
-	const priorityProperty = getPropertyName(mapPropertyToBasesProperty('priority', plugin));
+	const priorityProperty = getPropertyName(mapPropertyToBasesProperty("priority", plugin));
 
 	// Sort priorities by weight (ascending - lower weight = higher priority)
 	const sortedPriorities = [...settings.customPriorities].sort((a, b) => a.weight - b.weight);
 
 	if (sortedPriorities.length === 0) {
 		// No priorities configured, return a constant
-		return '999';
+		return "999";
 	}
 
 	// Build nested if statements from the inside out
 	// Start with the fallback value (for tasks with no priority or unknown priority)
-	let formula = '999';
+	let formula = "999";
 
 	// Work backwards through priorities to build nested ifs
 	for (let i = sortedPriorities.length - 1; i >= 0; i--) {
@@ -291,7 +291,7 @@ function generatePriorityWeightFormula(plugin: TaskNotesPlugin): string {
  * Maps priority values to their display labels for grouping.
  */
 function generatePriorityCategoryFormula(plugin: TaskNotesPlugin): string {
-	const priorityProperty = getPropertyName(mapPropertyToBasesProperty('priority', plugin));
+	const priorityProperty = getPropertyName(mapPropertyToBasesProperty("priority", plugin));
 	const priorities = plugin.settings.customPriorities;
 
 	if (priorities.length === 0) {
@@ -313,23 +313,25 @@ function generatePriorityCategoryFormula(plugin: TaskNotesPlugin): string {
  * These formulas provide calculated values that can be used in views, filters, and sorting.
  */
 function generateAllFormulas(plugin: TaskNotesPlugin): Record<string, string> {
-	const dueProperty = getPropertyName(mapPropertyToBasesProperty('due', plugin));
-	const statusProperty = getPropertyName(mapPropertyToBasesProperty('status', plugin));
-	const timeEstimateProperty = getPropertyName(mapPropertyToBasesProperty('timeEstimate', plugin));
-	const timeEntriesProperty = getPropertyName(mapPropertyToBasesProperty('timeEntries', plugin));
-	const projectsProperty = getPropertyName(mapPropertyToBasesProperty('projects', plugin));
-	const contextsProperty = getPropertyName(mapPropertyToBasesProperty('contexts', plugin));
+	const dueProperty = getPropertyName(mapPropertyToBasesProperty("due", plugin));
+	const statusProperty = getPropertyName(mapPropertyToBasesProperty("status", plugin));
+	const timeEstimateProperty = getPropertyName(
+		mapPropertyToBasesProperty("timeEstimate", plugin)
+	);
+	const timeEntriesProperty = getPropertyName(mapPropertyToBasesProperty("timeEntries", plugin));
+	const projectsProperty = getPropertyName(mapPropertyToBasesProperty("projects", plugin));
+	const contextsProperty = getPropertyName(mapPropertyToBasesProperty("contexts", plugin));
 
 	// Get all completed status values for isOverdue check
 	const completedStatuses = plugin.settings.customStatuses
-		.filter(s => s.isCompleted)
-		.map(s => s.value);
+		.filter((s) => s.isCompleted)
+		.map((s) => s.value);
 	const completedStatusCheck = completedStatuses
-		.map(status => `${statusProperty} != "${status}"`)
-		.join(' && ');
+		.map((status) => `${statusProperty} != "${status}"`)
+		.join(" && ");
 
-	const scheduledProperty = getPropertyName(mapPropertyToBasesProperty('scheduled', plugin));
-	const recurrenceProperty = getPropertyName(mapPropertyToBasesProperty('recurrence', plugin));
+	const scheduledProperty = getPropertyName(mapPropertyToBasesProperty("scheduled", plugin));
+	const recurrenceProperty = getPropertyName(mapPropertyToBasesProperty("recurrence", plugin));
 	const dueIsEmpty = `${dueProperty}.isEmpty()`;
 	const scheduledIsEmpty = `${scheduledProperty}.isEmpty()`;
 	const dueHasValue = `(${dueIsEmpty} == false)`;
@@ -359,10 +361,10 @@ function generateAllFormulas(plugin: TaskNotesPlugin): Record<string, string> {
 		daysUntilScheduled: `if(${scheduledHasValue}, ((number(date(${scheduledProperty})) - number(today())) / 86400000).floor(), null)`,
 
 		// Days since the task was created
-		daysSinceCreated: '((number(now()) - number(file.ctime)) / 86400000).floor()',
+		daysSinceCreated: "((number(now()) - number(file.ctime)) / 86400000).floor()",
 
 		// Days since the task was last modified
-		daysSinceModified: '((number(now()) - number(file.mtime)) / 86400000).floor()',
+		daysSinceModified: "((number(now()) - number(file.mtime)) / 86400000).floor()",
 
 		// === BOOLEAN FORMULAS ===
 
@@ -420,7 +422,8 @@ function generateAllFormulas(plugin: TaskNotesPlugin): Record<string, string> {
 		timeEstimateCategory: `if(!${timeEstimateProperty} || ${timeEstimateProperty} == 0 || ${timeEstimateProperty} == null, "No estimate", if(${timeEstimateProperty} < 30, "Quick (<30m)", if(${timeEstimateProperty} <= 120, "Medium (30m-2h)", "Long (>2h)")))`,
 
 		// Age category based on creation date
-		ageCategory: 'if(((number(now()) - number(file.ctime)) / 86400000) < 1, "Today", if(((number(now()) - number(file.ctime)) / 86400000) < 7, "This week", if(((number(now()) - number(file.ctime)) / 86400000) < 30, "This month", "Older")))',
+		ageCategory:
+			'if(((number(now()) - number(file.ctime)) / 86400000) < 1, "Today", if(((number(now()) - number(file.ctime)) / 86400000) < 7, "This week", if(((number(now()) - number(file.ctime)) / 86400000) < 30, "This month", "Older")))',
 
 		// Created month for grouping
 		createdMonth: 'file.ctime.format("YYYY-MM")',
@@ -491,7 +494,7 @@ function generateFormulasSection(plugin: TaskNotesPlugin): string {
 
 	const formulaLines = Object.entries(formulas)
 		.map(([name, formula]) => `  ${name}: '${formula}'`)
-		.join('\n');
+		.join("\n");
 
 	return `formulas:\n${formulaLines}`;
 }
@@ -629,9 +632,9 @@ export function generateBasesFileTemplate(commandId: string, plugin: TaskNotesPl
 	const formulasSection = generateFormulasSection(plugin);
 
 	switch (commandId) {
-		case 'open-calendar-view': {
-			const dueProperty = mapPropertyToBasesProperty('due', plugin);
-			const scheduledProperty = mapPropertyToBasesProperty('scheduled', plugin);
+		case "open-calendar-view": {
+			const dueProperty = mapPropertyToBasesProperty("due", plugin);
+			const scheduledProperty = mapPropertyToBasesProperty("scheduled", plugin);
 			return `# Mini Calendar
 # Generated with your TaskNotes settings
 
@@ -660,9 +663,9 @@ ${orderYaml}
     dateProperty: file.mtime
 `;
 		}
-		case 'open-kanban-view': {
-			const statusProperty = getPropertyName(mapPropertyToBasesProperty('status', plugin));
-			const sortOrderProperty = mapPropertyToBasesProperty('sortOrder', plugin);
+		case "open-kanban-view": {
+			const statusProperty = getPropertyName(mapPropertyToBasesProperty("status", plugin));
+			const sortOrderProperty = mapPropertyToBasesProperty("sortOrder", plugin);
 			return `# Kanban Board
 
 ${formatFilterAsYAML(taskFilterConditions)}
@@ -681,19 +684,25 @@ ${orderYaml}
       property: ${statusProperty}
       direction: ASC
     options:
+      boardFullWidth: false
+      boardWidth: 1200
+      boardSideMargin: 0
       columnWidth: 280
       hideEmptyColumns: false
 `;
 		}
 
-		case 'open-tasks-view': {
-			const statusProperty = mapPropertyToBasesProperty('status', plugin);
-			const dueProperty = mapPropertyToBasesProperty('due', plugin);
-			const scheduledProperty = mapPropertyToBasesProperty('scheduled', plugin);
-			const recurrenceProperty = mapPropertyToBasesProperty('recurrence', plugin);
-			const completeInstancesProperty = mapPropertyToBasesProperty('completeInstances', plugin);
-			const blockedByProperty = mapPropertyToBasesProperty('blockedBy', plugin);
-			const sortOrderProperty = mapPropertyToBasesProperty('sortOrder', plugin);
+		case "open-tasks-view": {
+			const statusProperty = mapPropertyToBasesProperty("status", plugin);
+			const dueProperty = mapPropertyToBasesProperty("due", plugin);
+			const scheduledProperty = mapPropertyToBasesProperty("scheduled", plugin);
+			const recurrenceProperty = mapPropertyToBasesProperty("recurrence", plugin);
+			const completeInstancesProperty = mapPropertyToBasesProperty(
+				"completeInstances",
+				plugin
+			);
+			const blockedByProperty = mapPropertyToBasesProperty("blockedBy", plugin);
+			const sortOrderProperty = mapPropertyToBasesProperty("sortOrder", plugin);
 			const dueHasValue = `${dueProperty}.isEmpty() == false`;
 			const scheduledHasValue = `${scheduledProperty}.isEmpty() == false`;
 			const todayDay = getBasesTodayDayExpression();
@@ -703,14 +712,14 @@ ${orderYaml}
 
 			// Get all completed status values
 			const completedStatuses = settings.customStatuses
-				.filter(s => s.isCompleted)
-				.map(s => s.value);
+				.filter((s) => s.isCompleted)
+				.map((s) => s.value);
 
 			// Generate filter for non-recurring incomplete tasks
 			// Status must not be in any of the completed statuses
 			const nonRecurringIncompleteFilter = completedStatuses
-				.map(status => `${statusProperty} != "${status}"`)
-				.join('\n            - ');
+				.map((status) => `${statusProperty} != "${status}"`)
+				.join("\n            - ");
 
 			// Normalize completion dates before comparing so YAML date values and strings both work.
 			// `!= true` also avoids unary `!` at the start of a YAML scalar.
@@ -719,8 +728,11 @@ ${orderYaml}
 			// Generate filter condition for checking if a blocking task is incomplete
 			// This is used in the "Not Blocked" view to filter out completed blocking tasks
 			const blockingTaskIncompleteCondition = completedStatuses
-				.map(status => `${formatDependencyEntryFileExpression("value")}.properties.${getPropertyName(statusProperty)} != "${status}"`)
-				.join(' && ');
+				.map(
+					(status) =>
+						`${formatDependencyEntryFileExpression("value")}.properties.${getPropertyName(statusProperty)} != "${status}"`
+				)
+				.join(" && ");
 
 			return `# All Tasks
 
@@ -879,7 +891,7 @@ ${orderYaml}
 `;
 		}
 
-		case 'open-advanced-calendar-view':
+		case "open-advanced-calendar-view":
 			return `# Calendar
 
 ${formatFilterAsYAML(taskFilterConditions)}
@@ -905,9 +917,13 @@ ${orderYaml}
       slotDuration: "00:30:00"
 `;
 
-		case 'open-agenda-view': {
-			const dueProperty = mapPropertyToBasesProperty('due', plugin);
-			const agendaOrderArray = insertOrderPropertyAfter(orderArray, dueProperty, "formula.dueIn");
+		case "open-agenda-view": {
+			const dueProperty = mapPropertyToBasesProperty("due", plugin);
+			const agendaOrderArray = insertOrderPropertyAfter(
+				orderArray,
+				dueProperty,
+				"formula.dueIn"
+			);
 			const agendaOrderYaml = formatOrderArray(agendaOrderArray);
 			const agendaPropertiesYaml = agendaOrderArray.includes("formula.dueIn")
 				? `
@@ -939,31 +955,54 @@ ${agendaOrderYaml}
 `;
 		}
 
-		case 'pomodoro-stats-base':
+		case "open-statistics":
+			return `# Time statistics
+# Generated with your TaskNotes settings
+
+${formatFilterAsYAML(taskFilterConditions)}
+
+views:
+  - type: tasknotesTimeStatistics
+    name: "Time Statistics"
+    order:
+      - file.name
+`;
+
+		case "pomodoro-stats-base":
 			return generatePomodoroStatsTemplate(plugin);
 
-			case 'relationships': {
-				// Unified relationships widget that shows all relationship types
-				// Extract just the property names (without prefixes) since the template controls the context
-				const projectsProperty = getPropertyName(mapPropertyToBasesProperty('projects', plugin));
-				const blockedByProperty = getPropertyName(mapPropertyToBasesProperty('blockedBy', plugin));
-				const recurrenceParentProperty = getPropertyName(mapPropertyToBasesProperty('recurrenceParent', plugin));
-				const occurrenceDateProperty = mapPropertyToBasesProperty('occurrenceDate', plugin);
-				const scheduledProperty = mapPropertyToBasesProperty('scheduled', plugin);
-				const statusProperty = getPropertyName(mapPropertyToBasesProperty('status', plugin));
-				const sortOrderProperty = mapPropertyToBasesProperty('sortOrder', plugin);
-				const occurrenceOrderYaml = formatOrderArray(
-					insertOrderPropertyAfterOrAppend(orderArray, occurrenceDateProperty, scheduledProperty)
-				);
-				const taskRelationshipFilterYaml = taskFilterConditions
-					.map((condition) => `        - ${condition}`)
-					.join('\n');
-				const projectRelationshipFilterYaml = excludedFolderFilterConditions
-					.map((condition) => `        - ${condition}`)
-					.join('\n');
-				const projectRelationshipFilterPrefix = projectRelationshipFilterYaml
-					? `${projectRelationshipFilterYaml}\n`
-					: '';
+		case "relationships": {
+			// Unified relationships widget that shows all relationship types
+			// Extract just the property names (without prefixes) since the template controls the context
+			const projectsProperty = getPropertyName(
+				mapPropertyToBasesProperty("projects", plugin)
+			);
+			const blockedByProperty = getPropertyName(
+				mapPropertyToBasesProperty("blockedBy", plugin)
+			);
+			const recurrenceParentProperty = getPropertyName(
+				mapPropertyToBasesProperty("recurrenceParent", plugin)
+			);
+			const occurrenceDateProperty = mapPropertyToBasesProperty("occurrenceDate", plugin);
+			const scheduledProperty = mapPropertyToBasesProperty("scheduled", plugin);
+			const statusProperty = getPropertyName(mapPropertyToBasesProperty("status", plugin));
+			const sortOrderProperty = mapPropertyToBasesProperty("sortOrder", plugin);
+			const occurrenceOrderYaml = formatOrderArray(
+				insertOrderPropertyAfterOrAppend(
+					orderArray,
+					occurrenceDateProperty,
+					scheduledProperty
+				)
+			);
+			const taskRelationshipFilterYaml = taskFilterConditions
+				.map((condition) => `        - ${condition}`)
+				.join("\n");
+			const projectRelationshipFilterYaml = excludedFolderFilterConditions
+				.map((condition) => `        - ${condition}`)
+				.join("\n");
+			const projectRelationshipFilterPrefix = projectRelationshipFilterYaml
+				? `${projectRelationshipFilterYaml}\n`
+				: "";
 
 			// Note: No top-level task filter here. Each view applies filters as needed:
 			// - Subtasks, Blocked By, Blocking: include task filter (these are tasks)
@@ -1037,6 +1076,6 @@ ${orderYaml}
 		}
 
 		default:
-			return '';
+			return "";
 	}
 }

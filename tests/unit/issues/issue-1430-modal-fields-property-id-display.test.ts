@@ -2,6 +2,7 @@ import { App } from "obsidian";
 import { createFieldManager } from "../../../src/settings/components/FieldManagerComponent";
 import type TaskNotesPlugin from "../../../src/main";
 import type { TaskModalFieldsConfig, UserMappedField } from "../../../src/types/settings";
+import { createI18nService } from "../../../src/i18n";
 
 describe("Issue #1430: Modal Fields displays property keys for custom fields", () => {
 	let container: HTMLElement;
@@ -50,6 +51,7 @@ describe("Issue #1430: Modal Fields displays property keys for custom fields", (
 	function renderFieldManager(userFields: UserMappedField[]) {
 		const plugin = {
 			settings: { userFields },
+			i18n: createI18nService({ initialLocale: "en" }),
 		} as TaskNotesPlugin;
 
 		createFieldManager(

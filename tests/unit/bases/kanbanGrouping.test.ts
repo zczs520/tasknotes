@@ -143,14 +143,28 @@ describe("Kanban grouping helpers", () => {
 		};
 
 		expect(isKanbanListTypeProperty("ctx", fields, () => false)).toBe(true);
-		expect(isKanbanListTypeProperty("custom", fields, (name) => name === "custom")).toBe(
-			true
-		);
+		expect(isKanbanListTypeProperty("custom", fields, (name) => name === "custom")).toBe(true);
 		expect(getKanbanListPropertyValue(item, "ctx", pathToProps, fields)).toEqual(["work"]);
 		expect(getKanbanListPropertyValue(item, "proj", pathToProps, fields)).toEqual([
 			"Projects/Alpha.md",
 		]);
 		expect(getKanbanListPropertyValue(item, "custom", pathToProps, fields)).toEqual(["A"]);
+	});
+
+	it("prefers current Base tag values over stale cached TaskInfo tags", () => {
+		const item = taskInfo("one.md", {
+			tags: [],
+		});
+		const pathToProps = new Map<string, Record<string, unknown>>([
+			["one.md", { tags: ["project/alpha", "task"] }],
+		]);
+
+		expect(
+			getKanbanListPropertyValue(item, "tags", pathToProps, {
+				contextsField: "contexts",
+				projectsField: "projects",
+			})
+		).toEqual(["project/alpha", "task"]);
 	});
 
 	it("canonicalizes configured status and priority group keys", () => {
@@ -184,6 +198,24 @@ describe("Kanban grouping helpers", () => {
 				getStatusGroupKeyAliases: aliases,
 			})
 		).toBe("high");
+
+		const localizedStatuses: StatusConfig[] = [
+			{
+				...status("Open", "待完成"),
+				id: "open",
+			},
+		];
+		expect(
+			canonicalizeKanbanConfiguredGroupKey({
+				groupKey: "open",
+				propertyId: "note.status",
+				fields: { statusField: "status", priorityField: "priority" },
+				statuses: localizedStatuses,
+				normalizeStatusValue: (value) => (value === "open" ? "Open" : value),
+				normalizePriorityValue: (value) => value,
+				getStatusGroupKeyAliases: aliases,
+			})
+		).toBe("Open");
 	});
 
 	it("builds exploded list groups, preserves source order, replays sort order, and adds empty configured groups", () => {
@@ -500,9 +532,7 @@ describe("Kanban grouping helpers", () => {
 
 	it("exposes small ordering helpers for view adapters", () => {
 		expect(compareKanbanSpecialColumnKeys("None", "todo")).toBeGreaterThan(0);
-		expect(getConfiguredKanbanOrder({ priority: ["high"] }, "task.priority")).toEqual([
-			"high",
-		]);
+		expect(getConfiguredKanbanOrder({ priority: ["high"] }, "task.priority")).toEqual(["high"]);
 		expect(keepPinnedKanbanColumnsFirst(["low", "high", "medium"], ["medium"])).toEqual([
 			"medium",
 			"low",

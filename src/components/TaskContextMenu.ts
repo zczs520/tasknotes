@@ -581,37 +581,7 @@ export class TaskContextMenu {
 					});
 				});
 
-				submenu.addItem((subItem) => {
-					subItem.setTitle(this.t("contextMenus.task.delete"));
-					subItem.setIcon("trash");
-					subItem.onClick(async () => {
-						// Show confirmation and delete
-						const confirmed = await showConfirmationModal(plugin.app, {
-							title: this.t("contextMenus.task.deleteTitle"),
-							message: this.t("contextMenus.task.deleteMessage", { name: file.name }),
-							confirmText: this.t("contextMenus.task.deleteConfirm"),
-							cancelText: this.t("common.cancel"),
-							isDestructive: true,
-						});
-						if (confirmed) {
-							try {
-								await plugin.taskService.deleteTask(task);
-								if (this.options.onUpdate) {
-									this.options.onUpdate();
-								}
-							} catch (error) {
-								const message =
-									error instanceof Error ? error.message : String(error);
-								tasknotesLogger.error("Error deleting task:", {
-									category: "persistence",
-									operation: "deleting-task",
-									error: error,
-								});
-								new Notice(`Failed to delete task: ${message}`);
-							}
-						}
-					});
-				});
+				this.addDeleteTaskMenuItem(submenu, task, plugin, file);
 
 				submenu.addSeparator();
 
@@ -833,12 +803,53 @@ export class TaskContextMenu {
 			});
 		});
 
+		this.menu.addSeparator();
+		this.addDeleteTaskMenuItem(this.menu, task, plugin);
+
 		this.addMobileDismissOption();
 
 		// Apply main menu icon colors after menu is built
 		window.setTimeout(() => {
 			this.updateMainMenuIconColors(task, plugin);
 		}, 10);
+	}
+
+	private addDeleteTaskMenuItem(
+		menu: Menu,
+		task: TaskInfo,
+		plugin: TaskNotesPlugin,
+		taskFile?: TFile
+	): void {
+		menu.addItem((item) => {
+			item.setTitle(this.t("contextMenus.task.deleteTask"));
+			item.setIcon("trash");
+			item.setWarning(true);
+			item.onClick(async () => {
+				const file = taskFile ?? plugin.app.vault.getAbstractFileByPath(task.path);
+				const fileName = file instanceof TFile ? file.name : task.title;
+				const confirmed = await showConfirmationModal(plugin.app, {
+					title: this.t("contextMenus.task.deleteTitle"),
+					message: this.t("contextMenus.task.deleteMessage", { name: fileName }),
+					confirmText: this.t("contextMenus.task.deleteConfirm"),
+					cancelText: this.t("common.cancel"),
+					isDestructive: true,
+				});
+				if (!confirmed) return;
+
+				try {
+					await plugin.taskService.deleteTask(task);
+					this.options.onUpdate?.();
+				} catch (error) {
+					const message = error instanceof Error ? error.message : String(error);
+					tasknotesLogger.error("Error deleting task:", {
+						category: "persistence",
+						operation: "deleting-task",
+						error,
+					});
+					new Notice(`Failed to delete task: ${message}`);
+				}
+			});
+		});
 	}
 
 	private addMobileDismissOption(): void {

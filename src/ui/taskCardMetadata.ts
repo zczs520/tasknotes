@@ -153,6 +153,29 @@ function createOccurrenceMetadataPill(config: RenderTaskCardMetadataConfig): HTM
 	return pill;
 }
 
+function createInProgressMetadataState(config: RenderTaskCardMetadataConfig): HTMLElement | null {
+	const { metadataLine, task, plugin } = config;
+	const inProgressStatus = plugin.statusManager
+		?.getAllStatuses?.()
+		.find((status) => status.id === "in-progress");
+	const normalizeStatus = (status: string) =>
+		plugin.statusManager?.normalizeStatusValue?.(status) ?? status;
+	const isInProgress =
+		inProgressStatus !== undefined &&
+		normalizeStatus(task.status) === normalizeStatus(inProgressStatus.value);
+	const isTracking = (plugin.getActiveTimeSession?.(task) ?? null) !== null;
+	if (!isInProgress && !isTracking) {
+		return null;
+	}
+
+	return metadataLine.createSpan({
+		cls: "task-card__metadata-state task-card__metadata-state--in-progress",
+		text: isTracking
+			? plugin.i18n.translate("ui.taskCard.trackingActive")
+			: (inProgressStatus?.label ?? inProgressStatus?.value ?? task.status),
+	});
+}
+
 export function renderTaskCardMetadata(config: RenderTaskCardMetadataConfig): HTMLElement[] {
 	const { metadataLine, task, plugin, visibleProperties, propertyOptions = {} } = config;
 	metadataLine.empty();
@@ -206,6 +229,11 @@ export function renderTaskCardMetadata(config: RenderTaskCardMetadataConfig): HT
 		if (propertyElement) {
 			metadataElements.push(propertyElement);
 		}
+	}
+
+	const inProgressState = createInProgressMetadataState(config);
+	if (inProgressState) {
+		metadataElements.push(inProgressState);
 	}
 
 	updateMetadataVisibility(metadataLine, metadataElements);

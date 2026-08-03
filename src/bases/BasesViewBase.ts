@@ -1,4 +1,4 @@
-import { Component, App, Notice } from "obsidian";
+import { Component, App, Notice, TFile } from "obsidian";
 import type { BasesPropertyId, BasesQueryResult, BasesViewConfig, EventRef } from "obsidian";
 import TaskNotesPlugin from "../main";
 import { BasesDataAdapter } from "./BasesDataAdapter";
@@ -16,6 +16,8 @@ import {
 	buildBasesTaskCreationDataForView,
 	getBasesCurrentFileLinkDefault,
 } from "./basesCreateFileForView";
+import type { TaskCreationPrepopulatedValues } from "./basesTaskCreation";
+import { buildSubtaskCreationPrePopulatedValues } from "../services/taskRelationshipActions";
 import {
 	buildBasesExportFileName,
 	buildBasesExportTable,
@@ -76,6 +78,35 @@ type BasesEphemeralState = {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
 	return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function mergeUniqueStrings(...values: Array<readonly string[] | undefined>): string[] {
+	return [...new Set(values.flatMap((value) => value ?? []).filter(Boolean))];
+}
+
+function mergeSubtaskCreationValues(
+	subtaskValues: Partial<TaskInfo>,
+	viewValues: TaskCreationPrepopulatedValues
+): TaskCreationPrepopulatedValues {
+	const mergedValues: TaskCreationPrepopulatedValues = {
+		...subtaskValues,
+		...viewValues,
+	};
+	const projects = mergeUniqueStrings(subtaskValues.projects, viewValues.projects);
+	const tags = mergeUniqueStrings(subtaskValues.tags, viewValues.tags);
+	const contexts = mergeUniqueStrings(subtaskValues.contexts, viewValues.contexts);
+
+	if (projects.length > 0) {
+		mergedValues.projects = projects;
+	}
+	if (tags.length > 0) {
+		mergedValues.tags = tags;
+	}
+	if (contexts.length > 0) {
+		mergedValues.contexts = contexts;
+	}
+
+	return mergedValues;
 }
 
 /**
@@ -504,14 +535,36 @@ export abstract class BasesViewBase extends Component {
 	): Promise<void> {
 		const { TaskCreationModal } = await import("../modals/TaskCreationModal");
 		const app = this.app || this.plugin.app;
-		const taskCreationData = buildBasesTaskCreationDataForView({
+		const relationshipSourceFile = this.getRelationshipSourceFile();
+		let taskCreationData = buildBasesTaskCreationDataForView({
 			config: this.config,
 			fieldMapper: this.plugin.fieldMapper,
 			taskTag: this.plugin.settings.taskTag,
 			userFields: this.plugin.settings.userFields || [],
-			currentFileLink: () => getBasesCurrentFileLinkDefault(app),
+			currentFileLink: () =>
+				relationshipSourceFile
+					? app.fileManager.generateMarkdownLink(
+							relationshipSourceFile,
+							relationshipSourceFile.path
+						)
+					: getBasesCurrentFileLinkDefault(app),
 			frontmatterProcessor,
 		});
+		if (relationshipSourceFile) {
+			const parentTask = await this.plugin.cacheManager.getTaskInfo(
+				relationshipSourceFile.path
+			);
+			if (parentTask) {
+				taskCreationData = mergeSubtaskCreationValues(
+					buildSubtaskCreationPrePopulatedValues(
+						this.plugin,
+						parentTask,
+						relationshipSourceFile
+					),
+					taskCreationData
+				);
+			}
+		}
 
 		// Open TaskNotes creation modal
 		// Use this.app if available (set by Bases), otherwise fall back to plugin.app
@@ -524,6 +577,19 @@ export abstract class BasesViewBase extends Component {
 		});
 
 		modal.open();
+	}
+
+	private getRelationshipSourceFile() {
+		const relationshipWidget = this.containerEl.closest<HTMLElement>(
+			".tasknotes-relationships-widget"
+		);
+		const sourcePath = relationshipWidget?.dataset.relationshipSourcePath;
+		if (!sourcePath) {
+			return null;
+		}
+
+		const sourceFile = this.plugin.app.vault.getAbstractFileByPath(sourcePath);
+		return sourceFile instanceof TFile && sourceFile.extension === "md" ? sourceFile : null;
 	}
 
 	/**

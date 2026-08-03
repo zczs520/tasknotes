@@ -14,6 +14,7 @@ import { TasksPluginParser } from "../utils/TasksPluginParser";
 import { createTaskNotesLogger } from "../utils/tasknotesLogger";
 
 const tasknotesLogger = createTaskNotesLogger({ tag: "Editor/InstantConvertButtons" });
+const instantConvertExtensions = new WeakMap<TaskNotesPlugin, Extension>();
 
 class ConvertButtonWidget extends WidgetType {
 	private plugin: TaskNotesPlugin;
@@ -356,5 +357,12 @@ function addConvertButtonDecorationForLine(
 }
 
 export function createInstantConvertButtons(plugin: TaskNotesPlugin): Extension {
-	return createInstantConvertField(plugin);
+	const existingExtension = instantConvertExtensions.get(plugin);
+	if (existingExtension) {
+		return existingExtension;
+	}
+
+	const extension = createInstantConvertField(plugin);
+	instantConvertExtensions.set(plugin, extension);
+	return extension;
 }

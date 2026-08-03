@@ -91,9 +91,7 @@ describe("Issue #1329: relationships widget bottom placement", () => {
 
 		lastLineBottom = 210;
 		applyRelationshipsBottomOffset(sizer, widget);
-		expect(widget.style.getPropertyValue("--tn-relationships-widget-margin-top")).toBe(
-			"10px"
-		);
+		expect(widget.style.getPropertyValue("--tn-relationships-widget-margin-top")).toBe("10px");
 
 		lastLineBottom = 224;
 		applyRelationshipsBottomOffset(sizer, widget);
@@ -127,6 +125,38 @@ describe("Issue #1329: relationships widget bottom placement", () => {
 		applyRelationshipsBottomOffset(sizer, widget);
 
 		expect(widget.style.getPropertyValue("--tn-relationships-widget-margin-top")).toBe("20px");
+	});
+
+	it("uses rendered block widgets that are siblings of CodeMirror lines", () => {
+		const sizer = el("cm-sizer");
+		const contentContainer = el("cm-contentContainer");
+		const cmContent = el("cm-content cm-lineWrapping");
+		const lastLine = el("cm-line");
+		const blockWidget = el("cm-embed-block markdown-rendered");
+		const virtualGap = el("cm-gap");
+		const widget = el("tasknotes-relationships-widget");
+		widget.style.marginTop = "24px";
+
+		cmContent.append(lastLine, blockWidget, virtualGap);
+		contentContainer.append(cmContent);
+		sizer.append(contentContainer, widget);
+
+		Object.defineProperty(contentContainer, "getBoundingClientRect", {
+			value: () => ({ bottom: 500 }),
+		});
+		Object.defineProperty(lastLine, "getBoundingClientRect", {
+			value: () => ({ bottom: 100, width: 100, height: 20 }),
+		});
+		Object.defineProperty(blockWidget, "getBoundingClientRect", {
+			value: () => ({ bottom: 470, width: 100, height: 370 }),
+		});
+		Object.defineProperty(virtualGap, "getBoundingClientRect", {
+			value: () => ({ bottom: 500, width: 100, height: 30 }),
+		});
+
+		applyRelationshipsBottomOffset(sizer, widget);
+
+		expect(widget.style.getPropertyValue("--tn-relationships-widget-margin-top")).toBe("-6px");
 	});
 
 	it("anchors reading mode widgets after the last content section", () => {

@@ -179,17 +179,26 @@ function getRenderedElementBottom(element: HTMLElement): number | null {
 	return bottom;
 }
 
-function getRenderedLinesBottom(lines: HTMLElement[]): number | null {
+function getRenderedContentBottom(elements: HTMLElement[]): number | null {
 	let bottom: number | null = null;
 
-	for (const line of lines) {
-		const lineBottom = getRenderedElementBottom(line);
-		if (lineBottom !== null && (bottom === null || lineBottom > bottom)) {
-			bottom = lineBottom;
+	for (const element of elements) {
+		const elementBottom = getRenderedElementBottom(element);
+		if (elementBottom !== null && (bottom === null || elementBottom > bottom)) {
+			bottom = elementBottom;
 		}
 	}
 
 	return bottom;
+}
+
+function getRenderedContentElements(cmContent: HTMLElement): HTMLElement[] {
+	return getHTMLElementChildren(cmContent).filter(
+		(child) =>
+			!child.classList.contains("cm-gap") &&
+			!child.classList.contains("cm-widgetBuffer") &&
+			child.getAttribute("aria-hidden") !== "true"
+	);
 }
 
 export function applyRelationshipsBottomOffset(container: HTMLElement, widget: HTMLElement): void {
@@ -200,10 +209,13 @@ export function applyRelationshipsBottomOffset(container: HTMLElement, widget: H
 		return;
 	}
 
-	const lines = getHTMLElementChildren(cmContent).filter((child) =>
-		child.classList.contains("cm-line")
-	);
-	const contentBottom = getRenderedLinesBottom(lines);
+	// Obsidian may render embeds, images, Bases, and other block widgets as
+	// siblings of .cm-line. Only measuring lines can therefore pull the
+	// relationships widget upward through those blocks after Live Preview
+	// reflows. Exclude CodeMirror's virtual spacer elements, but measure every
+	// real rendered content block and its descendants.
+	const contentElements = getRenderedContentElements(cmContent);
+	const contentBottom = getRenderedContentBottom(contentElements);
 	const contentContainer = cmContent.closest<HTMLElement>(".cm-contentContainer");
 	if (contentBottom === null || !contentContainer) {
 		return;
@@ -211,10 +223,7 @@ export function applyRelationshipsBottomOffset(container: HTMLElement, widget: H
 
 	const spacerGap = Math.max(
 		0,
-		Math.round(
-				contentContainer.getBoundingClientRect().bottom -
-					contentBottom
-			)
+		Math.round(contentContainer.getBoundingClientRect().bottom - contentBottom)
 	);
 	if (spacerGap > 0) {
 		const defaultMarginTop = getRelationshipsWidgetDefaultMarginTop(widget);
@@ -249,6 +258,7 @@ async function createRelationshipsWidget(
 	container.setAttribute("contenteditable", "false");
 	container.setAttribute("spellcheck", "false");
 	container.setAttribute("data-widget-type", "relationships");
+	container.dataset.relationshipSourcePath = notePath;
 
 	// Create container for embedded Bases view
 	const basesContainer = activeDocument.createElement("div");
@@ -306,6 +316,8 @@ class RelationshipsDecorationsPlugin implements PluginValue {
 	private dependencyCacheEventListeners: EventRef[] = [];
 	private injectionRunId = 0;
 	private bottomOffsetFrame: number | null = null;
+	private bottomContentResizeObserver: ResizeObserver | null = null;
+	private bottomContentMutationObserver: MutationObserver | null = null;
 
 	constructor(
 		view: EditorView,
@@ -347,6 +359,7 @@ class RelationshipsDecorationsPlugin implements PluginValue {
 			window.cancelAnimationFrame(this.bottomOffsetFrame);
 			this.bottomOffsetFrame = null;
 		}
+		this.disconnectBottomContentObservers();
 
 		// Clean up the widget and its component
 		this.removeWidget();
@@ -414,6 +427,45 @@ class RelationshipsDecorationsPlugin implements PluginValue {
 			if (this.currentWidget?.isConnected && this.widgetContainer?.isConnected) {
 				applyRelationshipsBottomOffset(this.widgetContainer, this.currentWidget);
 			}
+		});
+	}
+
+	private disconnectBottomContentObservers(): void {
+		this.bottomContentResizeObserver?.disconnect();
+		this.bottomContentResizeObserver = null;
+		this.bottomContentMutationObserver?.disconnect();
+		this.bottomContentMutationObserver = null;
+	}
+
+	private observeBottomContent(container: HTMLElement): void {
+		this.disconnectBottomContentObservers();
+
+		const cmContent = container.querySelector<HTMLElement>(".cm-content");
+		if (!cmContent || typeof ResizeObserver === "undefined") {
+			return;
+		}
+
+		const resizeObserver = new ResizeObserver(() => {
+			this.scheduleBottomOffsetRefresh();
+		});
+		const refreshObservedElements = () => {
+			resizeObserver.disconnect();
+			resizeObserver.observe(cmContent);
+			for (const element of getRenderedContentElements(cmContent)) {
+				resizeObserver.observe(element);
+			}
+		};
+
+		refreshObservedElements();
+		this.bottomContentResizeObserver = resizeObserver;
+
+		this.bottomContentMutationObserver = new MutationObserver(() => {
+			refreshObservedElements();
+			this.scheduleBottomOffsetRefresh();
+		});
+		this.bottomContentMutationObserver.observe(cmContent, {
+			childList: true,
+			subtree: true,
 		});
 	}
 
@@ -507,6 +559,7 @@ class RelationshipsDecorationsPlugin implements PluginValue {
 			this.currentWidget.remove();
 			this.currentWidget = null;
 		}
+		this.disconnectBottomContentObservers();
 		this.widgetContainer = null;
 	}
 
@@ -637,6 +690,7 @@ class RelationshipsDecorationsPlugin implements PluginValue {
 				}
 			} else {
 				insertRelationshipsWidgetAtBottom(targetContainer, widget);
+				this.observeBottomContent(targetContainer);
 				this.scheduleBottomOffsetRefresh();
 			}
 		} catch (error) {

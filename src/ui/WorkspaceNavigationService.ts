@@ -133,7 +133,12 @@ export class WorkspaceNavigationService {
 		}
 
 		const normalizedPath = normalizePath(filePath);
-		const fileExists = await this.plugin.app.vault.adapter.exists(normalizedPath);
+		let fileExists = await this.plugin.app.vault.adapter.exists(normalizedPath);
+		if (!fileExists) {
+			await this.plugin.ensureBasesViewFiles();
+			fileExists = await this.plugin.app.vault.adapter.exists(normalizedPath);
+		}
+
 		if (!fileExists) {
 			showNotice(
 				`File not found: ${normalizedPath}\n\nPlease configure a valid file in Settings → TaskNotes → View Commands, or use the "Create Default Files" button.`,

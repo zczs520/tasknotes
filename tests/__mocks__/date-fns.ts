@@ -20,6 +20,7 @@ export const format = jest.fn((date: Date, formatStr: string) => {
   if (formatStr === 'MM') return String(month + 1).padStart(2, '0');
   if (formatStr === 'dd') return String(day).padStart(2, '0');
   if (formatStr === 'yyyy-MM-dd') return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+  if (formatStr === 'yyyy-MM-dd HH:mm') return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')} ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 
   // Time formats
   if (formatStr === 'HH') return String(hours).padStart(2, '0');

@@ -6,6 +6,7 @@ import { renderTextWithLinks, type LinkServices } from "./linkRenderer";
 export interface TagServices {
 	onTagClick?: (tag: string, event: MouseEvent | KeyboardEvent) => void | Promise<void>;
 	linkServices?: LinkServices;
+	interactive?: boolean;
 }
 
 /** Render a single tag string as an Obsidian-like tag element */
@@ -15,27 +16,30 @@ export function renderTag(container: HTMLElement, tag: string, services?: TagSer
 	const normalized = normalizeTag(tag);
 	if (!normalized) return;
 
-	const el = container.createEl("a", {
+	const interactive = services?.interactive !== false;
+	const el = container.createEl(interactive ? "a" : "span", {
 		cls: "tag",
 		text: normalized,
-		attr: {
-			href: normalized,
-			role: "button",
-			tabindex: "0",
-			"data-tn-click-exclude": "true",
-		},
+		attr: interactive
+			? {
+					href: normalized,
+					role: "button",
+					tabindex: "0",
+					"data-tn-click-exclude": "true",
+				}
+			: undefined,
 	});
 
 	// Add click handler if provided
-	if (services?.onTagClick) {
-		el.addEventListener("click", (e) => {
+	if (interactive && services?.onTagClick) {
+		el.addEventListener("click", (e: MouseEvent) => {
 			e.preventDefault();
 			e.stopPropagation();
 			void services.onTagClick!(normalized, e);
 		});
 
 		// Add keyboard support
-		el.addEventListener("keydown", (e) => {
+		el.addEventListener("keydown", (e: KeyboardEvent) => {
 			if (e.key === "Enter" || e.key === " ") {
 				e.preventDefault();
 				e.stopPropagation();
@@ -67,7 +71,8 @@ export function renderTagsValue(
 		return;
 	}
 	// Fallback: not a recognizable tag value
-	if (value != null) container.appendChild(activeDocument.createTextNode(stringifyUnknown(value)));
+	if (value != null)
+		container.appendChild(activeDocument.createTextNode(stringifyUnknown(value)));
 }
 
 /** Render contexts with @ prefix */
@@ -94,14 +99,11 @@ export function renderContextsValue(
 		return;
 	}
 	// Fallback
-	if (value != null) container.appendChild(activeDocument.createTextNode(stringifyUnknown(value)));
+	if (value != null)
+		container.appendChild(activeDocument.createTextNode(stringifyUnknown(value)));
 }
 
-function renderContextItem(
-	container: HTMLElement,
-	value: string,
-	services?: TagServices
-): boolean {
+function renderContextItem(container: HTMLElement, value: string, services?: TagServices): boolean {
 	const linkText = stripContextPrefix(value);
 	if (services?.linkServices && isLinkLikeContext(linkText)) {
 		const colorClass = getContextColorClass(linkText);

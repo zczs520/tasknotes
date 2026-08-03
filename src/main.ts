@@ -172,6 +172,7 @@ export default class TaskNotesPlugin extends Plugin {
 	// Editor services
 	taskLinkDetectionService?: import("./services/TaskLinkDetectionService").TaskLinkDetectionService;
 	instantTaskConvertService?: import("./services/InstantTaskConvertService").InstantTaskConvertService;
+	instantConvertEditorExtensionRegistered = false;
 
 	// Drag and drop manager
 	dragDropManager: DragDropManager;
@@ -1303,6 +1304,20 @@ export default class TaskNotesPlugin extends Plugin {
 	 */
 	async stopTimeTracking(task: TaskInfo): Promise<TaskInfo> {
 		return this.taskActionCoordinator.stopTimeTracking(task);
+	}
+
+	/**
+	 * Starts the user-facing task workflow from task controls.
+	 */
+	async startTask(task: TaskInfo): Promise<TaskInfo> {
+		return this.taskActionCoordinator.startTask(task);
+	}
+
+	/**
+	 * Ends the user-facing task workflow from task controls.
+	 */
+	async endTask(task: TaskInfo): Promise<TaskInfo> {
+		return this.taskActionCoordinator.endTask(task);
 	}
 
 	/**

@@ -41,6 +41,8 @@ export interface TaskCardOptions {
 	hideStatusIndicator?: boolean;
 	/** When false, omit secondary badge controls such as reminders, project badges, and toggles. */
 	showSecondaryBadges?: boolean;
+	/** When true, show the high-frequency start/stop time tracking control on the card. */
+	showTimeTrackingAction?: boolean;
 	/** When false, disable hover preview wiring for the card. */
 	enableHoverPreview?: boolean;
 	/** Optional display labels for properties, typically sourced from Bases config. */
@@ -57,11 +59,18 @@ export interface TaskCardOptions {
 	expandedRelationshipTaskOrder?: ReadonlyMap<string, number>;
 	/** When true, occurrence actions are promoted to the top of the card context menu. */
 	promoteOccurrenceControlsInContextMenu?: boolean;
+	/** When true, every primary click on the card opens the task editor. */
+	openEditOnAnyClick?: boolean;
+	/** When false, tags are display-only and card clicks pass through them. */
+	interactiveTags?: boolean;
+	/** When true, scheduled dates use the compact inline calendar picker. */
+	useScheduledDatePopover?: boolean;
 }
 
 export const DEFAULT_TASK_CARD_OPTIONS: TaskCardOptions = {
 	layout: "default",
 	showSecondaryBadges: true,
+	showTimeTrackingAction: false,
 	enableHoverPreview: true,
 };
 
@@ -243,6 +252,22 @@ export function createTaskCard(
 		propertyOptions: opts,
 		handlers: secondaryBadgeHandlers,
 	});
+
+	if (opts.openEditOnAnyClick) {
+		card.addEventListener(
+			"click",
+			(event: MouseEvent) => {
+				if (event.button !== 0 || event.shiftKey) return;
+				const target = event.target as Element | null;
+				if (target?.closest('[data-tn-action="edit-date"]')) return;
+				event.preventDefault();
+				event.stopPropagation();
+				event.stopImmediatePropagation();
+				void plugin.openTaskEditModal(task);
+			},
+			{ capture: true }
+		);
+	}
 
 	// Add click handlers with single/double click distinction
 	const { clickHandler, auxclickHandler, dblclickHandler, contextmenuHandler } =

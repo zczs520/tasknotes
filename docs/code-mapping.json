@@ -41,7 +41,11 @@
     {
       "id": "time-management",
       "description": "Task time tracking and statistics",
-      "source": ["src/services/TaskStatsService.ts"],
+      "source": [
+        "src/services/TaskStatsService.ts",
+        "src/bases/TimeStatisticsView.ts",
+        "src/utils/timeStatistics.ts"
+      ],
       "docs": ["docs/features/time-management.md"]
     },
     {

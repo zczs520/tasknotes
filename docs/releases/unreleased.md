@@ -16,6 +16,7 @@ Example:
 ```
 ## Fixed
 
+- Fixed Kanban tag clicks opening tag search instead of the task editor; clicking anywhere on a Kanban card now opens the task editor.
 - (#768) Fixed calendar view appearing empty in week and day views due to invalid time configuration values
   - Added time validation in settings UI with proper error messages and debouncing
   - Prevents "Cannot read properties of null (reading 'years')" error from FullCalendar
@@ -32,8 +33,26 @@ When a change has user-facing documentation, include a canonical tasknotes.dev l
 
 -->
 
+## Added
+
+- Added a compact active-task control in the top-right of Obsidian with live elapsed time and an action to end the task.
+- Added an optional Kanban toolbar that combines task search with scheduled, created, or completed date filters for this week, last week, all tasks, or a custom date range. Scheduled date is the default.
+- Added a generated time statistics Base with a unified day, week, month, and year dashboard for totals, trends, task rankings, tag distribution, and recent time entries. It is available from a new ribbon shortcut and the command palette.
+
 ## Changed
 
+- Refreshed the custom Bases Kanban view with soft color-coded columns, cleaner standalone task cards, collapsible and persistently reorderable swimlanes, per-view swimlane visibility controls, and labeled creation actions.
+- Kanban scheduled dates can now be changed directly from each card with quick choices for today, tomorrow, Friday, Sunday, and a compact calendar. Custom date filters now use a visual range calendar with shortcuts for this month, last month, and the recent three months.
+- Kanban views can now use a centered fixed width or full width with configurable side margins. The floating active-task control can be dragged anywhere in the workspace and remembers its position.
+- Kanban task creation now inherits the current column and swimlane values for tags and other writable note properties, and the task card menu includes a direct delete action.
+- Task note header cards now keep the start/end task action visible and show a compact in-progress label while a task is active.
+- Refined the time statistics dashboard to match the day timeline, monthly heatmap, tag-stacked period chart with immediate tag breakdowns, compact task rankings, distribution, and date-grouped record layout across day, week, month, and year views. Time-entry tags remain fully visible without adding card borders to each row.
+- Task cards now distinguish the saved in-progress status from an active timer: status-only cards show the configured status label, while actively timed cards show a dedicated tracking label.
+- Starting a timer now moves the task to the configured in-progress status, and moving a task into that status starts its timer.
+- Moving a task out of the configured in-progress status now stops its active timer and refreshes the floating active-task control. Existing active timers attached to another status are reconciled when the plugin loads.
+- Task system properties now show created and modified timestamps in local time and summarize time entries instead of displaying raw timestamp and object data. Stored values retain their timezone information.
+- Newly created property-identified tasks now retain an empty `tags` property, making it available for direct editing in Obsidian even when no tag was chosen during creation.
+- TaskNotes Base view names, configuration labels, dropdown values, and placeholders now follow the selected interface language instead of displaying hard-coded English text.
 - Generated TaskNotes type contracts now include configured natural-language
   capture triggers, allowing compatible clients to offer the same field
   suggestions.
@@ -44,3 +63,17 @@ When a change has user-facing documentation, include a canonical tasknotes.dev l
   guides for adopting TaskNotes in an existing vault, mobile use, custom Bases,
   and backup and recovery. See the
   [TaskNotes documentation](https://tasknotes.dev/).
+
+## Fixed
+
+- Fixed Kanban drag-and-drop sometimes moving a card visually without saving its new status, including when the optimistic card position no longer matched the status still stored in the task file.
+- Fixed the Kanban custom date range control so applying a range filters the board reliably and dismissing the dialog no longer leaves the control waiting for a result.
+- Fixed the task-note card and floating active-task control using different end-task behavior. Both now stop the timer before completing the task, and restarting a task immediately restores the floating control.
+- Fixed the task modal fields settings page displaying hard-coded English text when the interface language is Chinese.
+- Fixed tasks created from the Relationships widget being detached from the current task; they now use the current task as their parent. Subtasks created from either the Relationships widget or task command menu always copy the parent task's complete tag list.
+- Fixed saved Kanban status orders creating a duplicate column when a configured status value used different capitalization.
+- Fixed hidden Kanban swimlanes reappearing as empty rows when they were still present in a saved swimlane order.
+- Fixed tag-based Kanban swimlanes falling into the `None` row when current Base properties had newer tag values than the cached task data.
+- Fixed duplicate instant-convert icons appearing beside checkbox tasks when editor services were initialized more than once.
+- (#1929) Fixed the bottom Relationships widget moving over images and other embedded content after Live Preview reflowed the note.
+    - Thanks to @rchaklashiya for the original report and embed follow-up.

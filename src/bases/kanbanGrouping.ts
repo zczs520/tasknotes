@@ -293,6 +293,11 @@ export function getKanbanListPropertyValue(
 		return task.projects;
 	}
 	if (propertyName === "tags") {
+		const props = pathToProps.get(task.path) || {};
+		const currentTags = props.tags ?? props["note.tags"] ?? props["file.tags"];
+		if (currentTags !== undefined) {
+			return currentTags;
+		}
 		return task.tags;
 	}
 
@@ -300,7 +305,10 @@ export function getKanbanListPropertyValue(
 	return props[propertyName];
 }
 
-export function isKanbanStatusGroupingProperty(propertyId: string | null, statusField: string): boolean {
+export function isKanbanStatusGroupingProperty(
+	propertyId: string | null,
+	statusField: string
+): boolean {
 	if (!propertyId) {
 		return false;
 	}
@@ -573,8 +581,7 @@ export function buildKanbanTaskGroups(options: KanbanTaskGroupingOptions): Map<s
 	const groups = new Map<string, TaskInfo[]>();
 	const taskOrder = new Map(options.taskNotes.map((task, index) => [task.path, index]));
 	const cleanGroupBy = stripPropertyPrefix(options.groupByPropertyId);
-	const shouldExplode =
-		options.explodeListColumns && options.isListTypeProperty(cleanGroupBy);
+	const shouldExplode = options.explodeListColumns && options.isListTypeProperty(cleanGroupBy);
 
 	if (shouldExplode) {
 		for (const task of options.taskNotes) {
@@ -698,6 +705,23 @@ export function getConfiguredKanbanOrder(
 	return orders[propertyId] ?? orders[stripPropertyPrefix(propertyId)];
 }
 
+export function moveKanbanOrderKey(
+	order: readonly string[],
+	draggedKey: string,
+	targetKey: string,
+	position: "before" | "after"
+): string[] | null {
+	if (draggedKey === targetKey || !order.includes(draggedKey) || !order.includes(targetKey)) {
+		return null;
+	}
+
+	const nextOrder = order.filter((key) => key !== draggedKey);
+	const targetIndex = nextOrder.indexOf(targetKey);
+	const insertionIndex = position === "after" ? targetIndex + 1 : targetIndex;
+	nextOrder.splice(insertionIndex, 0, draggedKey);
+	return nextOrder;
+}
+
 export function keepPinnedKanbanColumnsFirst(
 	actualKeys: readonly string[],
 	pinnedColumns: readonly string[]
@@ -763,8 +787,14 @@ export function applyKanbanColumnOrder(options: {
 	isStatusField: (propertyId: string | null) => boolean;
 	getPriorityWeight: (key: string) => number;
 	findStatusConfig: (key: string) => { order: number } | undefined;
+	canonicalizeKey?: (key: string) => string;
 }): string[] {
-	const savedOrder = getConfiguredKanbanOrder(options.columnOrders, options.groupBy);
+	const configuredOrder = getConfiguredKanbanOrder(options.columnOrders, options.groupBy);
+	const savedOrder = configuredOrder
+		? normalizeKanbanOrderValues(
+				configuredOrder.map((key) => options.canonicalizeKey?.(key) ?? key)
+			)
+		: undefined;
 
 	if (!savedOrder || savedOrder.length === 0) {
 		return applyDefaultKanbanColumnOrder(options);
@@ -832,10 +862,7 @@ export function applyKanbanSwimLaneOrder(options: {
 	getPriorityWeight: (key: string) => number;
 	getStatusOrder: (key: string) => number;
 }): string[] {
-	const savedOrder = getConfiguredKanbanOrder(
-		options.swimLaneOrders,
-		options.swimLanePropertyId
-	);
+	const savedOrder = getConfiguredKanbanOrder(options.swimLaneOrders, options.swimLanePropertyId);
 
 	if (!savedOrder || savedOrder.length === 0) {
 		return applyDefaultKanbanSwimLaneOrder(options);

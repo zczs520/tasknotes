@@ -267,9 +267,9 @@ export class TaskCreationService {
 				if (propName && propValue) {
 					applyPropertyTaskIdentifier(frontmatter, propName, propValue);
 				}
-				if (tagsArray.length > 0) {
-					frontmatter.tags = tagsArray;
-				}
+				// Keep the native tags property visible in Obsidian even when the
+				// task is identified by another property and no tags were chosen.
+				frontmatter.tags = tagsArray;
 			} else {
 				frontmatter.tags = tagsArray;
 			}

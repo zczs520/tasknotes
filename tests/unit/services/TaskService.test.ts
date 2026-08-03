@@ -610,7 +610,9 @@ describe('TaskService', () => {
 
       const { taskInfo } = await taskService.createTask(taskData);
 
-      // Should have empty tags array (no task tag added)
+      // Should have an empty frontmatter property without adding the task tag.
+      const fmArg = getLastCreatedFrontmatter();
+      expect(fmArg.tags).toBe('[]');
       expect(taskInfo.tags).toEqual([]);
     });
 

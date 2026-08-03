@@ -87,7 +87,7 @@ export function createTaskNotesCommandDefinitions(
 			id: "open-statistics",
 			nameKey: "commands.openStatisticsView",
 			callback: async (ctx) => {
-				await ctx.activateStatsView();
+				await ctx.openBasesFileForCommand("open-statistics");
 			},
 		},
 		{
@@ -239,28 +239,22 @@ export function createTaskNotesCommandDefinitions(
 			callback: async (ctx) => {
 				try {
 					const allTasks = await ctx.cacheManager.getAllTasks();
-					const { downloadAllTasksICSFile } = await import(
-						"../ui/calendarExportActions"
-					);
-					downloadAllTasksICSFile(
-						allTasks,
-						ctx.i18n.translate.bind(ctx.i18n),
-						{
-							useDurationForExport:
-								ctx.settings.icsIntegration.useDurationForExport ?? false,
-							excludeArchived:
-								ctx.settings.icsIntegration.excludeArchivedFromExport ?? false,
-							excludeCompleted:
-								ctx.settings.icsIntegration.excludeCompletedFromExport ?? false,
-							completedStatuses: ctx.statusManager.getCompletedStatuses(),
-							requireDueDate:
-								ctx.settings.icsIntegration.requireDueDateForExport ?? false,
-							requireScheduledDate:
-								ctx.settings.icsIntegration.requireScheduledDateForExport ?? false,
-							includeObsidianLink: true,
-							vaultName: ctx.app.vault.getName(),
-						}
-					);
+					const { downloadAllTasksICSFile } = await import("../ui/calendarExportActions");
+					downloadAllTasksICSFile(allTasks, ctx.i18n.translate.bind(ctx.i18n), {
+						useDurationForExport:
+							ctx.settings.icsIntegration.useDurationForExport ?? false,
+						excludeArchived:
+							ctx.settings.icsIntegration.excludeArchivedFromExport ?? false,
+						excludeCompleted:
+							ctx.settings.icsIntegration.excludeCompletedFromExport ?? false,
+						completedStatuses: ctx.statusManager.getCompletedStatuses(),
+						requireDueDate:
+							ctx.settings.icsIntegration.requireDueDateForExport ?? false,
+						requireScheduledDate:
+							ctx.settings.icsIntegration.requireScheduledDateForExport ?? false,
+						includeObsidianLink: true,
+						vaultName: ctx.app.vault.getName(),
+					});
 				} catch (error) {
 					tasknotesLogger.error("Error exporting all tasks as ICS:", {
 						category: "provider",

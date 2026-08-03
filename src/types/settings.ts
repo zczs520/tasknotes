@@ -171,6 +171,7 @@ export interface TaskNotesSettings {
 	starterNoteCreated?: boolean;
 	// Status bar settings
 	showTrackedTasksInStatusBar: boolean;
+	activeTaskControlPosition?: { x: number; y: number };
 	// Time tracking settings
 	autoStopTimeTrackingOnComplete: boolean;
 	autoStopTimeTrackingNotification: boolean;

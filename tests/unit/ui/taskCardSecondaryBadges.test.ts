@@ -33,6 +33,9 @@ function createPlugin(overrides: Partial<TaskNotesPlugin> = {}): TaskNotesPlugin
 			metadataCache: {
 				getFirstLinkpathDest: jest.fn(() => null),
 			},
+			workspace: {
+				trigger: jest.fn(),
+			},
 		},
 		i18n: {
 			translate: jest.fn((key: string, vars?: Record<string, string | number>) => {
@@ -47,6 +50,9 @@ function createPlugin(overrides: Partial<TaskNotesPlugin> = {}): TaskNotesPlugin
 					"ui.taskCard.collapseSubtasks": "Collapse subtasks",
 					"ui.taskCard.blockingToggle": `Blocking ${vars?.count ?? 0} tasks`,
 					"ui.taskCard.blockedBadge": "Blocked",
+					"ui.taskCard.trackingActive": "Tracking now",
+					"contextMenus.task.startTimeTracking": "Start time tracking",
+					"contextMenus.task.stopTimeTracking": "Stop time tracking",
 				};
 				return translations[key] ?? key;
 			}),
@@ -59,6 +65,30 @@ function createPlugin(overrides: Partial<TaskNotesPlugin> = {}): TaskNotesPlugin
 			isExpanded: jest.fn(() => false),
 			toggle: jest.fn(() => true),
 		},
+		startTimeTracking: jest.fn(async (task: TaskInfo) => ({
+			...task,
+			timeEntries: [{ startTime: "2026-07-28T10:00:00.000Z" }],
+		})),
+		stopTimeTracking: jest.fn(async (task: TaskInfo) => ({
+			...task,
+			timeEntries: task.timeEntries?.map((entry) => ({
+				...entry,
+				endTime: entry.endTime ?? "2026-07-28T10:30:00.000Z",
+			})),
+		})),
+		startTask: jest.fn(async (task: TaskInfo) => ({
+			...task,
+			status: "in-progress",
+			timeEntries: [{ startTime: "2026-07-28T10:00:00.000Z" }],
+		})),
+		endTask: jest.fn(async (task: TaskInfo) => ({
+			...task,
+			status: "done",
+			timeEntries: task.timeEntries?.map((entry) => ({
+				...entry,
+				endTime: entry.endTime ?? "2026-07-28T10:30:00.000Z",
+			})),
+		})),
 		...overrides,
 	} as unknown as TaskNotesPlugin;
 }
@@ -127,6 +157,45 @@ describe("taskCardSecondaryBadges", () => {
 			"button"
 		);
 		expect(handlers.toggleSubtasks).toHaveBeenCalledWith(card, task, true);
+	});
+
+	it("shows start and stop tracking as a high-frequency card action", async () => {
+		const plugin = createPlugin();
+		const handlers = createHandlers();
+		const { card, badgesContainer } = createCard();
+		const task = createTask();
+
+		renderTaskCardSecondaryBadges({
+			card,
+			badgesContainer,
+			task,
+			plugin,
+			hasDetails: false,
+			propertyOptions: { showTimeTrackingAction: true },
+			handlers,
+		});
+
+		const startControl = card.querySelector<HTMLButtonElement>(
+			".task-card__time-tracking-control"
+		);
+		expect(startControl?.textContent).toContain("Start time tracking");
+		startControl?.click();
+		await Promise.resolve();
+		await Promise.resolve();
+
+		expect(plugin.startTask).toHaveBeenCalledWith(task);
+		const stopControl = card.querySelector<HTMLButtonElement>(
+			".task-card__time-tracking-control--active"
+		);
+		expect(stopControl?.textContent).toContain("Tracking now");
+		expect(stopControl?.textContent).toContain("Stop time tracking");
+		stopControl?.click();
+		await Promise.resolve();
+		await Promise.resolve();
+
+		expect(plugin.endTask).toHaveBeenCalledWith(
+			expect.objectContaining({ path: task.path, status: "in-progress" })
+		);
 	});
 
 	it("keeps secondary badges omitted when the option is disabled", () => {

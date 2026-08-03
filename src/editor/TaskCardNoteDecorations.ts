@@ -61,6 +61,10 @@ import {
 } from "./MarkdownWidgetContext";
 import { insertAfterMetadataOrHeader } from "./MarkdownWidgetInsertion";
 import { createTaskNotesLogger } from "../utils/tasknotesLogger";
+import {
+	enhanceTaskMetadataProperties,
+	removeTaskMetadataPropertyEnhancements,
+} from "./TaskMetadataPropertyEnhancer";
 
 const tasknotesLogger = createTaskNotesLogger({ tag: "Editor/TaskCardNoteDecorations" });
 
@@ -118,7 +122,9 @@ function createTaskCardWidget(plugin: TaskNotesPlugin, task: TaskInfo): HTMLElem
 		: undefined;
 
 	// Create the task card
-	const taskCard = createTaskCard(task, plugin, visibleProperties);
+	const taskCard = createTaskCard(task, plugin, visibleProperties, {
+		showTimeTrackingAction: true,
+	});
 
 	// Add specific styling for the note widget
 	taskCard.classList.add("task-card-note-widget__card");
@@ -129,6 +135,7 @@ function createTaskCardWidget(plugin: TaskNotesPlugin, task: TaskInfo): HTMLElem
 }
 
 function removeTaskCardWidgets(container: ParentNode): void {
+	removeTaskMetadataPropertyEnhancements(container);
 	container.querySelectorAll(`.${CSS_TASK_CARD_WIDGET}`).forEach((el) => {
 		const holder = el as HTMLElementWithComponent;
 		holder.component?.unload();
@@ -225,6 +232,7 @@ export class TaskCardNoteDecorationsPlugin implements PluginValue {
 	private currentWidget: HTMLElementWithComponent | null = null;
 	private widgetContainer: HTMLElement | null = null;
 	private debounceTimer: number | null = null;
+	private metadataPropertyObserver: MutationObserver | null = null;
 
 	constructor(
 		view: EditorView,
@@ -295,6 +303,11 @@ export class TaskCardNoteDecorationsPlugin implements PluginValue {
 	}
 
 	private removeWidget(): void {
+		this.metadataPropertyObserver?.disconnect();
+		this.metadataPropertyObserver = null;
+		if (this.widgetContainer) {
+			removeTaskMetadataPropertyEnhancements(this.widgetContainer);
+		}
 		if (this.currentWidget) {
 			// Unload the component for proper cleanup
 			this.currentWidget.component?.unload();
@@ -302,6 +315,29 @@ export class TaskCardNoteDecorationsPlugin implements PluginValue {
 			this.currentWidget = null;
 		}
 		this.widgetContainer = null;
+	}
+
+	private observeMetadataProperties(container: HTMLElement): void {
+		if (!this.cachedTask) {
+			return;
+		}
+
+		const metadataContainer = container.querySelector<HTMLElement>(".metadata-container");
+		if (!metadataContainer) {
+			return;
+		}
+
+		enhanceTaskMetadataProperties(metadataContainer, this.cachedTask, this.plugin);
+		this.metadataPropertyObserver?.disconnect();
+		this.metadataPropertyObserver = new MutationObserver(() => {
+			if (this.cachedTask) {
+				enhanceTaskMetadataProperties(metadataContainer, this.cachedTask, this.plugin);
+			}
+		});
+		this.metadataPropertyObserver.observe(metadataContainer, {
+			childList: true,
+			subtree: true,
+		});
 	}
 
 	private cleanupOrphanedWidgets(view: EditorView): void {
@@ -364,6 +400,10 @@ export class TaskCardNoteDecorationsPlugin implements PluginValue {
 					this.cachedTask?.archived !== newTask?.archived ||
 					this.cachedTask?.timeEstimate !== newTask?.timeEstimate ||
 					this.cachedTask?.recurrence !== newTask?.recurrence ||
+					this.cachedTask?.dateCreated !== newTask?.dateCreated ||
+					this.cachedTask?.dateModified !== newTask?.dateModified ||
+					JSON.stringify(this.cachedTask?.timeEntries || []) !==
+						JSON.stringify(newTask?.timeEntries || []) ||
 					hasActiveSession(this.cachedTask) !== hasActiveSession(newTask) ||
 					JSON.stringify(this.cachedTask?.tags || []) !==
 						JSON.stringify(newTask?.tags || []) ||
@@ -523,6 +563,7 @@ export class TaskCardNoteDecorationsPlugin implements PluginValue {
 			this.widgetContainer = targetContainer;
 
 			insertAfterMetadataOrHeader(targetContainer, widget);
+			this.observeMetadataProperties(targetContainer);
 
 			// Emit event for coordination with other widgets (e.g., relationships)
 			this.plugin.emitter.trigger(EVENT_TASK_CARD_INJECTED, { container: targetContainer });
@@ -629,6 +670,7 @@ async function injectReadingModeWidget(
 		}
 
 		insertAfterMetadataOrHeader(sizer, widget);
+		enhanceTaskMetadataProperties(sizer, task, plugin);
 	} catch (error) {
 		tasknotesLogger.error("[TaskNotes] Error injecting task card widget in reading mode:", {
 			category: "persistence",
@@ -681,8 +723,10 @@ export function injectCanvasTaskCardWidgets(
 			const widget = createTaskCardWidget(plugin, task);
 			if (isEditing) {
 				contentEl.insertBefore(widget, contentEl.firstChild);
+				enhanceTaskMetadataProperties(contentEl, task, plugin);
 			} else if (targetContainer) {
 				insertAfterMetadataOrHeader(targetContainer, widget);
+				enhanceTaskMetadataProperties(targetContainer, task, plugin);
 			}
 		}
 	}

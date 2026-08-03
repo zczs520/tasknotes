@@ -2,6 +2,7 @@ import { Notice, setTooltip, TFile, type CachedMetadata } from "obsidian";
 import TaskNotesPlugin from "../main";
 import { ICSEvent, TaskInfo } from "../types";
 import { DateContextMenu } from "../components/DateContextMenu";
+import { ScheduledDatePopover } from "../components/ScheduledDatePopover";
 import { DEFAULT_INTERNAL_VISIBLE_PROPERTIES } from "../settings/defaults";
 import { calculateTotalTimeSpent, getFiniteRecurringInstanceCount } from "../utils/helpers";
 import { filterTaskIdentificationTags } from "../utils/taskTagFiltering";
@@ -40,6 +41,8 @@ const tasknotesLogger = createTaskNotesLogger({ tag: "Ui/TaskCardProperties" });
 
 export interface TaskCardPropertyOptions {
 	propertyLabels?: TaskCardPresentationOptions["propertyLabels"];
+	interactiveTags?: boolean;
+	useScheduledDatePopover?: boolean;
 }
 
 function tTaskCard(
@@ -134,41 +137,46 @@ function attachDateClickHandler(
 	span: HTMLElement,
 	task: TaskInfo,
 	plugin: TaskNotesPlugin,
-	dateType: "due" | "scheduled"
+	dateType: "due" | "scheduled",
+	useScheduledDatePopover = false
 ): void {
 	prepareInteractiveControl(span);
 	span.addEventListener("click", (event) => {
 		event.stopPropagation();
 		const currentValue = dateType === "due" ? task.due : task.scheduled;
+		if (dateType === "scheduled" && useScheduledDatePopover) {
+			const currentTime = getTimePart(currentValue || "");
+			new ScheduledDatePopover({
+				anchor: span,
+				currentDate: getDatePart(currentValue || ""),
+				locale: plugin.i18n.getCurrentLocale(),
+				labels: {
+					today: plugin.i18n.translate("contextMenus.date.basic.today"),
+					tomorrow: plugin.i18n.translate("contextMenus.date.basic.tomorrow"),
+					thisFriday: plugin.i18n.translate("ui.taskCard.scheduledPicker.thisFriday"),
+					thisSunday: plugin.i18n.translate("ui.taskCard.scheduledPicker.thisSunday"),
+					fridayPassed: plugin.i18n.translate("ui.taskCard.scheduledPicker.fridayPassed"),
+					previousMonth: plugin.i18n.translate(
+						"ui.taskCard.scheduledPicker.previousMonth"
+					),
+					nextMonth: plugin.i18n.translate("ui.taskCard.scheduledPicker.nextMonth"),
+					chooseDate: plugin.i18n.translate("ui.taskCard.scheduledPicker.chooseDate"),
+				},
+				onSelect: (dateValue) => {
+					const finalValue = currentTime ? `${dateValue}T${currentTime}` : dateValue;
+					void updateTaskDate(task, plugin, dateType, finalValue);
+				},
+			}).show();
+			return;
+		}
 		const menu = new DateContextMenu({
 			currentValue: getDatePart(currentValue || ""),
 			currentTime: getTimePart(currentValue || ""),
 			onSelect: (dateValue, timeValue) => {
-				void (async () => {
-					try {
-						let finalValue: string | undefined;
-						if (!dateValue) {
-							finalValue = undefined;
-						} else if (timeValue) {
-							finalValue = `${dateValue}T${timeValue}`;
-						} else {
-							finalValue = dateValue;
-						}
-						await plugin.updateTaskProperty(task, dateType, finalValue);
-					} catch (error) {
-						const errorMessage = error instanceof Error ? error.message : String(error);
-						tasknotesLogger.error(`Error updating ${dateType} date:`, {
-							category: "persistence",
-							operation: "updating",
-							details: { value: errorMessage },
-						});
-						const noticeKey =
-							dateType === "due"
-								? "contextMenus.task.notices.updateDueDateFailure"
-								: "contextMenus.task.notices.updateScheduledFailure";
-						new Notice(plugin.i18n.translate(noticeKey, { message: errorMessage }));
-					}
-				})();
+				let finalValue: string | undefined;
+				if (!dateValue) finalValue = undefined;
+				else finalValue = timeValue ? `${dateValue}T${timeValue}` : dateValue;
+				void updateTaskDate(task, plugin, dateType, finalValue);
 			},
 			dateRole: dateType,
 			plugin,
@@ -176,6 +184,29 @@ function attachDateClickHandler(
 		});
 		menu.show(event);
 	});
+}
+
+async function updateTaskDate(
+	task: TaskInfo,
+	plugin: TaskNotesPlugin,
+	dateType: "due" | "scheduled",
+	value: string | undefined
+): Promise<void> {
+	try {
+		await plugin.updateTaskProperty(task, dateType, value);
+	} catch (error) {
+		const errorMessage = error instanceof Error ? error.message : String(error);
+		tasknotesLogger.error(`Error updating ${dateType} date:`, {
+			category: "persistence",
+			operation: "updating",
+			details: { value: errorMessage },
+		});
+		const noticeKey =
+			dateType === "due"
+				? "contextMenus.task.notices.updateDueDateFailure"
+				: "contextMenus.task.notices.updateScheduledFailure";
+		new Notice(plugin.i18n.translate(noticeKey, { message: errorMessage }));
+	}
 }
 
 export function getDefaultVisibleProperties(plugin: TaskNotesPlugin): string[] {
@@ -255,7 +286,14 @@ const PROPERTY_RENDERERS: Record<string, PropertyRenderer> = {
 	},
 	scheduled: (element, value, task, plugin, options) => {
 		if (typeof value === "string") {
-			renderScheduledDateProperty(element, value, task, plugin, options?.propertyLabels);
+			renderScheduledDateProperty(
+				element,
+				value,
+				task,
+				plugin,
+				options?.propertyLabels,
+				options?.useScheduledDatePopover
+			);
 		}
 	},
 	projects: (element, value, task, plugin) => {
@@ -284,7 +322,7 @@ const PROPERTY_RENDERERS: Record<string, PropertyRenderer> = {
 			renderContextsValue(element, value, tagServices);
 		}
 	},
-	tags: (element, value, _, plugin) => {
+	tags: (element, value, _, plugin, options) => {
 		if (Array.isArray(value)) {
 			let tagsToRender = value;
 			if (
@@ -300,6 +338,7 @@ const PROPERTY_RENDERERS: Record<string, PropertyRenderer> = {
 
 			if (tagsToRender.length > 0) {
 				const tagServices: TagServices = {
+					interactive: options?.interactiveTags !== false,
 					onTagClick: async (tag) => {
 						const searchTag = tag.startsWith("#") ? tag.slice(1) : tag;
 						await plugin.openTagsPane(`#${searchTag}`);
@@ -855,7 +894,8 @@ function renderScheduledDateProperty(
 	scheduled: string,
 	task: TaskInfo,
 	plugin: TaskNotesPlugin,
-	propertyLabels?: Record<string, string>
+	propertyLabels?: Record<string, string>,
+	useScheduledDatePopover = false
 ): void {
 	const isScheduledToday = isTodayTimeAware(scheduled);
 	const isCompleted = plugin.statusManager.isCompletedStatus(task.status);
@@ -902,7 +942,7 @@ function renderScheduledDateProperty(
 	element.dataset.tnAction = "edit-date";
 	element.dataset.tnDateType = "scheduled";
 
-	attachDateClickHandler(element, task, plugin, "scheduled");
+	attachDateClickHandler(element, task, plugin, "scheduled", useScheduledDatePopover);
 }
 
 export function updateMetadataVisibility(

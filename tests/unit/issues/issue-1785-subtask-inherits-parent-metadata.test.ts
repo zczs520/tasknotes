@@ -39,7 +39,7 @@ describe("issue #1785 subtask metadata prefill", () => {
 		MockObsidian.reset();
 	});
 
-	it("prefills a new subtask with parent contexts, priority, user tags, and parent link", () => {
+	it("prefills a new subtask with parent contexts, priority, all tags, and parent link", () => {
 		const parentFile = new TFile("Tasks/Parent task.md");
 		const values = buildSubtaskCreationPrePopulatedValues(
 			createPlugin() as never,
@@ -50,10 +50,10 @@ describe("issue #1785 subtask metadata prefill", () => {
 		expect(values.projects).toEqual(["[[Client A]]", "[[Parent task]]"]);
 		expect(values.contexts).toEqual(["office", "calls"]);
 		expect(values.priority).toBe("high");
-		expect(values.tags).toEqual(["client-a", "urgent"]);
+		expect(values.tags).toEqual(["task", "task/project", "client-a", "urgent"]);
 	});
 
-	it("keeps task-tag-looking user tags when task identification is property-based", () => {
+	it("keeps the complete parent tag list when task identification is property-based", () => {
 		const parentFile = new TFile("Tasks/Parent task.md");
 		const values = buildSubtaskCreationPrePopulatedValues(
 			createPlugin({ taskIdentificationMethod: "property" }) as never,
@@ -75,7 +75,7 @@ describe("issue #1785 subtask metadata prefill", () => {
 		expect(values.status).toBeUndefined();
 	});
 
-	it("does not inherit parent metadata when the setting is disabled", () => {
+	it("still copies all parent tags when other parent metadata inheritance is disabled", () => {
 		const parentFile = new TFile("Tasks/Parent task.md");
 		const values = buildSubtaskCreationPrePopulatedValues(
 			createPlugin({
@@ -89,6 +89,7 @@ describe("issue #1785 subtask metadata prefill", () => {
 
 		expect(values).toEqual({
 			projects: ["[[Parent task]]"],
+			tags: ["task", "task/project", "client-a", "urgent"],
 		});
 	});
 });

@@ -29,6 +29,28 @@ The auto-stop feature works by monitoring task status changes across all views a
 
 The feature integrates with the custom status system, so completion detection respects your configured workflow statuses rather than relying on hardcoded completion states.
 
+## Time Statistics
+
+The generated `TaskNotes/Views/time-statistics.base` dashboard summarizes ordinary task
+time tracking without requiring Pomodoro sessions. Open it from the **Time statistics**
+ribbon icon or the **Open time statistics** command.
+
+- The summary row shows total tracked time, involved tasks, time-entry count, and average
+  time per active day for the selected period.
+- **Day** uses a compact time-of-day timeline, **week** and **year** use stacked trend
+  bars, and **month** uses a daily activity heatmap.
+- Task rankings, tag distribution, and recent time entries stay visible together so you
+  can compare where the time went without switching views. A task with multiple tags
+  contributes its full duration to every tag; distribution percentages use the total
+  attributed tag time so the visual remains comparable.
+- Day, week, month, and year controls open on the current period and can navigate backward
+  through history. Selecting a task or time entry opens its task note.
+
+The dashboard reads the tasks currently returned by its Base query. Completed and archived
+tasks remain in the statistics while their files exist. Deleting a task removes its time
+from the dashboard. Sessions crossing midnight are split across the affected calendar
+days, and active sessions update while they run.
+
 ## Pomodoro Timer
 
 TaskNotes also includes a Pomodoro timer, which is a tool for time management that uses a timer to break down work into intervals, separated by short breaks. The Pomodoro timer in TaskNotes has a dedicated view with controls to start, stop, and reset the timer.

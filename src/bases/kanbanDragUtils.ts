@@ -99,7 +99,45 @@ export type KanbanDropSideEffectPlanInput = {
 	isCompletedStatus: (status: string) => boolean;
 };
 
+export type KanbanAuthoritativeDropSourceInput = {
+	task: TaskInfo | null | undefined;
+	taskProp: string | null | undefined;
+	propertyId: string | null | undefined;
+	fallbackSource: string | null | undefined;
+	isListProperty: boolean;
+	canonicalize: (value: string, propertyId: string) => string;
+};
+
 type FrontmatterRecord = Record<string, unknown>;
+
+export function resolveKanbanAuthoritativeDropSource({
+	task,
+	taskProp,
+	propertyId,
+	fallbackSource,
+	isListProperty,
+	canonicalize,
+}: KanbanAuthoritativeDropSourceInput): string | null | undefined {
+	if (!task || !taskProp || !propertyId || isListProperty) {
+		return fallbackSource;
+	}
+
+	const value = task[taskProp as keyof TaskInfo];
+	if (value === null || value === undefined || value === "") {
+		return "None";
+	}
+	if (Array.isArray(value) || typeof value === "object") {
+		return fallbackSource;
+	}
+
+	const scalarValue =
+		typeof value === "string"
+			? value
+			: typeof value === "number" || typeof value === "boolean"
+				? value.toString()
+				: null;
+	return scalarValue === null ? fallbackSource : canonicalize(scalarValue, propertyId);
+}
 
 function getEventTargetElement(target: EventTarget | null): HTMLElement | null {
 	const node = target as Node | null;
@@ -253,16 +291,16 @@ export function clearKanbanDropMarkers(root: ParentNode): void {
 		);
 	}
 
-	root
-		.querySelectorAll<HTMLElement>(".kanban-view__card-wrapper--drop-marker")
-		.forEach((card) => {
+	root.querySelectorAll<HTMLElement>(".kanban-view__card-wrapper--drop-marker").forEach(
+		(card) => {
 			card.classList.remove("kanban-view__card-wrapper--drop-marker");
-		});
-	root
-		.querySelectorAll<HTMLElement>(".kanban-view__cards--drop-marker-end")
-		.forEach((container) => {
+		}
+	);
+	root.querySelectorAll<HTMLElement>(".kanban-view__cards--drop-marker-end").forEach(
+		(container) => {
 			container.classList.remove("kanban-view__cards--drop-marker-end");
-		});
+		}
+	);
 }
 
 export function performKanbanOptimisticReorder({

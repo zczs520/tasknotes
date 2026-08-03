@@ -36,6 +36,14 @@ function createPlugin(): TaskNotesPlugin {
 			lookupMappingKey: jest.fn((propertyId: string) => propertyId),
 			toUserField: jest.fn((field: string) => field),
 		},
+		statusManager: {
+			getAllStatuses: jest.fn(() => [
+				{ id: "open", value: "open", label: "Open" },
+				{ id: "in-progress", value: "in-progress", label: "In progress" },
+			]),
+			normalizeStatusValue: jest.fn((status: string) => status.trim().toLowerCase()),
+		},
+		getActiveTimeSession: jest.fn(() => null),
 		i18n: {
 			translate: jest.fn((key: string) => {
 				const translations: Record<string, string> = {
@@ -45,6 +53,7 @@ function createPlugin(): TaskNotesPlugin {
 					"ui.taskCard.blockingBadgeTooltip": "This task is blocking another task",
 					"ui.taskCard.googleCalendarSyncTooltip": "Synced to Google Calendar",
 					"ui.taskCard.labels.due": "Due",
+					"ui.taskCard.trackingActive": "Tracking now",
 				};
 				return translations[key] ?? key;
 			}),
@@ -161,6 +170,49 @@ describe("taskCardMetadata", () => {
 			false
 		);
 		expect(parentClick).not.toHaveBeenCalled();
+	});
+
+	it("shows a compact in-progress label beside task metadata", () => {
+		const plugin = createPlugin();
+		const { card, metadataLine } = createMetadataHost();
+
+		const elements = renderTaskCardMetadata({
+			metadataLine,
+			card,
+			task: createTask({ status: "in-progress", scheduled: "2026-07-29" }),
+			plugin,
+			visibleProperties: ["scheduled"],
+			onBlockedByToggle: jest.fn(),
+		});
+
+		const state = metadataLine.querySelector<HTMLElement>(
+			".task-card__metadata-state--in-progress"
+		);
+		expect(elements).toContain(state);
+		expect(state?.textContent).toBe("In progress");
+		expect(metadataLine.style.display).not.toBe("none");
+	});
+
+	it("shows active timing independently from the task status", () => {
+		const plugin = createPlugin();
+		(plugin.getActiveTimeSession as jest.Mock).mockReturnValue({
+			startTime: "2026-07-29T09:00:00.000Z",
+		});
+		const { card, metadataLine } = createMetadataHost();
+
+		renderTaskCardMetadata({
+			metadataLine,
+			card,
+			task: createTask({ status: "open" }),
+			plugin,
+			visibleProperties: [],
+			onBlockedByToggle: jest.fn(),
+		});
+
+		expect(
+			metadataLine.querySelector<HTMLElement>(".task-card__metadata-state--in-progress")
+				?.textContent
+		).toBe("Tracking now");
 	});
 
 	it("clears stale metadata and hides the line when no configured property renders", () => {

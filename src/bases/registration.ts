@@ -4,24 +4,42 @@ import { buildTaskListViewFactory } from "./TaskListView";
 import { buildKanbanViewFactory } from "./KanbanView";
 import { buildCalendarViewFactory } from "./CalendarView";
 import { buildMiniCalendarViewFactory } from "./MiniCalendarView";
+import { buildTimeStatisticsViewFactory } from "./TimeStatisticsView";
 import { registerBasesView, unregisterBasesView } from "./api";
 import { buildCalendarViewOptions, buildMiniCalendarViewOptions } from "./calendarViewOptions";
 import { createTaskNotesLogger } from "../utils/tasknotesLogger";
+import { buildSwimLaneVisibilityToggleOptions } from "./kanbanSwimLaneVisibility";
 
-const KANBAN_CARD_LAYOUT_OPTIONS: Record<string, string> = {
-	default: "Default",
-	compact: "Compact",
-};
+type TranslateBasesSetting = (key: string) => string;
 
-const TASK_LIST_DEFAULT_COLLAPSED_STATE_OPTIONS: Record<string, string> = {
-	Expanded: "Expanded",
-	Collapsed: "Collapsed",
-};
+function translateBasesSetting(plugin: TaskNotesPlugin): TranslateBasesSetting {
+	return (key: string) => plugin.i18n.translate(`views.basesViewSettings.${key}`);
+}
 
-const EXPANDED_RELATIONSHIP_FILTER_MODE_OPTIONS: Record<string, string> = {
-	inherit: "Inherit",
-	"show-all": "Show all",
-};
+function buildKanbanCardLayoutOptions(t: TranslateBasesSetting): Record<string, string> {
+	return {
+		default: t("options.default"),
+		compact: t("options.compact"),
+	};
+}
+
+function buildTaskListDefaultCollapsedStateOptions(
+	t: TranslateBasesSetting
+): Record<string, string> {
+	return {
+		Expanded: t("options.expanded"),
+		Collapsed: t("options.collapsed"),
+	};
+}
+
+function buildExpandedRelationshipFilterModeOptions(
+	t: TranslateBasesSetting
+): Record<string, string> {
+	return {
+		inherit: t("options.inherit"),
+		"show-all": t("options.showAll"),
+	};
+}
 
 /**
  * Register TaskNotes views with Bases plugin
@@ -38,49 +56,54 @@ export async function registerBasesTaskList(plugin: TaskNotesPlugin): Promise<vo
 
 	const attemptRegistration = async (): Promise<boolean> => {
 		try {
+			const t = translateBasesSetting(plugin);
 			// Register Task List view using public API
 			const taskListSuccess = registerBasesView(
 				plugin,
 				"tasknotesTaskList",
 				{
-					name: "TaskNotes Task List",
+					name: t("viewNames.taskList"),
 					icon: "tasknotes-simple",
 					factory: buildTaskListViewFactory(plugin),
 					options: () => [
 						{
 							type: "property",
 							key: "subGroup",
-							displayName: "Sub-group by",
-							placeholder: "Select property for sub-grouping (optional)",
+							displayName: t("taskList.subGroupBy"),
+							placeholder: t("taskList.subGroupByPlaceholder"),
 							filter: (prop: string) => {
 								// Show all note, task, and formula properties that could be used for sub-grouping
-								return prop.startsWith("note.") || prop.startsWith("task.") || prop.startsWith("formula.");
+								return (
+									prop.startsWith("note.") ||
+									prop.startsWith("task.") ||
+									prop.startsWith("formula.")
+								);
 							},
 						},
 						{
 							type: "toggle",
 							key: "enableSearch",
-							displayName: "Enable search box",
+							displayName: t("common.enableSearch"),
 							default: false,
 						},
 						{
 							type: "dropdown",
 							key: "defaultCollapsedState",
-							displayName: "Default collapsed state",
+							displayName: t("taskList.defaultCollapsedState"),
 							default: "Expanded",
-							options: TASK_LIST_DEFAULT_COLLAPSED_STATE_OPTIONS,
+							options: buildTaskListDefaultCollapsedStateOptions(t),
 						},
 						{
 							type: "dropdown",
 							key: "expandedRelationshipFilterMode",
-							displayName: "Expanded relationships",
+							displayName: t("common.expandedRelationships"),
 							default: "inherit",
-							options: EXPANDED_RELATIONSHIP_FILTER_MODE_OPTIONS,
+							options: buildExpandedRelationshipFilterModeOptions(t),
 						},
 						{
 							type: "toggle",
 							key: "hideTopLevelSubtasks",
-							displayName: "Hide top-level subtasks",
+							displayName: t("common.hideTopLevelSubtasks"),
 							default: false,
 						},
 					],
@@ -93,109 +116,145 @@ export async function registerBasesTaskList(plugin: TaskNotesPlugin): Promise<vo
 				plugin,
 				"tasknotesKanban",
 				{
-					name: "TaskNotes Kanban",
+					name: t("viewNames.kanban"),
 					icon: "tasknotes-simple",
 					factory: buildKanbanViewFactory(plugin),
-					options: () => [
-					{
-						type: "property",
-						key: "swimLane",
-						displayName: "Swim Lane",
-						placeholder: "Select property for swim lanes (optional)",
-						filter: (prop: string) => {
-							// Show all note, task, and formula properties that could be used for swimlanes
-							return prop.startsWith("note.") || prop.startsWith("task.") || prop.startsWith("formula.");
+					options: (config) => [
+						{
+							type: "property",
+							key: "swimLane",
+							displayName: t("kanban.swimLane"),
+							placeholder: t("kanban.swimLanePlaceholder"),
+							filter: (prop: string) => {
+								// Show all note, task, and formula properties that could be used for swimlanes
+								return (
+									prop.startsWith("note.") ||
+									prop.startsWith("task.") ||
+									prop.startsWith("formula.")
+								);
+							},
 						},
-					},
-					{
-						type: "slider",
-						key: "columnWidth",
-						displayName: "Column Width",
-						default: 280,
-						min: 200,
-						max: 500,
-						step: 20,
-					},
-					{
-						type: "slider",
-						key: "maxSwimlaneHeight",
-						displayName: "Max Swimlane Height",
-						default: 600,
-						min: 300,
-						max: 1200,
-						step: 50,
-					},
-					{
-						type: "toggle",
-						key: "hideEmptyColumns",
-						displayName: "Hide Empty Columns",
-						default: false,
-					},
-					{
-						type: "text",
-						key: "pinnedColumns",
-						displayName: "Pinned Columns",
-						placeholder: "Comma-separated column values to keep visible",
-						default: "",
-					},
-					{
-						type: "toggle",
-						key: "hideEmptySwimLanes",
-						displayName: "Hide Empty Swimlanes",
-						default: false,
-					},
-					{
-						type: "toggle",
-						key: "enableSearch",
-						displayName: "Enable search box",
-						default: false,
-					},
-					{
-						type: "toggle",
-						key: "explodeListColumns",
-						displayName: "Show items in multiple columns",
-						default: true,
-					},
-					{
-						type: "toggle",
-						key: "consolidateStatusIcon",
-						displayName: "Show status icon in column header only",
-						default: false,
-					},
-					{
-						type: "dropdown",
-						key: "cardLayout",
-						displayName: "Card layout",
-						default: "default",
-						options: KANBAN_CARD_LAYOUT_OPTIONS,
-					},
-					{
-						type: "text",
-						key: "columnOrder",
-						displayName: "Column Order (Advanced)",
-						placeholder: "Auto-managed when dragging columns",
-						default: "{}",
-					},
-					{
-						type: "text",
-						key: "swimLaneOrder",
-						displayName: "Swim Lane Order (Advanced)",
-						placeholder: "JSON object keyed by swim lane property",
-						default: "{}",
-					},
-					{
-						type: "dropdown",
-						key: "expandedRelationshipFilterMode",
-						displayName: "Expanded relationships",
-						default: "inherit",
-						options: EXPANDED_RELATIONSHIP_FILTER_MODE_OPTIONS,
-					},
-					{
-						type: "toggle",
-						key: "hideTopLevelSubtasks",
-						displayName: "Hide top-level subtasks",
-						default: false,
-					},
+						{
+							type: "group",
+							displayName: t("kanban.visibleSwimLanes"),
+							items: buildSwimLaneVisibilityToggleOptions(config),
+							shouldHide: () =>
+								buildSwimLaneVisibilityToggleOptions(config).length === 0,
+						},
+						{
+							type: "toggle",
+							key: "boardFullWidth",
+							displayName: t("kanban.boardFullWidth"),
+							default: false,
+						},
+						{
+							type: "slider",
+							key: "boardWidth",
+							displayName: t("kanban.boardWidth"),
+							default: 1200,
+							min: 600,
+							max: 2400,
+							step: 50,
+							shouldHide: () => config.get("boardFullWidth") === true,
+						},
+						{
+							type: "slider",
+							key: "boardSideMargin",
+							displayName: t("kanban.boardSideMargin"),
+							default: 0,
+							min: 0,
+							max: 200,
+							step: 8,
+						},
+						{
+							type: "slider",
+							key: "columnWidth",
+							displayName: t("kanban.columnWidth"),
+							default: 280,
+							min: 200,
+							max: 500,
+							step: 20,
+						},
+						{
+							type: "slider",
+							key: "maxSwimlaneHeight",
+							displayName: t("kanban.maxSwimlaneHeight"),
+							default: 600,
+							min: 300,
+							max: 1200,
+							step: 50,
+						},
+						{
+							type: "toggle",
+							key: "hideEmptyColumns",
+							displayName: t("kanban.hideEmptyColumns"),
+							default: false,
+						},
+						{
+							type: "text",
+							key: "pinnedColumns",
+							displayName: t("kanban.pinnedColumns"),
+							placeholder: t("kanban.pinnedColumnsPlaceholder"),
+							default: "",
+						},
+						{
+							type: "toggle",
+							key: "hideEmptySwimLanes",
+							displayName: t("kanban.hideEmptySwimlanes"),
+							default: false,
+						},
+						{
+							type: "toggle",
+							key: "enableSearch",
+							displayName: t("kanban.enableSearchAndTimeFilter"),
+							default: false,
+						},
+						{
+							type: "toggle",
+							key: "explodeListColumns",
+							displayName: t("kanban.showItemsInMultipleColumns"),
+							default: true,
+						},
+						{
+							type: "toggle",
+							key: "consolidateStatusIcon",
+							displayName: t("kanban.showStatusIconInHeaderOnly"),
+							default: false,
+						},
+						{
+							type: "dropdown",
+							key: "cardLayout",
+							displayName: t("kanban.cardLayout"),
+							default: "default",
+							options: buildKanbanCardLayoutOptions(t),
+						},
+						{
+							type: "text",
+							key: "columnOrder",
+							displayName: t("kanban.columnOrderAdvanced"),
+							placeholder: t("kanban.columnOrderPlaceholder"),
+							default: "{}",
+						},
+						{
+							type: "text",
+							key: "swimLaneOrder",
+							displayName: t("kanban.swimLaneOrderAdvanced"),
+							placeholder: t("kanban.swimLaneOrderPlaceholder"),
+							default: "{}",
+						},
+						{
+							type: "dropdown",
+							key: "expandedRelationshipFilterMode",
+							displayName: t("common.expandedRelationships"),
+							default: "inherit",
+							options: buildExpandedRelationshipFilterModeOptions(t),
+						},
+						{
+							type: "toggle",
+							key: "hideTopLevelSubtasks",
+							displayName: t("common.hideTopLevelSubtasks"),
+							default: false,
+						},
 					],
 				},
 				logger
@@ -206,7 +265,7 @@ export async function registerBasesTaskList(plugin: TaskNotesPlugin): Promise<vo
 				plugin,
 				"tasknotesCalendar",
 				{
-					name: "TaskNotes Calendar",
+					name: t("viewNames.calendar"),
 					icon: "tasknotes-simple",
 					factory: buildCalendarViewFactory(plugin),
 					options: (config) => buildCalendarViewOptions(plugin, config),
@@ -219,7 +278,7 @@ export async function registerBasesTaskList(plugin: TaskNotesPlugin): Promise<vo
 				plugin,
 				"tasknotesMiniCalendar",
 				{
-					name: "TaskNotes Mini Calendar",
+					name: t("viewNames.miniCalendar"),
 					icon: "tasknotes-simple",
 					factory: buildMiniCalendarViewFactory(plugin),
 					options: () => buildMiniCalendarViewOptions(plugin),
@@ -227,8 +286,25 @@ export async function registerBasesTaskList(plugin: TaskNotesPlugin): Promise<vo
 				logger
 			);
 
+			const timeStatisticsSuccess = registerBasesView(
+				plugin,
+				"tasknotesTimeStatistics",
+				{
+					name: t("viewNames.timeStatistics"),
+					icon: "bar-chart-3",
+					factory: buildTimeStatisticsViewFactory(plugin),
+				},
+				logger
+			);
+
 			// Consider it successful if any view registered successfully
-			if (!taskListSuccess && !kanbanSuccess && !calendarSuccess && !miniCalendarSuccess) {
+			if (
+				!taskListSuccess &&
+				!kanbanSuccess &&
+				!calendarSuccess &&
+				!miniCalendarSuccess &&
+				!timeStatisticsSuccess
+			) {
 				logger.debug("Bases plugin not available for registration", {
 					category: "configuration",
 					operation: "register-views",
@@ -298,6 +374,7 @@ export function unregisterBasesViews(plugin: TaskNotesPlugin): void {
 		unregisterBasesView(plugin, "tasknotesKanban", logger);
 		unregisterBasesView(plugin, "tasknotesCalendar", logger);
 		unregisterBasesView(plugin, "tasknotesMiniCalendar", logger);
+		unregisterBasesView(plugin, "tasknotesTimeStatistics", logger);
 	} catch (error) {
 		logger.error("Error during view unregistration", {
 			category: "provider",

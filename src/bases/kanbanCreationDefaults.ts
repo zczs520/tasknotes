@@ -82,6 +82,10 @@ export function applyKanbanCreationDefault(options: KanbanCreationDefaultOptions
 export function getKanbanCreatableFrontmatterProperty(
 	options: KanbanCreatableFrontmatterPropertyOptions
 ): string | null {
+	if (options.propertyId === "file.tags") {
+		return "tags";
+	}
+
 	if (options.propertyId.startsWith("file.") || options.propertyId.startsWith("formula.")) {
 		return null;
 	}
@@ -96,7 +100,16 @@ export function getKanbanCreatableFrontmatterProperty(
 		return property;
 	}
 
-	return options.userFields?.some((field) => field.key === property) ? property : null;
+	if (options.userFields?.some((field) => field.key === property)) {
+		return property;
+	}
+
+	if (options.propertyId.startsWith("note.") || options.propertyId.startsWith("task.")) {
+		const frontmatterProperty = options.propertyId.slice(options.propertyId.indexOf(".") + 1);
+		return frontmatterProperty.trim() ? frontmatterProperty : null;
+	}
+
+	return null;
 }
 
 export function isKanbanCreationListProperty(

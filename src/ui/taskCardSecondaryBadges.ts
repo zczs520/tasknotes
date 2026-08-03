@@ -1,7 +1,8 @@
-import { Notice, setTooltip } from "obsidian";
+import { Notice, setIcon, setTooltip } from "obsidian";
 import type TaskNotesPlugin from "../main";
 import type { TaskInfo } from "../types";
 import { createTaskNotesLogger } from "../utils/tasknotesLogger";
+import { getActiveTimeEntry } from "../utils/helpers";
 import {
 	createProjectClickHandler,
 	createRecurrenceClickHandler,
@@ -10,6 +11,7 @@ import {
 import { getChevronTooltip, getRecurrenceTooltip, getReminderTooltip } from "./taskCardHelpers";
 import {
 	createBadgeIndicator,
+	prepareInteractiveControl,
 	updateBadgeIndicator,
 } from "./taskCardIndicators";
 import { removeRelationshipContainer } from "./taskCardRelationshipExpansion";
@@ -19,6 +21,7 @@ import { type TaskCardPresentationOptions } from "./taskCardPresentation";
 export interface TaskCardSecondaryBadgeOptions {
 	propertyLabels?: TaskCardPresentationOptions["propertyLabels"];
 	showSecondaryBadges?: boolean;
+	showTimeTrackingAction?: boolean;
 }
 
 export interface TaskCardSecondaryBadgeHandlers {
@@ -62,6 +65,7 @@ const SECONDARY_BADGE_SELECTORS = [
 	".task-card__chevron",
 	".task-card__blocking-toggle",
 	".task-card__blocked-toggle",
+	".task-card__time-tracking-control",
 ];
 
 function getTaskCardBadgeLogger(plugin: TaskNotesPlugin) {
@@ -181,10 +185,7 @@ function createBlockedByToggleClickHandler(
 	};
 }
 
-export function syncTaskCardBlockedByExpansionControls(
-	card: HTMLElement,
-	expanded: boolean
-): void {
+export function syncTaskCardBlockedByExpansionControls(card: HTMLElement, expanded: boolean): void {
 	const toggle = card.querySelector<HTMLElement>(".task-card__blocked-toggle");
 	if (toggle) {
 		toggle.classList.toggle("task-card__blocked-toggle--expanded", expanded);
@@ -289,13 +290,76 @@ function renderDependencyToggles(
 	}
 }
 
-export function renderTaskCardSecondaryBadges(
-	options: RenderTaskCardSecondaryBadgesOptions
+function renderTimeTrackingControl(
+	options: RenderTaskCardSecondaryBadgesOptions,
+	badgesContainer: HTMLElement
 ): void {
+	const { task, plugin, propertyOptions } = options;
+	if (!propertyOptions.showTimeTrackingAction) {
+		return;
+	}
+
+	const isActive = getActiveTimeEntry(task.timeEntries ?? []) !== null;
+	const actionLabel = plugin.i18n.translate(
+		isActive ? "contextMenus.task.stopTimeTracking" : "contextMenus.task.startTimeTracking"
+	);
+	const control = badgesContainer.createEl("button", {
+		cls: `task-card__time-tracking-control${
+			isActive ? " task-card__time-tracking-control--active" : ""
+		}`,
+		attr: {
+			type: "button",
+			"aria-label": actionLabel,
+		},
+	});
+	setIcon(control, isActive ? "square" : "timer");
+	setTooltip(control, actionLabel, { placement: "top" });
+	prepareInteractiveControl(control);
+
+	if (isActive) {
+		control.createEl("span", {
+			cls: "task-card__time-tracking-status",
+			text: tTaskCard(plugin, "trackingActive"),
+		});
+	}
+	control.createEl("span", {
+		cls: "task-card__time-tracking-action-label",
+		text: actionLabel,
+	});
+
+	control.addEventListener("click", (event) => {
+		event.preventDefault();
+		event.stopPropagation();
+		void (async () => {
+			control.disabled = true;
+			try {
+				const updatedTask = isActive
+					? await plugin.endTask(task)
+					: await plugin.startTask(task);
+				control.remove();
+				renderTimeTrackingControl({ ...options, task: updatedTask }, badgesContainer);
+				plugin.app.workspace.trigger("tasknotes:refresh-views");
+			} catch (error) {
+				getTaskCardBadgeLogger(plugin).error("Time tracking action failed", {
+					category: "persistence",
+					operation: isActive ? "stop-time-tracking" : "start-time-tracking",
+					details: { taskPath: task.path },
+					error,
+				});
+			} finally {
+				control.disabled = false;
+			}
+		})();
+	});
+}
+
+export function renderTaskCardSecondaryBadges(options: RenderTaskCardSecondaryBadgesOptions): void {
 	const { badgesContainer, task, plugin, hasDetails, propertyOptions } = options;
 	if (!badgesContainer || propertyOptions.showSecondaryBadges === false) {
 		return;
 	}
+
+	renderTimeTrackingControl(options, badgesContainer);
 
 	if (task.recurrence) {
 		createBadgeIndicator({
@@ -484,9 +548,7 @@ function updateBlockedByToggle(options: UpdateTaskCardSecondaryBadgesOptions): v
 	}
 }
 
-export function updateTaskCardSecondaryBadges(
-	options: UpdateTaskCardSecondaryBadgesOptions
-): void {
+export function updateTaskCardSecondaryBadges(options: UpdateTaskCardSecondaryBadgesOptions): void {
 	const { card, mainRow, task, plugin, hasDetails, propertyOptions } = options;
 	const badgesContainer = card.querySelector<HTMLElement>(".task-card__badges");
 
@@ -494,6 +556,9 @@ export function updateTaskCardSecondaryBadges(
 		removeSecondaryBadges(card);
 		return;
 	}
+
+	card.querySelector(".task-card__time-tracking-control")?.remove();
+	renderTimeTrackingControl({ ...options, badgesContainer }, badgesContainer);
 
 	updateBadgeIndicator(card, ".task-card__recurring-indicator", {
 		shouldExist: !!task.recurrence,
