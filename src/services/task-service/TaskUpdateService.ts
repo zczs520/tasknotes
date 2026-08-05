@@ -108,7 +108,12 @@ export class TaskUpdateService {
 
 		try {
 			const taskUpdates = normalizeTaskUpdateInput(updates);
-			const file = runtime.app.vault.getAbstractFileByPath(originalTask.path);
+			const legacyNormalizedPath = originalTask.path.replace(/^\/+/, "");
+			const file =
+				runtime.app.vault.getAbstractFileByPath(originalTask.path) ??
+				(legacyNormalizedPath !== originalTask.path
+					? runtime.app.vault.getAbstractFileByPath(legacyNormalizedPath)
+					: null);
 			if (!(file instanceof TFile)) {
 				throw new Error(`Cannot find task file: ${originalTask.path}`);
 			}
@@ -117,10 +122,11 @@ export class TaskUpdateService {
 				runtime.settings.storeTitleInFilename &&
 				taskUpdates.title &&
 				taskUpdates.title !== originalTask.title;
-			let newPath = originalTask.path;
+			let newPath = file.path;
 
 			if (isRenameNeeded && taskUpdates.title) {
-				const parentPath = file.parent ? file.parent.path : "";
+				const fileParentPath = file.parent?.path ?? "";
+				const parentPath = fileParentPath === "/" ? "" : fileParentPath.replace(/\/+$/, "");
 				const newFilename = await generateUniqueFilename(
 					taskUpdates.title,
 					parentPath,
@@ -199,6 +205,9 @@ export class TaskUpdateService {
 
 			if (isRenameNeeded) {
 				runtime.cacheManager.clearCacheEntry(originalTask.path);
+				if (file.path !== originalTask.path) {
+					runtime.cacheManager.clearCacheEntry(file.path);
+				}
 				runtime.expandedProjectsService.renamePath(originalTask.path, newPath);
 				runtime.projectSubtasksService.invalidateIndex();
 			}

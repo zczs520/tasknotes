@@ -75,6 +75,22 @@ describe("taskModalActionButtons", () => {
 		expect(saveButton.disabled).toBe(false);
 	});
 
+	it("supports mode-specific save and close labels", () => {
+		const container = document.createElement("div");
+		const buttonContainer = createTaskModalActionButtons(createContext(), {
+			container,
+			saveText: "Create task",
+			cancelText: "Esc Close",
+			onSave: jest.fn().mockResolvedValue(undefined),
+			onSaved: jest.fn(),
+			onCancel: jest.fn(),
+		});
+
+		expect(
+			Array.from(buttonContainer.querySelectorAll("button"), (button) => button.textContent)
+		).toEqual(["Create task", "Esc Close"]);
+	});
+
 	it("reenables save and skips the saved callback when save fails", async () => {
 		const saveButton = document.createElement("button");
 		const onSaved = jest.fn();

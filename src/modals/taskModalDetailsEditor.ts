@@ -29,7 +29,7 @@ export function createTaskModalDetailsEditor(
 		"tn-task-modal__markdown-editor tn-task-modal__markdown-editor--details"
 	);
 
-	return createTaskModalMarkdownEditor(options.app, editorContainer, {
+	const editor = createTaskModalMarkdownEditor(options.app, editorContainer, {
 		value: options.value,
 		placeholder: options.placeholder,
 		cls: "details-editor",
@@ -45,13 +45,30 @@ export function createTaskModalDetailsEditor(
 		},
 		file: options.file ?? null,
 	});
+
+	editorContainer.addEventListener("click", (event) => {
+		const target = event.target instanceof Element ? event.target : null;
+		if (
+			target?.closest(
+				".cm-content, a, button, input, textarea, select, [contenteditable='true']"
+			)
+		) {
+			return;
+		}
+
+		editor?.editor?.cm?.focus();
+	});
+
+	return editor;
 }
 
 export function setTaskModalDetailsEditorValue(
 	editor: EmbeddableMarkdownEditor | null,
 	value: string
 ): void {
-	editor?.setValue(value);
+	if (editor && editor.value !== value) {
+		editor.setValue(value);
+	}
 }
 
 export function destroyTaskModalDetailsEditor(editor: EmbeddableMarkdownEditor | null): void {

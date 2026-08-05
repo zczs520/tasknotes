@@ -608,4 +608,50 @@ describe("TaskCreationModal - Fixed Implementation", () => {
 			expect(() => (modal as any).applyParsedData(parsedData)).not.toThrow();
 		});
 	});
+
+	describe("Natural language autofill performance", () => {
+		beforeEach(() => {
+			modal = new TaskCreationModal(createMockApp(mockApp), mockPlugin);
+			jest.useFakeTimers();
+		});
+
+		afterEach(() => {
+			jest.useRealTimers();
+		});
+
+		it("uses a short debounce and only parses the latest input", () => {
+			const privateModal = modal as unknown as {
+				parseAndFillForm: (value: string) => void;
+				scheduleNaturalLanguageAutofill: (value: string) => void;
+			};
+			const parseAndFillForm = jest
+				.spyOn(privateModal, "parseAndFillForm")
+				.mockImplementation(() => undefined);
+
+			privateModal.scheduleNaturalLanguageAutofill("Tomorrow");
+			privateModal.scheduleNaturalLanguageAutofill("Tomorrow at 3pm");
+
+			jest.advanceTimersByTime(149);
+			expect(parseAndFillForm).not.toHaveBeenCalled();
+
+			jest.advanceTimersByTime(1);
+			expect(parseAndFillForm).toHaveBeenCalledTimes(1);
+			expect(parseAndFillForm).toHaveBeenCalledWith("Tomorrow at 3pm");
+		});
+
+		it("keeps title first and gives it the initial focus", () => {
+			const titleInput = document.createElement("input");
+			document.body.appendChild(titleInput);
+			const privateModal = modal as unknown as {
+				titleInput: HTMLInputElement;
+				focusTitleInput: () => void;
+			};
+			privateModal.titleInput = titleInput;
+
+			privateModal.focusTitleInput();
+			jest.runOnlyPendingTimers();
+
+			expect(document.activeElement).toBe(titleInput);
+		});
+	});
 });

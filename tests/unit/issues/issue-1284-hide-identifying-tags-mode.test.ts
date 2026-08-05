@@ -3,6 +3,7 @@ import {
 	filterTagsForTaskModalSuggestions,
 	filterTaskIdentificationTags,
 	isTaskIdentificationTag,
+	mergeTaskModalTagSuggestionSources,
 } from "../../../src/utils/taskTagFiltering";
 import {
 	clearEditableTagsFromList,
@@ -48,6 +49,25 @@ describe("issue #1284 exact-only identifying tag hiding", () => {
 				hideIdentifyingTagsMode: "exact-only",
 			})
 		).toEqual(tags);
+	});
+
+	it("merges task tags with hierarchical tags from the entire vault", () => {
+		expect(
+			mergeTaskModalTagSuggestionSources(["拼豆"], {
+				"#拼豆": 3,
+				"#项目/拼豆": 2,
+				"#项目/拼豆/网站": 1,
+			})
+		).toEqual(["拼豆", "项目/拼豆", "项目/拼豆/网站"]);
+	});
+
+	it("normalizes leading hashes and removes case-insensitive duplicates", () => {
+		expect(
+			mergeTaskModalTagSuggestionSources(["#Work", "task"], {
+				"#work": 4,
+				"#PROJECT/NEXT": 1,
+			})
+		).toEqual(["Work", "task", "PROJECT/NEXT"]);
 	});
 
 	it("preserves only hidden exact task tags when editable tags change in exact-only mode", () => {

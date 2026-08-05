@@ -235,13 +235,17 @@ export function buildSettingsFromLoadedData(data: LoadedSettingsData | null): Se
 		customPriorities: loadedData?.customPriorities || DEFAULT_SETTINGS.customPriorities,
 		savedViews: loadedData?.savedViews || DEFAULT_SETTINGS.savedViews,
 	};
+	const modalFieldsNeedMigration =
+		Boolean(loadedData?.modalFieldsConfig) &&
+		(loadedData?.modalFieldsConfig?.version ?? 1) < 2;
 
 	return {
 		settings,
 		shouldPersistMigratedSettings:
 			hasMissingMigratedSettings(loadedData) ||
 			migratedLegacyCustomFilenameTemplate ||
-			migratedParentNoteTaskCreationDefault,
+			migratedParentNoteTaskCreationDefault ||
+			modalFieldsNeedMigration,
 	};
 }
 

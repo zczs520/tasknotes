@@ -139,7 +139,7 @@ export class StatusBarService {
 	private readonly handleActiveTaskPointerDown = (event: PointerEvent): void => {
 		if (event.button !== 0 || !this.activeTaskControlElement) return;
 		const target = event.target as Element | null;
-		if (target?.closest(".tasknotes-active-task-control__end")) return;
+		if (target?.closest(".tasknotes-active-task-control__action")) return;
 
 		const rect = this.activeTaskControlElement.getBoundingClientRect();
 		this.activeTaskDragState = {
@@ -501,8 +501,11 @@ export class StatusBarService {
 				const openButton = row.querySelector<HTMLElement>(
 					".tasknotes-active-task-control__open"
 				);
-				const endButton = row.querySelector<HTMLElement>(
-					".tasknotes-active-task-control__end"
+				const stopButton = row.querySelector<HTMLElement>(
+					".tasknotes-active-task-control__stop"
+				);
+				const completeButton = row.querySelector<HTMLElement>(
+					".tasknotes-active-task-control__complete"
 				);
 				if (task && title && elapsed) {
 					title.textContent = task.title;
@@ -517,7 +520,15 @@ export class StatusBarService {
 							{ title: task.title }
 						)
 					);
-					endButton?.setAttribute(
+					stopButton?.setAttribute(
+						"aria-label",
+						this.translate(
+							"ui.activeTaskControl.stopTask",
+							`Stop task: ${task.title}`,
+							{ title: task.title }
+						)
+					);
+					completeButton?.setAttribute(
 						"aria-label",
 						this.translate(
 							"ui.activeTaskControl.endTask",
@@ -585,11 +596,30 @@ export class StatusBarService {
 		openButton.appendChild(elapsed);
 		row.appendChild(openButton);
 
-		const endButton = activeDocument.createElement("button");
-		endButton.type = "button";
-		endButton.className = "tasknotes-active-task-control__end";
-		endButton.textContent = this.translate("ui.activeTaskControl.endAction", "End task");
-		endButton.setAttribute(
+		const stopButton = activeDocument.createElement("button");
+		stopButton.type = "button";
+		stopButton.className =
+			"tasknotes-active-task-control__action tasknotes-active-task-control__stop";
+		stopButton.textContent = this.translate("ui.activeTaskControl.stopAction", "Stop");
+		stopButton.setAttribute(
+			"aria-label",
+			this.translate(
+				"ui.activeTaskControl.stopTask",
+				`Stop task: ${task.title}`,
+				{ title: task.title }
+			)
+		);
+		stopButton.addEventListener("click", () => {
+			void this.stopTrackedTask(task, stopButton);
+		});
+		row.appendChild(stopButton);
+
+		const completeButton = activeDocument.createElement("button");
+		completeButton.type = "button";
+		completeButton.className =
+			"tasknotes-active-task-control__action tasknotes-active-task-control__complete";
+		completeButton.textContent = this.translate("ui.activeTaskControl.endAction", "Complete");
+		completeButton.setAttribute(
 			"aria-label",
 			this.translate(
 				"ui.activeTaskControl.endTask",
@@ -597,10 +627,10 @@ export class StatusBarService {
 				{ title: task.title }
 			)
 		);
-		endButton.addEventListener("click", () => {
-			void this.endTrackedTask(task, endButton);
+		completeButton.addEventListener("click", () => {
+			void this.endTrackedTask(task, completeButton);
 		});
-		row.appendChild(endButton);
+		row.appendChild(completeButton);
 
 		return row;
 	}
@@ -612,29 +642,45 @@ export class StatusBarService {
 		}
 	}
 
+	private async stopTrackedTask(task: TaskInfo, button: HTMLButtonElement): Promise<void> {
+		await this.runTrackedTaskAction(task, button, "stop", () => this.plugin.stopTask(task));
+	}
+
 	private async endTrackedTask(task: TaskInfo, button: HTMLButtonElement): Promise<void> {
-		button.disabled = true;
-		button.closest(".tasknotes-active-task-control__task")?.setAttribute("aria-busy", "true");
+		await this.runTrackedTaskAction(task, button, "complete", () => this.plugin.endTask(task));
+	}
+
+	private async runTrackedTaskAction(
+		task: TaskInfo,
+		button: HTMLButtonElement,
+		action: "stop" | "complete",
+		run: () => Promise<TaskInfo>
+	): Promise<void> {
+		const row = button.closest<HTMLElement>(".tasknotes-active-task-control__task");
+		row?.setAttribute("aria-busy", "true");
+		row
+			?.querySelectorAll<HTMLButtonElement>(".tasknotes-active-task-control__action")
+			.forEach((actionButton) => (actionButton.disabled = true));
 
 		try {
-			await this.plugin.endTask(task);
+			await run();
 
 			this.renderTrackedTaskSurfaces(
 				this.currentTrackedTasks.filter((candidate) => candidate.path !== task.path)
 			);
 			this.requestUpdate();
 		} catch (error) {
-			tasknotesLogger.error("Failed to end tracked task:", {
+			tasknotesLogger.error(`Failed to ${action} tracked task:`, {
 				category: "persistence",
-				operation: "end-tracked-task",
+				operation: `${action}-tracked-task`,
 				details: { taskPath: task.path },
 				error,
 			});
-			if (button.isConnected) {
-				button.disabled = false;
-				button
-					.closest(".tasknotes-active-task-control__task")
-					?.removeAttribute("aria-busy");
+			if (row?.isConnected) {
+				row.removeAttribute("aria-busy");
+				row
+					.querySelectorAll<HTMLButtonElement>(".tasknotes-active-task-control__action")
+					.forEach((actionButton) => (actionButton.disabled = false));
 			}
 		}
 	}

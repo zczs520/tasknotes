@@ -13,6 +13,39 @@ export function normalizeTagName(tag: string): string {
 	return trimmed.startsWith("#") ? trimmed.slice(1) : trimmed;
 }
 
+/**
+ * Merge the task index's tags with Obsidian's vault-wide tag index.
+ *
+ * The task index only contains tags already used by TaskNotes tasks, while
+ * MetadataCache#getTags also contains tags from ordinary Markdown notes. The
+ * latter uses leading hashes, which task form values intentionally omit.
+ */
+export function mergeTaskModalTagSuggestionSources(
+	taskTags: readonly string[],
+	vaultTagCounts: Readonly<Record<string, number>> = {}
+): string[] {
+	const mergedTags = new Map<string, string>();
+
+	const addTag = (tag: string): void => {
+		const normalized = normalizeTagName(tag);
+		if (!normalized) return;
+
+		const dedupeKey = normalized.toLocaleLowerCase();
+		if (!mergedTags.has(dedupeKey)) {
+			mergedTags.set(dedupeKey, normalized);
+		}
+	};
+
+	for (const tag of taskTags) {
+		if (typeof tag === "string") addTag(tag);
+	}
+	for (const tag of Object.keys(vaultTagCounts)) {
+		addTag(tag);
+	}
+
+	return Array.from(mergedTags.values());
+}
+
 export function isExactTaskIdentificationTag(tag: string, taskTag: string): boolean {
 	const normalizedTag = normalizeTagName(tag);
 	const normalizedTaskTag = normalizeTagName(taskTag);

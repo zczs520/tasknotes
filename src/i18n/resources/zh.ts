@@ -7,6 +7,7 @@ export const zh: TranslationTree = {
 		cancel: "取消",
 		confirm: "确认",
 		close: "关闭",
+		done: "完成",
 		save: "保存",
 		reorder: {
 			confirmLargeTitle: "确认大规模重排",
@@ -542,10 +543,19 @@ export const zh: TranslationTree = {
 				}
 			},
 			summary: {
-				day: "今日总投入",
-				week: "本周总投入",
-				month: "本月总投入",
-				year: "本年总投入",
+				task: {
+					day: "今日任务投入",
+					week: "本周任务投入",
+					month: "本月任务投入",
+					year: "本年任务投入",
+				},
+				total: {
+					day: "今日总投入",
+					week: "本周总投入",
+					month: "本月总投入",
+					year: "本年总投入",
+				},
+				totalHint: "重叠的计时区间只计算一次",
 				tasksLabel: "涉及任务",
 				recordsLabel: "计时记录",
 				averageLabel: "活跃日均投入",
@@ -690,10 +700,17 @@ export const zh: TranslationTree = {
 			},
 			fields: {
 				title: "标题",
+				status: "状态",
+				priority: "优先级",
+				dueDate: "截止日期",
+				scheduledDate: "计划日期",
 				details: "详情",
 				contexts: "情境",
 				tags: "标签",
 				timeEstimate: "时间预估",
+				recurrence: "重复",
+				reminders: "提醒",
+				timeTracking: "计时",
 				projects: "项目",
 				subtasks: "子任务",
 				blockedBy: "被阻塞于",
@@ -2669,6 +2686,17 @@ export const zh: TranslationTree = {
 		},
 		task: {
 			titlePlaceholder: "需要做什么？",
+			untitledTitlePlaceholder: "无标题任务",
+			notSet: "未设置",
+			fields: {
+				status: "状态",
+				priority: "优先级",
+				due: "截止日期",
+				scheduled: "计划日期",
+				recurrence: "重复",
+				reminders: "提醒",
+				timeTracking: "计时",
+			},
 			titleLabel: "标题",
 			titleDetailedPlaceholder: "任务标题...",
 			detailsLabel: "详情",
@@ -2797,8 +2825,8 @@ export const zh: TranslationTree = {
 			title: "创建任务",
 			actions: {
 				fillFromNaturalLanguage: "从自然语言填写表单",
-				hideDetailedOptions: "隐藏详细选项",
-				showDetailedOptions: "显示详细选项"
+				hideDetailedOptions: "收起额外属性",
+				showDetailedOptions: "展开所有属性"
 			},
 			nlPlaceholder: "明天下午3点@家买杂货 #差事\n\n在这里添加详情...",
 			notices: {
@@ -2980,11 +3008,11 @@ export const zh: TranslationTree = {
 			noTasksAvailable: "没有可用的任务进行时间跟踪",
 			started: "开始跟踪时间：{taskTitle}",
 			startedSimple: "任务已开始",
-			stopped: "任务已结束",
+			stopped: "任务已停止",
 			alreadyActive: "此任务已在进行中",
 			noActiveSession: "此任务当前没有进行中的计时",
 			startFailed: "无法开始任务",
-			stopFailed: "无法结束任务"
+			stopFailed: "无法停止任务"
 		},
 		timeEntry: {
 			mustHaveSpecificTime: "时间条目必须有具体时间。请在周视图或日视图中选择时间范围。",
@@ -3466,8 +3494,10 @@ export const zh: TranslationTree = {
 			dragHint: "拖动可移动位置；聚焦后可用方向键调整。",
 			multipleLabel: "{count} 个任务进行中",
 			openTask: "打开任务：{title}",
-			endTask: "结束任务：{title}",
-			endAction: "结束任务"
+			endTask: "完成任务：{title}",
+			endAction: "完成",
+			stopTask: "停止任务：{title}",
+			stopAction: "停止"
 		}
 	},
 	components: {

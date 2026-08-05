@@ -133,18 +133,51 @@ describe("taskModalDetailsEditor", () => {
 		expect(focusPreviousField).not.toHaveBeenCalled();
 	});
 
+	it("focuses the markdown editor when the blank details region is clicked", () => {
+		const parent = document.createElement("div");
+		const focus = jest.fn();
+		createTaskModalMarkdownEditorMock.mockReturnValue({
+			destroy: jest.fn(),
+			editor: { cm: { focus } },
+		} as never);
+
+		createTaskModalDetailsEditor({
+			app: {} as never,
+			parent,
+			label: "Details",
+			value: "",
+			placeholder: "Add details",
+			tabMovesFocus: false,
+			onChange: jest.fn(),
+			onSubmit: jest.fn(),
+			onEscape: jest.fn(),
+			focusNextField: jest.fn(),
+			focusPreviousField: jest.fn(),
+		});
+
+		const container = parent.querySelector<HTMLElement>(
+			".tn-task-modal__markdown-editor--details"
+		);
+		container?.click();
+
+		expect(focus).toHaveBeenCalledTimes(1);
+	});
+
 	it("updates and destroys details editors with null-safe helpers", () => {
 		const editor = {
 			destroy: jest.fn(),
 			setValue: jest.fn(),
+			value: "Existing details",
 		} as never;
 
 		setTaskModalDetailsEditorValue(editor, "Parsed details");
+		setTaskModalDetailsEditorValue(editor, "Existing details");
 		setTaskModalDetailsEditorValue(null, "Ignored");
 		destroyTaskModalDetailsEditor(editor);
 		destroyTaskModalDetailsEditor(null);
 
 		expect(editor.setValue).toHaveBeenCalledWith("Parsed details");
+		expect(editor.setValue).toHaveBeenCalledTimes(1);
 		expect(editor.destroy).toHaveBeenCalledTimes(1);
 	});
 });

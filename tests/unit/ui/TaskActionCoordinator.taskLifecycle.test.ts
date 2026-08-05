@@ -107,4 +107,61 @@ describe("TaskActionCoordinator task lifecycle", () => {
 		);
 		expect(result).toBe(completedTask);
 	});
+
+	it("stops timing and returns the task to the configured pending status", async () => {
+		const task = createTask();
+		const stoppedTask = {
+			...task,
+			timeEntries: task.timeEntries?.map((entry) => ({
+				...entry,
+				endTime: "2026-07-31T10:30:00+08:00",
+			})),
+		};
+		const pendingTask = { ...stoppedTask, status: "open" };
+		const plugin = {
+			settings: { defaultTaskStatus: "open" },
+			getActiveTimeSession: jest.fn(() => task.timeEntries?.[0] ?? null),
+			taskService: {
+				stopTimeTracking: jest.fn(async () => stoppedTask),
+			},
+			statusManager: {
+				getAllStatuses: jest.fn(() => [
+					{
+						id: "open",
+						value: "open",
+						isCompleted: false,
+						isSkipped: false,
+						order: 0,
+					},
+					{
+						id: "done",
+						value: "done",
+						isCompleted: true,
+						isSkipped: false,
+						order: 1,
+					},
+				]),
+				normalizeStatusValue: jest.fn((value: string) => value.trim().toLowerCase()),
+			},
+			updateTaskProperty: jest.fn(async () => pendingTask),
+			i18n: {
+				translate: jest.fn((key: string) => key),
+			},
+			statusBarService: {
+				requestUpdate: jest.fn(),
+			},
+		};
+		const coordinator = new TaskActionCoordinator(plugin as never);
+
+		const result = await coordinator.stopTask(task);
+
+		expect(plugin.taskService.stopTimeTracking).toHaveBeenCalledWith(task);
+		expect(plugin.updateTaskProperty).toHaveBeenCalledWith(
+			stoppedTask,
+			"status",
+			"open",
+			{ silent: true }
+		);
+		expect(result).toBe(pendingTask);
+	});
 });

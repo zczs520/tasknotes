@@ -1,7 +1,11 @@
 import { AbstractInputSuggest, App } from "obsidian";
 import TaskNotesPlugin from "../main";
 import type { UserMappedField } from "../types/settings";
-import { filterTagsForTaskModalSuggestions } from "../utils/taskTagFiltering";
+import {
+	filterTagsForTaskModalSuggestions,
+	mergeTaskModalTagSuggestionSources,
+	normalizeTagName,
+} from "../utils/taskTagFiltering";
 import { createTaskNotesLogger } from "../utils/tasknotesLogger";
 
 const tasknotesLogger = createTaskNotesLogger({ tag: "Modals/TaskModalSuggests" });
@@ -84,18 +88,33 @@ export class TagSuggest extends AbstractInputSuggest<TagSuggestion> {
 		super(app, inputEl);
 		this.plugin = plugin;
 		this.input = inputEl;
+		this.limit = 100;
 		openSuggestionsOnFieldSelection(this.input, () => this.open());
+	}
+
+	public open(): void {
+		super.open();
+		const view = this.input.ownerDocument.defaultView ?? window;
+		view.setTimeout(() => {
+			const containers = Array.from(
+				this.input.ownerDocument.querySelectorAll<HTMLElement>(".suggestion-container")
+			);
+			containers[containers.length - 1]?.addClass("tn-task-modal__tag-suggestions");
+		}, 0);
 	}
 
 	protected async getSuggestions(_: string): Promise<TagSuggestion[]> {
 		const currentValues = this.input.value.split(",").map((value: string) => value.trim());
-		const currentQuery = currentValues[currentValues.length - 1];
+		const currentQuery = currentValues[currentValues.length - 1].replace(/^#/, "");
 
 		const tags = filterTagsForTaskModalSuggestions(
-			this.plugin.cacheManager.getAllTags(),
+			mergeTaskModalTagSuggestionSources(
+				this.plugin.cacheManager.getAllTags(),
+				this.plugin.app.metadataCache.getTags?.() ?? {}
+			),
 			this.plugin.settings
 		);
-		const alreadySelected = currentValues.slice(0, -1);
+		const alreadySelected = currentValues.slice(0, -1).map(normalizeTagName);
 		return tags
 			.filter((tag) => tag && typeof tag === "string")
 			.filter(
@@ -103,7 +122,7 @@ export class TagSuggest extends AbstractInputSuggest<TagSuggestion> {
 					!alreadySelected.includes(tag) &&
 					(!currentQuery || tag.toLowerCase().includes(currentQuery.toLowerCase()))
 			)
-			.slice(0, 10)
+			.slice(0, 100)
 			.map((tag) => ({
 				value: tag,
 				display: tag,

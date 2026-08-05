@@ -31,6 +31,10 @@ export class NaturalLanguageParser extends NaturalLanguageParserCore {
 	private readonly taskNotesStatusConfigs: StatusConfig[];
 	private readonly taskNotesUserFields: UserMappedField[];
 	private readonly taskNotesPriorityConfigs: PriorityConfig[];
+	private readonly taskNotesDefaultToScheduled: boolean;
+	private readonly taskNotesLanguageCode: string;
+	private readonly taskNotesParserOptions?: NaturalLanguageParserOptions;
+	private chineseFallbackParser: NaturalLanguageParserCore | null = null;
 
 	static fromPlugin(plugin: TaskNotesPlugin): NaturalLanguageParser {
 		const s = plugin.settings;
@@ -67,10 +71,16 @@ export class NaturalLanguageParser extends NaturalLanguageParserCore {
 		this.taskNotesStatusConfigs = statusConfigs;
 		this.taskNotesUserFields = userFields || [];
 		this.taskNotesPriorityConfigs = priorityConfigs;
+		this.taskNotesDefaultToScheduled = defaultToScheduled;
+		this.taskNotesLanguageCode = languageCode;
+		this.taskNotesParserOptions = options;
 	}
 
 	parseInput(input: string): ParsedTaskData {
-		const parsed = super.parseInput(input);
+		let parsed = super.parseInput(input);
+		if (this.shouldUseChineseDateFallback(input, parsed)) {
+			parsed = this.getChineseFallbackParser().parseInput(input);
+		}
 		const withStatusShortcutResidueRemoved = this.applyTriggeredStatusMatch(input, parsed);
 		const withPriorityShortcutResidueRemoved = this.removePriorityShortcutResidue(
 			input,
@@ -78,6 +88,30 @@ export class NaturalLanguageParser extends NaturalLanguageParserCore {
 		);
 		const withLinkedFields = this.extractLinkedUserFields(input, withPriorityShortcutResidueRemoved);
 		return this.normalizeUserFieldValues(withLinkedFields);
+	}
+
+	private getChineseFallbackParser(): NaturalLanguageParserCore {
+		this.chineseFallbackParser ??= new NaturalLanguageParserCore(
+			this.taskNotesStatusConfigs,
+			this.taskNotesPriorityConfigs,
+			this.taskNotesDefaultToScheduled,
+			"zh",
+			this.taskNotesNlpTriggers,
+			this.taskNotesUserFields,
+			this.taskNotesParserOptions
+		);
+		return this.chineseFallbackParser;
+	}
+
+	private shouldUseChineseDateFallback(input: string, parsed: ParsedTaskData): boolean {
+		const configuredLanguage = this.taskNotesLanguageCode.toLowerCase();
+		return (
+			!configuredLanguage.startsWith("zh") &&
+			!configuredLanguage.startsWith("ja") &&
+			/\p{Script=Han}/u.test(input) &&
+			!parsed.scheduledDate &&
+			!parsed.dueDate
+		);
 	}
 
 	private applyTriggeredStatusMatch(input: string, parsed: ParsedTaskData): ParsedTaskData {

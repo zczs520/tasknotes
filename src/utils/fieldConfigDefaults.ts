@@ -65,13 +65,73 @@ export const DEFAULT_CORE_FIELDS: ModalFieldConfig[] = [
 		required: true,
 	},
 	{
+		id: "status",
+		fieldType: "core",
+		group: "basic",
+		displayName: "Status",
+		visibleInCreation: true,
+		visibleInEdit: true,
+		order: 1,
+		enabled: true,
+	},
+	{
+		id: "priority",
+		fieldType: "core",
+		group: "basic",
+		displayName: "Priority",
+		visibleInCreation: true,
+		visibleInEdit: true,
+		order: 2,
+		enabled: true,
+	},
+	{
+		id: "due-date",
+		fieldType: "core",
+		group: "basic",
+		displayName: "Due date",
+		visibleInCreation: true,
+		visibleInEdit: true,
+		order: 3,
+		enabled: true,
+	},
+	{
+		id: "scheduled-date",
+		fieldType: "core",
+		group: "basic",
+		displayName: "Scheduled date",
+		visibleInCreation: true,
+		visibleInEdit: true,
+		order: 4,
+		enabled: true,
+	},
+	{
+		id: "projects",
+		fieldType: "organization",
+		group: "basic",
+		displayName: "Projects",
+		visibleInCreation: true,
+		visibleInEdit: true,
+		order: 5,
+		enabled: true,
+	},
+	{
+		id: "tags",
+		fieldType: "core",
+		group: "basic",
+		displayName: "Tags",
+		visibleInCreation: true,
+		visibleInEdit: true,
+		order: 6,
+		enabled: true,
+	},
+	{
 		id: "details",
 		fieldType: "core",
 		group: "basic",
 		displayName: "Details",
 		visibleInCreation: true,
 		visibleInEdit: true,
-		order: 1,
+		order: 7,
 		enabled: true,
 	},
 
@@ -87,37 +147,47 @@ export const DEFAULT_CORE_FIELDS: ModalFieldConfig[] = [
 		enabled: true,
 	},
 	{
-		id: "tags",
-		fieldType: "core",
-		group: "metadata",
-		displayName: "Tags",
-		visibleInCreation: true,
-		visibleInEdit: true,
-		order: 1,
-		enabled: true,
-	},
-	{
 		id: "time-estimate",
 		fieldType: "core",
 		group: "metadata",
 		displayName: "Time Estimate",
 		visibleInCreation: true,
 		visibleInEdit: true,
+		order: 1,
+		enabled: true,
+	},
+	{
+		id: "recurrence",
+		fieldType: "core",
+		group: "metadata",
+		displayName: "Recurrence",
+		visibleInCreation: true,
+		visibleInEdit: true,
 		order: 2,
+		enabled: true,
+	},
+	{
+		id: "reminders",
+		fieldType: "core",
+		group: "metadata",
+		displayName: "Reminders",
+		visibleInCreation: true,
+		visibleInEdit: true,
+		order: 3,
+		enabled: true,
+	},
+	{
+		id: "time-tracking",
+		fieldType: "core",
+		group: "metadata",
+		displayName: "Time tracking",
+		visibleInCreation: false,
+		visibleInEdit: true,
+		order: 4,
 		enabled: true,
 	},
 
 	// Organization group
-	{
-		id: "projects",
-		fieldType: "organization",
-		group: "organization",
-		displayName: "Projects",
-		visibleInCreation: true,
-		visibleInEdit: true,
-		order: 0,
-		enabled: true,
-	},
 	{
 		id: "subtasks",
 		fieldType: "organization",
@@ -125,7 +195,7 @@ export const DEFAULT_CORE_FIELDS: ModalFieldConfig[] = [
 		displayName: "Subtasks",
 		visibleInCreation: true,
 		visibleInEdit: true,
-		order: 1,
+		order: 0,
 		enabled: true,
 	},
 
@@ -157,7 +227,7 @@ export const DEFAULT_CORE_FIELDS: ModalFieldConfig[] = [
  */
 export function createDefaultFieldConfig(): TaskModalFieldsConfig {
 	return {
-		version: 1,
+		version: 2,
 		fields: [...DEFAULT_CORE_FIELDS],
 		groups: [...DEFAULT_FIELD_GROUPS],
 	};
@@ -172,9 +242,7 @@ export function getFieldsForModal(
 ): ModalFieldConfig[] {
 	return config.fields
 		.filter((field) => field.enabled)
-		.filter((field) =>
-			isCreationMode ? field.visibleInCreation : field.visibleInEdit
-		)
+		.filter((field) => (isCreationMode ? field.visibleInCreation : field.visibleInEdit))
 		.sort((a, b) => {
 			// First sort by group order
 			const groupA = config.groups.find((g) => g.id === a.group);
@@ -235,9 +303,31 @@ export function initializeFieldConfig(
 	existingConfig?: TaskModalFieldsConfig,
 	userFields?: UserMappedField[]
 ): TaskModalFieldsConfig {
-	// If we have an existing config, return it
+	// Reconcile older configurations with the current built-in field set while
+	// preserving each user's visibility and enabled choices.
 	if (existingConfig) {
-		return existingConfig;
+		const existingVersion = existingConfig.version ?? 1;
+		const fieldsById = new Map(existingConfig.fields.map((field) => [field.id, field]));
+		const migratedFields = DEFAULT_CORE_FIELDS.map((defaultField) => {
+			const existing = fieldsById.get(defaultField.id);
+			if (!existing) return { ...defaultField };
+			fieldsById.delete(defaultField.id);
+			return existingVersion < 2
+				? {
+						...existing,
+						group: defaultField.group,
+						order: defaultField.order,
+					}
+				: existing;
+		});
+		return {
+			...existingConfig,
+			version: 2,
+			fields: [...migratedFields, ...fieldsById.values()],
+			groups: existingConfig.groups?.length
+				? existingConfig.groups
+				: [...DEFAULT_FIELD_GROUPS],
+		};
 	}
 
 	// Create default config

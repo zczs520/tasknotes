@@ -10,6 +10,7 @@ import {
 	buildTimeStatisticsSegments,
 	calculateAverageTimePerActiveDay,
 	calculateTimeStatisticsTotal,
+	calculateUniqueTimeStatisticsTotal,
 	getTimeStatisticsRange,
 	isCurrentTimeStatisticsPeriod,
 	shiftTimeStatisticsReference,
@@ -308,19 +309,25 @@ export class TimeStatisticsView extends BasesViewBase {
 		segments: readonly TimeStatisticsSegment[],
 		taskStats: readonly TaskTimeStatistic[]
 	): void {
-		const totalMs = calculateTimeStatisticsTotal(segments);
+		const taskTotalMs = calculateTimeStatisticsTotal(segments);
+		const uniqueTotalMs = calculateUniqueTimeStatisticsTotal(segments);
 		const records = new Set(segments.map((segment) => segment.sessionKey)).size;
 		const isChinese = this.plugin.i18n.getCurrentLocale() === "zh";
 		const averageMs =
 			this.period === "day"
 				? records > 0
-					? totalMs / records
+					? taskTotalMs / records
 					: 0
 				: calculateAverageTimePerActiveDay(segments);
 		const metrics = [
 			{
-				label: this.translate(`summary.${this.period}`),
-				value: this.formatDuration(totalMs),
+				label: this.translate(`summary.task.${this.period}`),
+				value: this.formatDuration(taskTotalMs),
+			},
+			{
+				label: this.translate(`summary.total.${this.period}`),
+				value: this.formatDuration(uniqueTotalMs),
+				hint: this.translate("summary.totalHint"),
 			},
 			{
 				label: this.translate("summary.tasksLabel"),
@@ -350,7 +357,10 @@ export class TimeStatisticsView extends BasesViewBase {
 		metrics.forEach((metric, index) => {
 			const item = summary.createDiv({ cls: "tn-time-statistics__metric" });
 			const label = item.createDiv({ cls: "tn-time-statistics__metric-label" });
-			label.createSpan({ text: metric.label });
+			label.createSpan({
+				text: metric.label,
+				attr: metric.hint ? { title: metric.hint } : undefined,
+			});
 			if (index === 0 && segments.some((segment) => segment.isActive)) {
 				const live = label.createSpan({ cls: "tn-time-statistics__live-indicator" });
 				live.createSpan({ cls: "tn-time-statistics__live-dot" });

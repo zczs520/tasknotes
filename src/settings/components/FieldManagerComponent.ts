@@ -1,10 +1,6 @@
 import { App } from "obsidian";
 import type TaskNotesPlugin from "../../main";
-import type {
-	ModalFieldConfig,
-	FieldGroup,
-	TaskModalFieldsConfig,
-} from "../../types/settings";
+import type { ModalFieldConfig, FieldGroup, TaskModalFieldsConfig } from "../../types/settings";
 import {
 	createCard,
 	setupCardDragAndDrop,
@@ -23,10 +19,17 @@ const GROUP_TRANSLATION_KEYS: Partial<Record<FieldGroup, TranslationKey>> = {
 
 const FIELD_TRANSLATION_KEYS: Record<string, TranslationKey> = {
 	title: "settings.modalFields.fields.title",
+	status: "settings.modalFields.fields.status",
+	priority: "settings.modalFields.fields.priority",
+	"due-date": "settings.modalFields.fields.dueDate",
+	"scheduled-date": "settings.modalFields.fields.scheduledDate",
 	details: "settings.modalFields.fields.details",
 	contexts: "settings.modalFields.fields.contexts",
 	tags: "settings.modalFields.fields.tags",
 	"time-estimate": "settings.modalFields.fields.timeEstimate",
+	recurrence: "settings.modalFields.fields.recurrence",
+	reminders: "settings.modalFields.fields.reminders",
+	"time-tracking": "settings.modalFields.fields.timeTracking",
 	projects: "settings.modalFields.fields.projects",
 	subtasks: "settings.modalFields.fields.subtasks",
 	"blocked-by": "settings.modalFields.fields.blockedBy",
@@ -160,10 +163,7 @@ function createFieldCard(
 	const typeBadge = activeDocument.createElement("span");
 	typeBadge.classList.add("field-card__type");
 	typeBadge.classList.add(`field-card__type--${field.fieldType}`);
-	typeBadge.textContent = translate(
-		plugin,
-		`settings.modalFields.fieldTypes.${field.fieldType}`
-	);
+	typeBadge.textContent = translate(plugin, `settings.modalFields.fieldTypes.${field.fieldType}`);
 
 	// Create toggle switches with callbacks
 	const enabledToggle = createCardToggle(field.enabled, (value) => {
@@ -235,8 +235,8 @@ function createFieldCard(
 	};
 
 	// Determine if this field can be reordered
-	// Title and details are in the basic group and cannot be reordered
-	const canReorder = field.group !== "basic";
+	// Title and details anchor the task sheet; the remaining basic fields can be reordered.
+	const canReorder = field.id !== "title" && field.id !== "details";
 
 	// Create the card using CardComponent
 	const card = createCard(container, {
@@ -339,9 +339,7 @@ function getFieldSecondaryText(field: ModalFieldConfig, plugin: TaskNotesPlugin)
 		return translate(plugin, "settings.modalFields.secondary.id", { id: field.id });
 	}
 
-	const userField = plugin.settings.userFields?.find(
-		(candidate) => candidate.id === field.id
-	);
+	const userField = plugin.settings.userFields?.find((candidate) => candidate.id === field.id);
 	return userField?.key
 		? translate(plugin, "settings.modalFields.secondary.key", { key: userField.key })
 		: translate(plugin, "settings.modalFields.secondary.noKey");

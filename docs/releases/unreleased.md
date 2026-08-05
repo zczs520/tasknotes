@@ -41,6 +41,10 @@ When a change has user-facing documentation, include a canonical tasknotes.dev l
 
 ## Changed
 
+- Time statistics now separates cumulative task time from total time, with overlapping task timers counted only once in the total across day, week, month, and year views.
+- Rebuilt the task creation and edit dialogs as a unified single-column task sheet with a compact icon-led property layout. Status, priority, scheduled time, and tags appear first; a control directly below the property list reveals only the remaining properties, while the full-height Markdown details stay visible and can be focused from anywhere in their blank region. Natural-language task capture now fills the form automatically with a faster, change-aware debounce, including Chinese phrases such as “明天下午三点.” Edit dialogs now save continuously like a normal note, place the icon-labeled “Open note” action beside the top close control, and no longer require a bottom action bar. The modal field settings now include status, priority, dates, recurrence, reminders, and edit-mode time tracking.
+- Active task controls now separate stopping from completing: the blue Stop action ends timing and returns the task to its configured pending status, while the green Complete action ends timing and completes the task.
+- Unified task date entry points around a compact visual calendar with today, tomorrow, Friday, and Sunday shortcuts while retaining optional time selection and natural-language date entry without unused modal space.
 - Refreshed the custom Bases Kanban view with soft color-coded columns, cleaner standalone task cards, collapsible and persistently reorderable swimlanes, per-view swimlane visibility controls, and labeled creation actions.
 - Kanban scheduled dates can now be changed directly from each card with quick choices for today, tomorrow, Friday, Sunday, and a compact calendar. Custom date filters now use a visual range calendar with shortcuts for this month, last month, and the recent three months.
 - Kanban views can now use a centered fixed width or full width with configurable side margins. The floating active-task control can be dragged anywhere in the workspace and remembers its position.
@@ -66,6 +70,9 @@ When a change has user-facing documentation, include a canonical tasknotes.dev l
 
 ## Fixed
 
+- Opening a task note from the edit dialog now reuses the active tab and dismisses the dialog before Markdown and embedded queries finish rendering, while still saving pending edits first.
+- Fixed continuous edit-modal autosave errors after renaming a task stored in the vault root; root filenames now keep canonical paths, and previously generated leading-slash paths are recovered automatically.
+- Fixed task modal tag suggestions only searching tags already used by tasks; suggestions now include hierarchical tags from the entire vault, matching Markdown tag completion.
 - Fixed Kanban drag-and-drop sometimes moving a card visually without saving its new status, including when the optimistic card position no longer matched the status still stored in the task file.
 - Fixed the Kanban custom date range control so applying a range filters the board reliably and dismissing the dialog no longer leaves the control waiting for a result.
 - Fixed the task-note card and floating active-task control using different end-task behavior. Both now stop the timer before completing the task, and restarting a task immediately restores the floating control.

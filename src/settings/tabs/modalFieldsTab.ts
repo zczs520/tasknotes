@@ -39,19 +39,6 @@ export function renderModalFieldsTab(
 			description: translate("settings.modalFields.description"),
 		},
 		(group) => {
-			// Split layout toggle
-			group.addSetting((setting) => {
-				configureToggleSetting(setting, {
-					name: translate("settings.modalFields.splitLayout.name"),
-					desc: translate("settings.modalFields.splitLayout.description"),
-					getValue: () => plugin.settings.enableModalSplitLayout,
-					setValue: (value) => {
-						plugin.settings.enableModalSplitLayout = value;
-						save();
-					},
-				});
-			});
-
 			group.addSetting((setting) => {
 				configureToggleSetting(setting, {
 					name: translate("settings.modalFields.tabMovesFocus.name"),

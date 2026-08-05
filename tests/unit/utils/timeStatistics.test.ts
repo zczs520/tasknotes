@@ -5,6 +5,7 @@ import {
 	buildTimeStatisticsSegments,
 	calculateAverageTimePerActiveDay,
 	calculateTimeStatisticsTotal,
+	calculateUniqueTimeStatisticsTotal,
 	getTimeStatisticsRange,
 	isCurrentTimeStatisticsPeriod,
 	shiftTimeStatisticsReference,
@@ -87,6 +88,55 @@ describe("time statistics", () => {
 		expect(segments).toHaveLength(1);
 		expect(segments[0].durationMs).toBe(45 * 60_000);
 		expect(segments[0].isActive).toBe(true);
+	});
+
+	it("counts overlapping task sessions only once in the unique total", () => {
+		const tasks = [
+			createTask({
+				path: "Tasks/alpha.md",
+				timeEntries: [
+					{ startTime: "2026-07-31T13:00:00", endTime: "2026-07-31T14:00:00" },
+				],
+			}),
+			createTask({
+				path: "Tasks/beta.md",
+				timeEntries: [
+					{ startTime: "2026-07-31T13:00:00", endTime: "2026-07-31T14:00:00" },
+				],
+			}),
+			createTask({
+				path: "Tasks/gamma.md",
+				timeEntries: [
+					{ startTime: "2026-07-31T13:00:00", endTime: "2026-07-31T14:00:00" },
+				],
+			}),
+			createTask({
+				path: "Tasks/delta.md",
+				timeEntries: [
+					{ startTime: "2026-07-31T13:00:00", endTime: "2026-07-31T14:00:00" },
+				],
+			}),
+		];
+		const range = getTimeStatisticsRange(new Date(2026, 6, 31), "day");
+		const segments = buildTimeStatisticsSegments(tasks, range);
+
+		expect(calculateTimeStatisticsTotal(segments)).toBe(4 * 60 * 60_000);
+		expect(calculateUniqueTimeStatisticsTotal(segments)).toBe(60 * 60_000);
+	});
+
+	it("merges partially overlapping and adjacent intervals across a period", () => {
+		const task = createTask({
+			timeEntries: [
+				{ startTime: "2026-07-30T23:30:00", endTime: "2026-07-31T01:00:00" },
+				{ startTime: "2026-07-31T00:30:00", endTime: "2026-07-31T02:00:00" },
+				{ startTime: "2026-07-31T02:00:00", endTime: "2026-07-31T02:30:00" },
+			],
+		});
+		const range = getTimeStatisticsRange(new Date(2026, 6, 31), "week", 1);
+		const segments = buildTimeStatisticsSegments([task], range);
+
+		expect(calculateTimeStatisticsTotal(segments)).toBe(210 * 60_000);
+		expect(calculateUniqueTimeStatisticsTotal(segments)).toBe(180 * 60_000);
 	});
 
 	it("attributes the full duration to every exact tag and groups untagged time", () => {

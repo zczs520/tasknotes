@@ -145,7 +145,43 @@ export class TaskActionCoordinator {
 	}
 
 	/**
-	 * End the user-facing task workflow shared by task cards and the floating
+	 * Stop the active timer without completing the task, then return it to the
+	 * configured pending status used for newly created tasks.
+	 */
+	async stopTask(task: TaskInfo): Promise<TaskInfo> {
+		let updatedTask = task;
+		if (this.plugin.getActiveTimeSession(updatedTask)) {
+			updatedTask = await this.plugin.taskService.stopTimeTracking(updatedTask);
+		}
+
+		const statuses = this.plugin.statusManager
+			.getAllStatuses()
+			.filter((status) => !status.isCompleted && !status.isSkipped)
+			.sort((first, second) => first.order - second.order);
+		const normalize = (value: string): string =>
+			this.plugin.statusManager.normalizeStatusValue(value);
+		const configuredPendingStatus = normalize(this.plugin.settings.defaultTaskStatus);
+		const pendingStatus =
+			statuses.find((status) => normalize(status.value) === configuredPendingStatus) ??
+			statuses.find((status) => status.id === "open") ??
+			statuses[0];
+
+		if (pendingStatus && normalize(updatedTask.status) !== normalize(pendingStatus.value)) {
+			updatedTask = await this.plugin.updateTaskProperty(
+				updatedTask,
+				"status",
+				pendingStatus.value,
+				{ silent: true }
+			);
+		}
+
+		showNotice(this.plugin.i18n.translate("modals.timeTracking.stopped"));
+		this.requestStatusBarUpdate();
+		return updatedTask;
+	}
+
+	/**
+	 * Complete the user-facing task workflow shared by task cards and the floating
 	 * active-task control: stop the timer first, then complete the task.
 	 */
 	async endTask(task: TaskInfo): Promise<TaskInfo> {

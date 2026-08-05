@@ -20,6 +20,7 @@ interface TaskEditCompletionsOptions {
 	completedInstancesChanges: string[];
 	skippedInstancesChanges: string[];
 	translate: (key: string, params?: Record<string, string | number>) => string;
+	onChange?: () => void;
 }
 
 export function createCompletionsCalendarSection(
@@ -268,6 +269,7 @@ function syncInstanceChangeState(
 		options.task.skipped_instances || [],
 		skippedInstances
 	);
+	options.onChange?.();
 }
 
 function replaceInstanceChanges(

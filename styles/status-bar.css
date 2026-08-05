@@ -80,7 +80,7 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
-    width: min(360px, calc(100% - 24px));
+    width: min(420px, calc(100% - 24px));
     max-height: min(40vh, 320px);
     padding: 6px;
     overflow-y: auto;
@@ -135,7 +135,7 @@
 }
 
 .tasknotes-active-task-control__open,
-.tasknotes-active-task-control__end {
+.tasknotes-active-task-control__action {
     appearance: none;
     min-width: 0;
     margin: 0;
@@ -176,26 +176,48 @@
     font-variant-numeric: tabular-nums;
 }
 
-.tasknotes-active-task-control__end {
+.tasknotes-active-task-control__action {
     flex: 0 0 auto;
     padding: 4px 7px;
-    border: 1px solid var(--background-modifier-border);
+    border: 1px solid transparent;
     border-radius: var(--radius-s);
-    background: var(--background-secondary);
-    color: var(--text-muted);
     font-size: var(--font-ui-smaller);
+    font-weight: var(--font-medium);
     white-space: nowrap;
     cursor: var(--cursor-link, pointer);
 }
 
-.tasknotes-active-task-control__end:hover {
-    border-color: var(--interactive-accent);
-    background: var(--interactive-accent);
+.tasknotes-active-task-control__stop {
+    border-color: color-mix(in srgb, var(--tn-color-info) 38%, var(--background-modifier-border));
+    background: color-mix(in srgb, var(--tn-color-info) 12%, var(--background-primary));
+    color: var(--tn-color-info);
+}
+
+.tasknotes-active-task-control__stop:hover {
+    border-color: var(--tn-color-info);
+    background: var(--tn-color-info);
     color: var(--text-on-accent);
 }
 
+.tasknotes-active-task-control__complete {
+    border-color: color-mix(in srgb, var(--tn-color-success) 38%, var(--background-modifier-border));
+    background: color-mix(in srgb, var(--tn-color-success) 12%, var(--background-primary));
+    color: var(--tn-color-success);
+}
+
+.tasknotes-active-task-control__complete:hover {
+    border-color: var(--tn-color-success);
+    background: var(--tn-color-success);
+    color: var(--text-on-accent);
+}
+
+.tasknotes-active-task-control__action:disabled {
+    cursor: progress;
+    opacity: 0.55;
+}
+
 .tasknotes-active-task-control__open:focus-visible,
-.tasknotes-active-task-control__end:focus-visible {
+.tasknotes-active-task-control__action:focus-visible {
     outline: 2px solid var(--background-modifier-border-focus);
     outline-offset: 1px;
 }

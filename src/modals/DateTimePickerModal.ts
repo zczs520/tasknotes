@@ -5,6 +5,12 @@ import {
 	type ParsedTaskData,
 } from "../services/NaturalLanguageParser";
 import { attachDateInputBehavior } from "../ui/dateInputBehavior";
+import {
+	addCalendarDays,
+	CalendarMonthGrid,
+	getUpcomingWeekday,
+	parseCalendarDate,
+} from "../components/CalendarMonthGrid";
 
 export interface DateTimePickerOptions {
 	currentDate?: string | null;
@@ -75,13 +81,6 @@ function addDays(date: Date, days: number): Date {
 	return result;
 }
 
-function nextMonday(from: Date): Date {
-	const result = new Date(from);
-	const daysUntilMonday = ((1 - result.getDay() + 7) % 7) || 7;
-	result.setDate(result.getDate() + daysUntilMonday);
-	return result;
-}
-
 /**
  * Calendar-first modal for selecting a task date and optional time.
  */
@@ -93,6 +92,7 @@ export class DateTimePickerModal extends Modal {
 	private timeInput: HTMLInputElement | null = null;
 	private selectButtonEl: HTMLButtonElement | null = null;
 	private detachDateInputBehavior: (() => void) | null = null;
+	private calendar: CalendarMonthGrid | null = null;
 
 	constructor(app: App, options: DateTimePickerOptions) {
 		super(app);
@@ -103,6 +103,7 @@ export class DateTimePickerModal extends Modal {
 	onOpen(): void {
 		const { contentEl } = this;
 		contentEl.empty();
+		this.modalEl.addClass("tasknotes-date-time-picker-shell");
 		contentEl.addClass("tasknotes-plugin", "date-time-picker-modal");
 
 		if (this.options.title) {
@@ -113,6 +114,7 @@ export class DateTimePickerModal extends Modal {
 		}
 
 		this.renderQuickActions(contentEl);
+		this.renderCalendar(contentEl);
 		this.renderNaturalLanguageInput(contentEl);
 		this.renderDateInput(contentEl);
 		if (this.shouldShowTime()) {
@@ -122,22 +124,40 @@ export class DateTimePickerModal extends Modal {
 		this.updateSelectButtonState();
 
 		window.setTimeout(() => {
-			this.dateInput?.focus();
+			contentEl
+				.querySelector<HTMLButtonElement>(
+					".tn-calendar-month__day.is-range-start, .tn-calendar-month__day:not(.is-outside-month)"
+				)
+				?.focus();
 		}, 100);
 	}
 
 	onClose(): void {
 		this.detachDateInputBehavior?.();
 		this.detachDateInputBehavior = null;
+		this.calendar = null;
+		this.modalEl.removeClass("tasknotes-date-time-picker-shell");
 		this.contentEl.empty();
 	}
 
 	private renderQuickActions(container: HTMLElement): void {
 		const today = new Date();
+		const thisFriday = getUpcomingWeekday(today, 5) ?? addCalendarDays(today, 7);
+		const thisSunday = getUpcomingWeekday(today, 0) ?? addCalendarDays(today, 7);
 		const quickActions = [
-			{ label: "Today", date: today },
-			{ label: "Tomorrow", date: addDays(today, 1) },
-			{ label: "Next week", date: nextMonday(today) },
+			{ label: this.getLabel("contextMenus.date.basic.today", "Today"), date: today },
+			{
+				label: this.getLabel("contextMenus.date.basic.tomorrow", "Tomorrow"),
+				date: addDays(today, 1),
+			},
+			{
+				label: this.getLabel("ui.taskCard.scheduledPicker.thisFriday", "This Friday"),
+				date: thisFriday,
+			},
+			{
+				label: this.getLabel("ui.taskCard.scheduledPicker.thisSunday", "This Sunday"),
+				date: thisSunday,
+			},
 		];
 
 		const row = container.createDiv({ cls: "date-time-picker-modal__quick-actions" });
@@ -153,6 +173,32 @@ export class DateTimePickerModal extends Modal {
 				);
 			});
 		}
+	}
+
+	private renderCalendar(container: HTMLElement): void {
+		const calendarContainer = container.createDiv("date-time-picker-modal__calendar");
+		const selectedDate = this.selectedDate ?? "";
+		this.calendar = new CalendarMonthGrid({
+			container: calendarContainer,
+			locale: this.options.plugin?.i18n.getCurrentLocale(),
+			visibleMonth: parseCalendarDate(selectedDate) ?? new Date(),
+			selectedStart: selectedDate,
+			labels: {
+				previousMonth: this.getLabel(
+					"ui.taskCard.scheduledPicker.previousMonth",
+					"Previous month"
+				),
+				nextMonth: this.getLabel(
+					"ui.taskCard.scheduledPicker.nextMonth",
+					"Next month"
+				),
+				chooseDate: this.getLabel(
+					"ui.taskCard.scheduledPicker.chooseDate",
+					"Choose date"
+				),
+			},
+			onSelect: (date) => this.updateSelectedDate(date),
+		});
 	}
 
 	private renderNaturalLanguageInput(container: HTMLElement): void {
@@ -186,7 +232,10 @@ export class DateTimePickerModal extends Modal {
 	}
 
 	private renderDateInput(container: HTMLElement): void {
-		const field = container.createDiv({ cls: "date-time-picker-modal__date-field" });
+		const field = container.createDiv({
+			cls: "date-time-picker-modal__date-field date-time-picker-modal__date-field--compatibility",
+			attr: { "aria-hidden": "true" },
+		});
 		field.createEl("label", {
 			text: "Date",
 			cls: "date-time-picker-modal__field-label",
@@ -295,6 +344,7 @@ export class DateTimePickerModal extends Modal {
 
 	private updateSelectedDate(date: string | null): void {
 		this.selectedDate = date;
+		this.calendar?.setSelection(date ?? "");
 		if (this.dateInput && this.dateInput.value !== (date ?? "")) {
 			this.dateInput.value = date ?? "";
 		}
@@ -328,6 +378,11 @@ export class DateTimePickerModal extends Modal {
 		if (this.options.naturalLanguageParser) return this.options.naturalLanguageParser;
 		if (!this.options.plugin?.settings.enableNaturalLanguageInput) return null;
 		return NaturalLanguageParser.fromPlugin(this.options.plugin);
+	}
+
+	private getLabel(key: string, fallback: string): string {
+		const translated = this.options.plugin?.i18n.translate(key);
+		return translated && translated !== key ? translated : fallback;
 	}
 
 	private applyNaturalLanguageInput(): void {

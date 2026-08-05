@@ -10,6 +10,7 @@ describe("Issue #1526: native task date picker", () => {
 		});
 
 		modal.open();
+		expect(modal.modalEl.classList.contains("tasknotes-date-time-picker-shell")).toBe(true);
 
 		const dateInput = modal.contentEl.querySelector<HTMLInputElement>(
 			'input[type="date"].date-time-picker-modal__date-input'

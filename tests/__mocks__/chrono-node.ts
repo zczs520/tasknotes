@@ -72,6 +72,7 @@ const mockChrono = {
     
     // Enhanced date patterns for testing - handle time expressions properly
     const patterns = [
+      { regex: /明天下午三点/i, offset: 1, timeFn: () => 15 },
       // Date + time patterns (must come first for longest match)
       { regex: /\btomorrow\s+at\s+(\d{1,2})\s*pm\b/i, offset: 1, timeFn: (match: RegExpMatchArray) => parseInt(match[1]) + 12 },
       { regex: /\btomorrow\s+at\s+(\d{1,2})\s*am\b/i, offset: 1, timeFn: (match: RegExpMatchArray) => parseInt(match[1]) },
@@ -230,3 +231,4 @@ export const parse = mockChrono.parse;
 export const parseDate = mockChrono.parseDate;
 export const casual = mockChrono.casual;
 export const strict = mockChrono.strict;
+export const zh = mockChrono;

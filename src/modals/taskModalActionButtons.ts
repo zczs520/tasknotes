@@ -11,6 +11,8 @@ export interface TaskModalLeadingButton {
 export interface CreateTaskModalActionButtonsOptions {
 	container: HTMLElement;
 	leadingButtons?: readonly TaskModalLeadingButton[];
+	saveText?: string;
+	cancelText?: string;
 	onSave: () => Promise<void>;
 	onSaved: () => void;
 	onCancel: () => void;
@@ -34,7 +36,7 @@ export function createTaskModalActionButtons(
 
 	const saveButton = buttonContainer.createEl("button", {
 		cls: "mod-cta",
-		text: context.translate("modals.task.buttons.save"),
+		text: options.saveText ?? context.translate("modals.task.buttons.save"),
 	});
 
 	saveButton.addEventListener("click", () => {
@@ -42,7 +44,8 @@ export function createTaskModalActionButtons(
 	});
 
 	const cancelButton = buttonContainer.createEl("button", {
-		text: context.translate("common.cancel"),
+		cls: "tn-task-modal__cancel-button",
+		text: options.cancelText ?? context.translate("common.cancel"),
 	});
 
 	cancelButton.addEventListener("click", options.onCancel);

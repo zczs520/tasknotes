@@ -201,6 +201,43 @@ export function calculateTimeStatisticsTotal(segments: readonly TimeStatisticsSe
 	return segments.reduce((total, segment) => total + segment.durationMs, 0);
 }
 
+export function calculateUniqueTimeStatisticsTotal(
+	segments: readonly TimeStatisticsSegment[]
+): number {
+	const intervals = segments
+		.map((segment) => ({ start: segment.start.getTime(), end: segment.end.getTime() }))
+		.filter(
+			(interval) =>
+				Number.isFinite(interval.start) &&
+				Number.isFinite(interval.end) &&
+				interval.end > interval.start
+		)
+		.sort((left, right) => left.start - right.start || left.end - right.end);
+
+	let totalMs = 0;
+	let mergedStart = 0;
+	let mergedEnd = 0;
+
+	for (const [index, interval] of intervals.entries()) {
+		if (index === 0) {
+			mergedStart = interval.start;
+			mergedEnd = interval.end;
+			continue;
+		}
+
+		if (interval.start <= mergedEnd) {
+			mergedEnd = Math.max(mergedEnd, interval.end);
+			continue;
+		}
+
+		totalMs += mergedEnd - mergedStart;
+		mergedStart = interval.start;
+		mergedEnd = interval.end;
+	}
+
+	return intervals.length > 0 ? totalMs + mergedEnd - mergedStart : 0;
+}
+
 export function buildTagTimeStatistics(
 	segments: readonly TimeStatisticsSegment[]
 ): TagTimeStatistic[] {

@@ -53,6 +53,8 @@ function createPlugin(overrides: Partial<TaskNotesPlugin> = {}): TaskNotesPlugin
 					"ui.taskCard.trackingActive": "Tracking now",
 					"contextMenus.task.startTimeTracking": "Start time tracking",
 					"contextMenus.task.stopTimeTracking": "Stop time tracking",
+					"ui.activeTaskControl.stopAction": "Stop",
+					"ui.activeTaskControl.endAction": "Complete",
 				};
 				return translations[key] ?? key;
 			}),
@@ -80,6 +82,14 @@ function createPlugin(overrides: Partial<TaskNotesPlugin> = {}): TaskNotesPlugin
 			...task,
 			status: "in-progress",
 			timeEntries: [{ startTime: "2026-07-28T10:00:00.000Z" }],
+		})),
+		stopTask: jest.fn(async (task: TaskInfo) => ({
+			...task,
+			status: "open",
+			timeEntries: task.timeEntries?.map((entry) => ({
+				...entry,
+				endTime: entry.endTime ?? "2026-07-28T10:30:00.000Z",
+			})),
 		})),
 		endTask: jest.fn(async (task: TaskInfo) => ({
 			...task,
@@ -159,7 +169,7 @@ describe("taskCardSecondaryBadges", () => {
 		expect(handlers.toggleSubtasks).toHaveBeenCalledWith(card, task, true);
 	});
 
-	it("shows start and stop tracking as a high-frequency card action", async () => {
+	it("shows separate stop and complete actions while tracking", async () => {
 		const plugin = createPlugin();
 		const handlers = createHandlers();
 		const { card, badgesContainer } = createCard();
@@ -184,18 +194,47 @@ describe("taskCardSecondaryBadges", () => {
 		await Promise.resolve();
 
 		expect(plugin.startTask).toHaveBeenCalledWith(task);
-		const stopControl = card.querySelector<HTMLButtonElement>(
+		const activeControl = card.querySelector<HTMLElement>(
 			".task-card__time-tracking-control--active"
 		);
-		expect(stopControl?.textContent).toContain("Tracking now");
-		expect(stopControl?.textContent).toContain("Stop time tracking");
+		const stopControl = activeControl?.querySelector<HTMLButtonElement>(
+			".task-card__time-tracking-action--stop"
+		);
+		const completeControl = activeControl?.querySelector<HTMLButtonElement>(
+			".task-card__time-tracking-action--complete"
+		);
+		expect(activeControl?.textContent).toContain("Tracking now");
+		expect(stopControl?.textContent).toContain("Stop");
+		expect(completeControl?.textContent).toContain("Complete");
 		stopControl?.click();
 		await Promise.resolve();
 		await Promise.resolve();
 
-		expect(plugin.endTask).toHaveBeenCalledWith(
+		expect(plugin.stopTask).toHaveBeenCalledWith(
 			expect.objectContaining({ path: task.path, status: "in-progress" })
 		);
+
+		badgesContainer.replaceChildren();
+		const trackedTask = createTask({
+			status: "in-progress",
+			timeEntries: [{ startTime: "2026-07-28T10:00:00.000Z" }],
+		});
+		renderTaskCardSecondaryBadges({
+			card,
+			badgesContainer,
+			task: trackedTask,
+			plugin,
+			hasDetails: false,
+			propertyOptions: { showTimeTrackingAction: true },
+			handlers,
+		});
+		card
+			.querySelector<HTMLButtonElement>(".task-card__time-tracking-action--complete")
+			?.click();
+		await Promise.resolve();
+		await Promise.resolve();
+
+		expect(plugin.endTask).toHaveBeenCalledWith(trackedTask);
 	});
 
 	it("keeps secondary badges omitted when the option is disabled", () => {

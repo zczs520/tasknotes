@@ -1314,7 +1314,14 @@ export default class TaskNotesPlugin extends Plugin {
 	}
 
 	/**
-	 * Ends the user-facing task workflow from task controls.
+	 * Stops timing and returns the task to its configured pending status.
+	 */
+	async stopTask(task: TaskInfo): Promise<TaskInfo> {
+		return this.taskActionCoordinator.stopTask(task);
+	}
+
+	/**
+	 * Completes the user-facing task workflow from task controls.
 	 */
 	async endTask(task: TaskInfo): Promise<TaskInfo> {
 		return this.taskActionCoordinator.endTask(task);

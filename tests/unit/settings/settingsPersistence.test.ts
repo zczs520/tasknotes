@@ -150,6 +150,46 @@ describe("settings persistence helpers", () => {
 		expect(shouldPersistMigratedSettings).toBe(true);
 	});
 
+	it("persists the unified task modal field migration", () => {
+		const legacyConfig = {
+			version: 1,
+			groups: [
+				{
+					id: "basic" as const,
+					displayName: "Basic information",
+					order: 0,
+					collapsible: false,
+					defaultCollapsed: false,
+				},
+			],
+			fields: [
+				{
+					id: "title",
+					fieldType: "core" as const,
+					group: "basic" as const,
+					displayName: "Title",
+					visibleInCreation: true,
+					visibleInEdit: true,
+					order: 0,
+					enabled: true,
+				},
+			],
+		};
+		const { settings, shouldPersistMigratedSettings } = buildSettingsFromLoadedData({
+			fieldMapping: DEFAULT_SETTINGS.fieldMapping,
+			calendarViewSettings: DEFAULT_SETTINGS.calendarViewSettings,
+			commandFileMapping: DEFAULT_SETTINGS.commandFileMapping,
+			taskCreationDefaults: DEFAULT_SETTINGS.taskCreationDefaults,
+			modalFieldsConfig: legacyConfig,
+		});
+
+		expect(settings.modalFieldsConfig?.version).toBe(2);
+		expect(settings.modalFieldsConfig?.fields.some((field) => field.id === "status")).toBe(
+			true
+		);
+		expect(shouldPersistMigratedSettings).toBe(true);
+	});
+
 	it("preserves an explicit normal task creation parent-note project setting", () => {
 		const { settings, shouldPersistMigratedSettings } = buildSettingsFromLoadedData({
 			fieldMapping: DEFAULT_SETTINGS.fieldMapping,

@@ -46,6 +46,14 @@ function createHarness(initialTasks: TaskInfo[]) {
 				endTime: entry.endTime ?? "2026-07-29T10:02:05.000Z",
 			})),
 		})),
+		stopTask: jest.fn(async (task: TaskInfo) => ({
+			...task,
+			status: "open",
+			timeEntries: (task.timeEntries ?? []).map((entry) => ({
+				...entry,
+				endTime: entry.endTime ?? "2026-07-29T10:02:05.000Z",
+			})),
+		})),
 		toggleRecurringTaskComplete: jest.fn(async (task: TaskInfo) => task),
 		statusManager: {
 			getAllStatuses: jest.fn(() => [
@@ -67,8 +75,10 @@ function createHarness(initialTasks: TaskInfo[]) {
 					"ui.activeTaskControl.regionLabel": "进行中的任务",
 					"ui.activeTaskControl.multipleLabel": "{count} 个任务进行中",
 					"ui.activeTaskControl.openTask": "打开任务：{title}",
-					"ui.activeTaskControl.endTask": "结束任务：{title}",
-					"ui.activeTaskControl.endAction": "结束任务",
+					"ui.activeTaskControl.endTask": "完成任务：{title}",
+					"ui.activeTaskControl.endAction": "完成",
+					"ui.activeTaskControl.stopTask": "停止任务：{title}",
+					"ui.activeTaskControl.stopAction": "停止",
 				};
 				return Object.entries(params ?? {}).reduce(
 					(text, [name, value]) => text.replaceAll(`{${name}}`, String(value)),
@@ -127,8 +137,13 @@ describe("active task floating control", () => {
 		expect(control?.querySelector(".tasknotes-active-task-control__elapsed")?.textContent).toBe(
 			"2:05"
 		);
-		expect(control?.querySelector(".tasknotes-active-task-control__end")?.textContent).toBe(
-			"结束任务"
+		expect(control?.querySelector(".tasknotes-active-task-control__stop")?.textContent).toBe(
+			"停止"
+		);
+		expect(
+			control?.querySelector(".tasknotes-active-task-control__complete")?.textContent
+		).toBe(
+			"完成"
 		);
 		expect(plugin.addStatusBarItem).not.toHaveBeenCalled();
 
@@ -149,7 +164,7 @@ describe("active task floating control", () => {
 		service.initialize();
 		await (service as unknown as { updateStatusBar: () => Promise<void> }).updateStatusBar();
 		const endButton = workspaceContainer.querySelector<HTMLButtonElement>(
-			".tasknotes-active-task-control__end"
+			".tasknotes-active-task-control__complete"
 		);
 		expect(endButton).not.toBeNull();
 
@@ -160,6 +175,31 @@ describe("active task floating control", () => {
 		).endTrackedTask(task, endButton!);
 
 		expect(plugin.endTask).toHaveBeenCalledWith(task);
+		expect(
+			workspaceContainer.querySelector<HTMLElement>(".tasknotes-active-task-control")?.hidden
+		).toBe(true);
+
+		service.destroy();
+	});
+
+	it("stops tracking and returns the task to pending without completing it", async () => {
+		const task = createTask();
+		const { plugin, workspaceContainer } = createHarness([task]);
+		const service = new StatusBarService(plugin as never);
+		service.initialize();
+		await (service as unknown as { updateStatusBar: () => Promise<void> }).updateStatusBar();
+		const stopButton = workspaceContainer.querySelector<HTMLButtonElement>(
+			".tasknotes-active-task-control__stop"
+		);
+
+		await (
+			service as unknown as {
+				stopTrackedTask: (task: TaskInfo, button: HTMLButtonElement) => Promise<void>;
+			}
+		).stopTrackedTask(task, stopButton!);
+
+		expect(plugin.stopTask).toHaveBeenCalledWith(task);
+		expect(plugin.endTask).not.toHaveBeenCalled();
 		expect(
 			workspaceContainer.querySelector<HTMLElement>(".tasknotes-active-task-control")?.hidden
 		).toBe(true);

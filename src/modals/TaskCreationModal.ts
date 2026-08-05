@@ -1,4 +1,4 @@
-import { App, Notice, setIcon, setTooltip, TFile } from "obsidian";
+import { App, Notice, TFile } from "obsidian";
 import TaskNotesPlugin from "../main";
 import { TaskModal } from "./TaskModal";
 import { TaskInfo } from "../types";
@@ -23,13 +23,13 @@ import { applyTaskCreationSubtaskAssignments } from "./taskCreationSubtasks";
 import { NLPSuggest } from "./taskCreationSuggest";
 import { shouldShowFilenameShortenedNotice } from "../utils/filenameGenerator";
 import { setTaskModalDetailsEditorValue } from "./taskModalDetailsEditor";
-import { collapseTaskModalDetailsLayout } from "./taskModalLayout";
 import { createTaskNotesLogger } from "../utils/tasknotesLogger";
 
 const tasknotesLogger = createTaskNotesLogger({ tag: "Modals/TaskCreationModal" });
 export type { StatusSuggestion } from "./taskCreationSuggest";
 
 const TASK_CREATION_FAILURE_PREFIX = "Failed to create task: ";
+const NLP_AUTOFILL_DEBOUNCE_MS = 150;
 const NLP_TAB_ORDER_SELECTOR = [
 	"button",
 	"a[href]",
@@ -106,9 +106,8 @@ export class TaskCreationModal extends TaskModal {
 	private nlParser: NaturalLanguageParser;
 	private nlInput: HTMLTextAreaElement = undefined as unknown as HTMLTextAreaElement; // Legacy - keeping for compatibility
 	private nlMarkdownEditor: EmbeddableMarkdownEditor | null = null;
-	private nlPreviewContainer: HTMLElement = undefined as unknown as HTMLElement;
-	private nlButtonContainer: HTMLElement = undefined as unknown as HTMLElement;
 	private nlpSuggest: NLPSuggest | null = null; // Will be replaced with CodeMirror autocomplete
+	private nlpAutofillTimer: number | null = null;
 
 	// Track event listeners for cleanup
 	private eventListeners: Array<{
@@ -154,18 +153,15 @@ export class TaskCreationModal extends TaskModal {
 	}
 
 	/**
-	 * Override to use NLP input when enabled, otherwise fall back to title input
+	 * Keep the task title as the visual anchor and expose NLP as an optional capture aid.
 	 */
 	protected createPrimaryInput(container: HTMLElement): void {
+		this.createTitleInput(container);
 		if (this.plugin.settings.enableNaturalLanguageInput) {
 			this.createNaturalLanguageInput(container);
-		} else {
-			// Fall back to regular title input
-			this.createTitleInput(container);
-			// When NLP is disabled, start with the modal expanded
-			this.isExpanded = true;
-			this.containerEl.addClass("expanded");
 		}
+		this.isExpanded = true;
+		this.containerEl.addClass("expanded");
 	}
 
 	/**
@@ -192,12 +188,6 @@ export class TaskCreationModal extends TaskModal {
 		editorContainer.setAttribute("aria-label", this.t("modals.taskCreation.nlPlaceholder"));
 		editorContainer.setAttribute("aria-multiline", "true");
 
-		// Preview container
-		this.nlPreviewContainer = nlContainer.createDiv("nl-preview-container");
-		this.nlPreviewContainer.setAttribute("role", "status");
-		this.nlPreviewContainer.setAttribute("aria-live", "polite");
-		this.nlPreviewContainer.setAttribute("aria-label", "Task preview");
-
 		try {
 			// Create NLP autocomplete extension for @, #, +, status triggers
 			// Returns array: [autocomplete, keymap]
@@ -211,12 +201,7 @@ export class TaskCreationModal extends TaskModal {
 				extensions: nlpAutocomplete, // Add autocomplete extensions (array)
 				enterVimInsertMode: true, // Auto-enter insert mode when vim is enabled (#1410)
 				onChange: (value) => {
-					// Update preview as user types
-					if (value.trim()) {
-						this.updateNaturalLanguagePreview(value.trim());
-					} else {
-						this.clearNaturalLanguagePreview();
-					}
+					this.scheduleNaturalLanguageAutofill(value);
 				},
 				onSubmit: (_editor, shift) => {
 					// Ctrl+Enter - save the task
@@ -231,20 +216,7 @@ export class TaskCreationModal extends TaskModal {
 					if (shift) {
 						return this.focusPreviousNaturalLanguageField(editorContainer);
 					}
-					// Tab - jump to title input (expand form if needed)
-					if (!this.isExpanded) {
-						this.expandModal();
-					}
-					// Focus title input
-					window.setTimeout(() => {
-						const titleInput = this.modalEl.querySelector(
-							".title-input-detailed"
-						) as HTMLInputElement;
-						if (titleInput) {
-							titleInput.focus();
-						}
-					}, 50);
-					return true; // Prevent default tab behavior
+					return this.focusNextNaturalLanguageField(editorContainer);
 				},
 				onEnter: (editor, mod, shift) => {
 					if (mod) {
@@ -275,14 +247,7 @@ export class TaskCreationModal extends TaskModal {
 			});
 
 			// Event listeners for fallback - track them for cleanup
-			const inputHandler = () => {
-				const input = this.nlInput.value.trim();
-				if (input) {
-					this.updateNaturalLanguagePreview(input);
-				} else {
-					this.clearNaturalLanguagePreview();
-				}
-			};
+			const inputHandler = () => this.scheduleNaturalLanguageAutofill(this.nlInput.value);
 			this.addTrackedEventListener(this.nlInput, "input", inputHandler);
 
 			const keydownHandler = (e: Event) => {
@@ -295,7 +260,7 @@ export class TaskCreationModal extends TaskModal {
 					void this.handleSubmitShortcut(keyEvent.shiftKey);
 				} else if (keyEvent.key === "Tab" && keyEvent.shiftKey) {
 					keyEvent.preventDefault();
-					this.parseAndFillForm(input);
+					this.titleInput?.focus();
 				}
 			};
 			this.addTrackedEventListener(this.nlInput, "keydown", keydownHandler);
@@ -332,71 +297,42 @@ export class TaskCreationModal extends TaskModal {
 		return true;
 	}
 
+	private focusNextNaturalLanguageField(editorContainer: HTMLElement): boolean {
+		const root = this.modalEl.contains(editorContainer) ? this.modalEl : this.contentEl;
+		const orderedElements = Array.from(
+			root.querySelectorAll<HTMLElement>(NLP_TAB_ORDER_SELECTOR)
+		);
+		const currentIndex = orderedElements.findIndex(
+			(element) => element === editorContainer || editorContainer.contains(element)
+		);
+		const nextElement = orderedElements
+			.slice(currentIndex + 1)
+			.find(isFocusableModalElement);
+
+		if (nextElement) {
+			window.setTimeout(() => nextElement.focus(), 50);
+		}
+
+		return true;
+	}
+
 	protected focusTitleInput(): void {
-		if (!this.plugin.settings.enableNaturalLanguageInput) {
-			super.focusTitleInput();
-			return;
-		}
-
-		window.setTimeout(() => {
-			const cm = this.nlMarkdownEditor?.editor?.cm;
-			if (cm) {
-				cm.focus();
-				cm.scrollDOM.scrollTop = 0;
-				return;
-			}
-
-			if (this.nlInput) {
-				this.nlInput.focus({ preventScroll: true });
-				this.nlInput.select();
-			}
-		}, this.getInitialFocusDelay());
+		super.focusTitleInput();
 	}
 
-	private updateNaturalLanguagePreview(input: string): void {
-		if (!this.nlPreviewContainer) return;
-
-		const parsed = this.nlParser.parseInput(input);
-		const previewData = this.nlParser.getPreviewData(parsed);
-
-		if (previewData.length > 0 && parsed.title) {
-			this.nlPreviewContainer.empty();
-			this.nlPreviewContainer.classList.add("nl-preview-container--visible");
-			this.nlPreviewContainer.classList.remove(
-				"tn-static-display-flex-4d51fc62",
-				"tn-static-display-flex-75816cae",
-				"tn-static-display-flex-8bb39979",
-				"tn-static-display-inline-block-60e32dcb",
-				"tn-static-display-inline-cccfa456",
-				"tn-static-display-inline-flex-f984c520",
-				"tn-static-display-none-6b99de8b",
-				"tn-static-min-height-800px-997b4c8c"
-			);
-
-			previewData.forEach((item) => {
-				const previewItem = this.nlPreviewContainer.createDiv("nl-preview-item");
-				previewItem.textContent = item.text;
-			});
-		} else {
-			this.clearNaturalLanguagePreview();
+	private scheduleNaturalLanguageAutofill(value: string): void {
+		if (this.nlpAutofillTimer !== null) {
+			window.clearTimeout(this.nlpAutofillTimer);
+			this.nlpAutofillTimer = null;
 		}
-	}
 
-	private clearNaturalLanguagePreview(): void {
-		if (this.nlPreviewContainer) {
-			this.nlPreviewContainer.empty();
-			this.nlPreviewContainer.classList.remove("nl-preview-container--visible");
-			this.nlPreviewContainer.classList.remove(
-				"tn-static-display-block-2a1b75c9",
-				"tn-static-display-flex-4d51fc62",
-				"tn-static-display-flex-75816cae",
-				"tn-static-display-flex-8bb39979",
-				"tn-static-display-inline-block-60e32dcb",
-				"tn-static-display-inline-cccfa456",
-				"tn-static-display-inline-flex-f984c520",
-				"tn-static-min-height-800px-997b4c8c"
-			);
-		}
+		const input = value.trim();
+		if (!input) return;
+
+		this.nlpAutofillTimer = window.setTimeout(() => {
+			this.nlpAutofillTimer = null;
+			this.parseAndFillForm(input);
+		}, NLP_AUTOFILL_DEBOUNCE_MS);
 	}
 
 	/**
@@ -412,176 +348,129 @@ export class TaskCreationModal extends TaskModal {
 	}
 
 	protected createActionBar(container: HTMLElement): void {
-		this.actionBar = container.createDiv("tn-task-modal__action-bar");
-
-		// NLP-specific icons (only if NLP is enabled)
-		if (this.plugin.settings.enableNaturalLanguageInput) {
-			// Fill form icon
-			this.createActionIcon(
-				this.actionBar,
-				"wand",
-				this.t("modals.taskCreation.actions.fillFromNaturalLanguage"),
-				(icon, event) => {
-					const input = this.getNLPInputValue().trim();
-					if (input) {
-						this.parseAndFillForm(input);
-					}
-				}
-			);
-
-			// Expand/collapse icon
-			this.createActionIcon(
-				this.actionBar,
-				this.isExpanded ? "chevron-up" : "chevron-down",
-				this.isExpanded
-					? this.t("modals.taskCreation.actions.hideDetailedOptions")
-					: this.t("modals.taskCreation.actions.showDetailedOptions"),
-				(icon, event) => {
-					this.toggleDetailedForm();
-					// Update icon and tooltip
-					const iconEl = icon.querySelector(".icon");
-					if (iconEl) {
-						setIcon(
-							iconEl as HTMLElement,
-							this.isExpanded ? "chevron-up" : "chevron-down"
-						);
-					}
-					setTooltip(
-						icon,
-						this.isExpanded
-							? this.t("modals.taskCreation.actions.hideDetailedOptions")
-							: this.t("modals.taskCreation.actions.showDetailedOptions"),
-						{ placement: "top" }
-					);
-				}
-			);
-
-			// Add separator
-			const separator = this.actionBar.createDiv("action-separator");
-			separator.classList.remove(
-				"tn-static-width-100-0466783d",
-				"tn-static-width-12px-fbf353fb",
-				"tn-static-width-16px-7375d50b",
-				"tn-static-width-200px-2acaf3b5",
-				"tn-static-width-60px-bd09c419",
-				"tn-static-width-80px-8573bae3"
-			);
-			separator.classList.add("tn-static-width-1px-aa77e27e");
-			separator.classList.remove(
-				"tn-static-display-flex-4d51fc62",
-				"tn-static-height-0-7a31cef0",
-				"tn-static-height-100-62264068",
-				"tn-static-height-12px-06c0747e",
-				"tn-static-height-16px-30de4aee",
-				"tn-static-min-height-800px-997b4c8c"
-			);
-			separator.classList.add("tn-static-height-24px-29a11d37");
-			separator.classList.remove(
-				"tn-static-background-color-var-background-se-9087a23e",
-				"tn-static-background-color-var-color-base-40-ef5f175e",
-				"tn-static-background-color-var-color-red-134bc721",
-				"tn-static-background-color-var-text-accent-a954c70f"
-			);
-			separator.classList.add("tn-static-background-color-var-background-mo-94b219f0");
-			separator.classList.remove(
-				"tn-static-margin-0-11696618",
-				"tn-static-margin-0-auto-266e9b04",
-				"tn-static-margin-0-db0d5f36",
-				"tn-static-margin-2px-0-edce9b14",
-				"tn-static-margin-8px-0-0-0-a2eb8382",
-				"tn-static-padding-12px-43bef435",
-				"tn-static-padding-20px-ebe8e48c"
-			);
-			separator.classList.add("tn-static-margin-0-var-size-4-2-77f7dc08");
-		}
-
-		this.createCoreActionIcons(this.actionBar);
-		this.updateIconStates();
+		super.createActionBar(container);
 	}
 
 	private parseAndFillForm(input: string): void {
 		const parsed = this.nlParser.parseInput(input);
 		this.applyParsedData(parsed);
-
-		// Expand the form to show filled fields
-		if (!this.isExpanded) {
-			this.expandModal();
-		}
 	}
 
 	private applyParsedData(parsed: NLParsedTaskData): void {
-		if (parsed.title) this.title = parsed.title;
-		if (parsed.status) this.status = parsed.status;
-		if (parsed.priority) this.priority = parsed.priority;
+		let titleChanged = false;
+		let detailsChanged = false;
+		let contextsChanged = false;
+		let tagsChanged = false;
+		let timeEstimateChanged = false;
+		let propertyStateChanged = false;
+
+		if (parsed.title && parsed.title !== this.title) {
+			this.title = parsed.title;
+			titleChanged = true;
+		}
+		if (parsed.status && parsed.status !== this.status) {
+			this.status = parsed.status;
+			propertyStateChanged = true;
+		}
+		if (parsed.priority && parsed.priority !== this.priority) {
+			this.priority = parsed.priority;
+			propertyStateChanged = true;
+		}
 
 		// Handle due date with time
 		if (parsed.dueDate) {
-			this.dueDate = parsed.dueTime
+			const dueDate = parsed.dueTime
 				? combineDateAndTime(parsed.dueDate, parsed.dueTime)
 				: parsed.dueDate;
+			if (dueDate !== this.dueDate) {
+				this.dueDate = dueDate;
+				propertyStateChanged = true;
+			}
 		}
 
 		// Handle scheduled date with time
 		if (parsed.scheduledDate) {
-			this.scheduledDate = parsed.scheduledTime
+			const scheduledDate = parsed.scheduledTime
 				? combineDateAndTime(parsed.scheduledDate, parsed.scheduledTime)
 				: parsed.scheduledDate;
+			if (scheduledDate !== this.scheduledDate) {
+				this.scheduledDate = scheduledDate;
+				propertyStateChanged = true;
+			}
 		}
 
-		if (parsed.contexts && parsed.contexts.length > 0)
-			this.contexts = parsed.contexts.join(", ");
+		if (parsed.contexts && parsed.contexts.length > 0) {
+			const contexts = parsed.contexts.join(", ");
+			if (contexts !== this.contexts) {
+				this.contexts = contexts;
+				contextsChanged = true;
+			}
+		}
 		// Projects will be handled in the form input update section below
-		if (parsed.tags && parsed.tags.length > 0) this.tags = sanitizeTags(parsed.tags.join(", "));
-		if (parsed.details) this.details = parsed.details;
-		if (parsed.recurrence) this.recurrenceRule = parsed.recurrence;
+		if (parsed.tags && parsed.tags.length > 0) {
+			const tags = sanitizeTags(parsed.tags.join(", "));
+			if (tags !== this.tags) {
+				this.tags = tags;
+				tagsChanged = true;
+			}
+		}
+		if (parsed.details && parsed.details !== this.details) {
+			this.details = parsed.details;
+			detailsChanged = true;
+		}
+		if (parsed.recurrence && parsed.recurrence !== this.recurrenceRule) {
+			this.recurrenceRule = parsed.recurrence;
+			propertyStateChanged = true;
+		}
 		if (parsed.estimate !== undefined) {
-			this.timeEstimate = parsed.estimate > 0 ? parsed.estimate : 0;
-			if (this.timeEstimateInput) {
+			const timeEstimate = parsed.estimate > 0 ? parsed.estimate : 0;
+			if (timeEstimate !== this.timeEstimate) {
+				this.timeEstimate = timeEstimate;
+				timeEstimateChanged = true;
+				propertyStateChanged = true;
+			}
+			if (timeEstimateChanged && this.timeEstimateInput) {
 				this.timeEstimateInput.value =
 					this.timeEstimate > 0 ? this.timeEstimate.toString() : "";
 			}
 		}
 
 		// Update form inputs if they exist
-		if (this.titleInput) this.titleInput.value = this.title;
-		if (this.detailsInput) this.detailsInput.value = this.details;
-		setTaskModalDetailsEditorValue(this.detailsMarkdownEditor, this.details);
-		if (this.contextsInput) this.contextsInput.value = this.contexts;
-		if (this.tagsInput) this.tagsInput.value = this.tags;
+		if (titleChanged && this.titleInput) this.titleInput.value = this.title;
+		if (detailsChanged && this.detailsInput) this.detailsInput.value = this.details;
+		if (detailsChanged) setTaskModalDetailsEditorValue(this.detailsMarkdownEditor, this.details);
+		if (contextsChanged && this.contextsInput) this.contextsInput.value = this.contexts;
+		if (tagsChanged && this.tagsInput) this.tagsInput.value = this.tags;
 
 		// Handle projects differently - they use file selection, not text input
 		if (parsed.projects && parsed.projects.length > 0) {
+			const projectsBeforeUpdate = this.projects;
 			this.addProjectsFromStrings(parsed.projects);
-			this.renderProjectsList();
+			if (this.projects !== projectsBeforeUpdate) {
+				this.renderProjectsList();
+			}
 		}
 
 		// Handle user-defined fields
 		if (parsed.userFields) {
+			let userFieldsChanged = false;
 			for (const [fieldId, value] of Object.entries(parsed.userFields)) {
 				const userField = this.plugin.settings.userFields?.find((f) => f.id === fieldId);
-				if (userField) {
+				if (
+					userField &&
+					JSON.stringify(this.userFields[userField.key]) !== JSON.stringify(value)
+				) {
 					this.userFields[userField.key] = value;
+					userFieldsChanged = true;
 				}
 			}
-			this.updateUserFieldControls();
+			if (userFieldsChanged) {
+				this.updateUserFieldControls();
+			}
 		}
 
-		// Update icon states
-		this.updateIconStates();
-	}
-
-	private toggleDetailedForm(): void {
-		if (this.isExpanded) {
-			// Collapse
-			this.isExpanded = false;
-			collapseTaskModalDetailsLayout({
-				detailsContainer: this.detailsContainer,
-				splitRightColumn: this.splitRightColumn,
-			});
-			this.containerEl.removeClass("expanded");
-		} else {
-			// Expand
-			this.expandModal();
+		if (propertyStateChanged) {
+			this.updateIconStates();
 		}
 	}
 
@@ -772,12 +661,8 @@ export class TaskCreationModal extends TaskModal {
 		return taskData;
 	}
 
-	// Override to prevent creating duplicate title input when NLP is enabled
 	protected createTitleInput(container: HTMLElement): void {
-		// Only create title input if NLP is disabled
-		if (!this.plugin.settings.enableNaturalLanguageInput) {
-			super.createTitleInput(container);
-		}
+		super.createTitleInput(container);
 	}
 
 	protected async applySubtaskAssignments(createdTask: TaskInfo): Promise<void> {
@@ -803,6 +688,10 @@ export class TaskCreationModal extends TaskModal {
 	}
 
 	onClose(): void {
+		if (this.nlpAutofillTimer !== null) {
+			window.clearTimeout(this.nlpAutofillTimer);
+			this.nlpAutofillTimer = null;
+		}
 		// Clean up markdown editor if it exists
 		if (this.nlMarkdownEditor) {
 			this.nlMarkdownEditor.destroy();

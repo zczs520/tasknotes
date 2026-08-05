@@ -300,28 +300,87 @@ function renderTimeTrackingControl(
 	}
 
 	const isActive = getActiveTimeEntry(task.timeEntries ?? []) !== null;
-	const actionLabel = plugin.i18n.translate(
-		isActive ? "contextMenus.task.stopTimeTracking" : "contextMenus.task.startTimeTracking"
-	);
+	const actionLabel = plugin.i18n.translate("contextMenus.task.startTimeTracking");
+
+	if (isActive) {
+		const control = badgesContainer.createDiv({
+			cls: "task-card__time-tracking-control task-card__time-tracking-control--active",
+		});
+		control.createEl("span", {
+			cls: "task-card__time-tracking-status",
+			text: tTaskCard(plugin, "trackingActive"),
+		});
+
+		const createAction = (
+			className: string,
+			icon: string,
+			labelKey: string,
+			run: () => Promise<TaskInfo>
+		): void => {
+			const label = plugin.i18n.translate(labelKey);
+			const button = control.createEl("button", {
+				cls: `task-card__time-tracking-action ${className}`,
+				attr: { type: "button", "aria-label": label },
+			});
+			setIcon(button, icon);
+			button.createSpan({ cls: "task-card__time-tracking-action-label", text: label });
+			setTooltip(button, label, { placement: "top" });
+			prepareInteractiveControl(button);
+			button.addEventListener("click", (event) => {
+				event.preventDefault();
+				event.stopPropagation();
+				void (async () => {
+					control
+						.querySelectorAll<HTMLButtonElement>(".task-card__time-tracking-action")
+						.forEach((actionButton) => (actionButton.disabled = true));
+					try {
+						const updatedTask = await run();
+						control.remove();
+						renderTimeTrackingControl({ ...options, task: updatedTask }, badgesContainer);
+						plugin.app.workspace.trigger("tasknotes:refresh-views");
+					} catch (error) {
+						getTaskCardBadgeLogger(plugin).error("Time tracking action failed", {
+							category: "persistence",
+							operation: className,
+							details: { taskPath: task.path },
+							error,
+						});
+						control
+							.querySelectorAll<HTMLButtonElement>(
+								".task-card__time-tracking-action"
+							)
+							.forEach((actionButton) => (actionButton.disabled = false));
+					}
+				})();
+			});
+		};
+
+		createAction(
+			"task-card__time-tracking-action--stop",
+			"square",
+			"ui.activeTaskControl.stopAction",
+			() => plugin.stopTask(task)
+		);
+		createAction(
+			"task-card__time-tracking-action--complete",
+			"check",
+			"ui.activeTaskControl.endAction",
+			() => plugin.endTask(task)
+		);
+		return;
+	}
+
 	const control = badgesContainer.createEl("button", {
-		cls: `task-card__time-tracking-control${
-			isActive ? " task-card__time-tracking-control--active" : ""
-		}`,
+		cls: "task-card__time-tracking-control",
 		attr: {
 			type: "button",
 			"aria-label": actionLabel,
 		},
 	});
-	setIcon(control, isActive ? "square" : "timer");
+	setIcon(control, "timer");
 	setTooltip(control, actionLabel, { placement: "top" });
 	prepareInteractiveControl(control);
 
-	if (isActive) {
-		control.createEl("span", {
-			cls: "task-card__time-tracking-status",
-			text: tTaskCard(plugin, "trackingActive"),
-		});
-	}
 	control.createEl("span", {
 		cls: "task-card__time-tracking-action-label",
 		text: actionLabel,
@@ -333,16 +392,14 @@ function renderTimeTrackingControl(
 		void (async () => {
 			control.disabled = true;
 			try {
-				const updatedTask = isActive
-					? await plugin.endTask(task)
-					: await plugin.startTask(task);
+				const updatedTask = await plugin.startTask(task);
 				control.remove();
 				renderTimeTrackingControl({ ...options, task: updatedTask }, badgesContainer);
 				plugin.app.workspace.trigger("tasknotes:refresh-views");
 			} catch (error) {
 				getTaskCardBadgeLogger(plugin).error("Time tracking action failed", {
 					category: "persistence",
-					operation: isActive ? "stop-time-tracking" : "start-time-tracking",
+					operation: "start-time-tracking",
 					details: { taskPath: task.path },
 					error,
 				});

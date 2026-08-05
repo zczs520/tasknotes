@@ -1174,6 +1174,45 @@ describe('TaskService', () => {
       expect(result.dateModified).toBe('2025-01-01T12:00:00Z');
     });
 
+    it('should rename root tasks without adding a leading slash', async () => {
+      mockPlugin.settings.storeTitleInFilename = true;
+      mockPlugin.app.fileManager.renameFile = jest.fn().mockResolvedValue(undefined);
+      mockPlugin.expandedProjectsService = { renamePath: jest.fn() };
+      mockPlugin.projectSubtasksService = { invalidateIndex: jest.fn() };
+      Object.defineProperty(mockFile, 'parent', {
+        configurable: true,
+        value: { path: '/' }
+      });
+
+      const result = await taskService.updateTask(task, { title: 'Renamed root task' });
+
+      expect(mockPlugin.app.fileManager.renameFile).toHaveBeenCalledWith(
+        mockFile,
+        'Renamed root task.md'
+      );
+      expect(result.path).toBe('Renamed root task.md');
+    });
+
+    it('should recover task paths with a legacy leading slash', async () => {
+      const canonicalFile = new TFile('root-task.md');
+      const taskWithLegacyPath = TaskFactory.createTask({ path: '/root-task.md' });
+      mockPlugin.app.vault.getAbstractFileByPath.mockImplementation((path: string) =>
+        path === canonicalFile.path ? canonicalFile : null
+      );
+
+      const result = await taskService.updateTask(taskWithLegacyPath, { priority: 'high' });
+
+      expect(mockPlugin.app.vault.getAbstractFileByPath).toHaveBeenNthCalledWith(
+        1,
+        '/root-task.md'
+      );
+      expect(mockPlugin.app.vault.getAbstractFileByPath).toHaveBeenNthCalledWith(
+        2,
+        'root-task.md'
+      );
+      expect(result.path).toBe('root-task.md');
+    });
+
     it('should handle completion date for status changes', async () => {
       const updates = { status: 'done' };
 
