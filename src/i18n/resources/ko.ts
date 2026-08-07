@@ -2,7 +2,7 @@ import { TranslationTree } from "../types";
 
 export const ko: TranslationTree = {
 	common: {
-		appName: "TaskNotes",
+		appName: "Dayquence",
 		new: "새로 만들기",
 		cancel: "취소",
 		confirm: "확인",

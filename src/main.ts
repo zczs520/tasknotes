@@ -888,6 +888,7 @@ export default class TaskNotesPlugin extends Plugin {
 			app: this.app,
 			settings: this.settings,
 			shouldCreateStarterNote,
+			uiLocale: this.i18n.getCurrentLocale(),
 			saveSettings: () => this.saveSettingsDataOnly(),
 			warn: (message, error) => {
 				if (error === undefined) {

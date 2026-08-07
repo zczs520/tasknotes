@@ -5,7 +5,9 @@ import { spawn, ChildProcess } from 'child_process';
 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 const UNPACKED_DIR = path.join(PROJECT_ROOT, '.obsidian-unpacked');
-const E2E_VAULT_DIR = path.join(PROJECT_ROOT, 'tasknotes-e2e-vault');
+const E2E_VAULT_DIR = process.env.TASKNOTES_E2E_VAULT_DIR
+  ? path.resolve(process.env.TASKNOTES_E2E_VAULT_DIR)
+  : path.join(PROJECT_ROOT, 'tasknotes-e2e-vault');
 
 export interface ObsidianApp {
   browser?: Browser;
@@ -203,7 +205,9 @@ async function waitForCdpUrl(
 
 export async function launchObsidian(): Promise<ObsidianApp> {
   // Check that setup has been run
-  const obsidianBinary = path.join(UNPACKED_DIR, 'obsidian');
+  const obsidianBinary = process.env.TASKNOTES_E2E_OBSIDIAN_BINARY
+    ? path.resolve(process.env.TASKNOTES_E2E_OBSIDIAN_BINARY)
+    : path.join(UNPACKED_DIR, process.platform === 'win32' ? 'obsidian.exe' : 'obsidian');
   if (!fs.existsSync(obsidianBinary)) {
     throw new Error(
       'Obsidian unpacked directory not found. Run `npm run e2e:setup` first.'
@@ -257,14 +261,16 @@ export async function launchObsidian(): Promise<ObsidianApp> {
       `--user-data-dir=${userDataDir}`,
       E2E_VAULT_DIR,
     ];
-    const launchWithoutDisplay = !process.env.DISPLAY;
+    const launchWithoutDisplay = process.platform !== 'win32' && !process.env.DISPLAY;
     const spawnCommand = launchWithoutDisplay ? 'xvfb-run' : obsidianBinary;
     const spawnArgs = launchWithoutDisplay
       ? ['-a', obsidianBinary, ...obsidianArgs]
       : obsidianArgs;
 
     obsidianProcess = spawn(spawnCommand, spawnArgs, {
-      cwd: UNPACKED_DIR,
+      cwd: process.env.TASKNOTES_E2E_OBSIDIAN_BINARY
+        ? path.dirname(obsidianBinary)
+        : UNPACKED_DIR,
       stdio: ['ignore', 'pipe', 'pipe'],
       env: {
         ...process.env,
@@ -317,28 +323,34 @@ export async function launchObsidian(): Promise<ObsidianApp> {
   await page.waitForTimeout(3000);
 
   // Handle "Trust this vault" dialog - this enables community plugins
-  const trustButton = page.locator('button:has-text("Trust author and enable plugins")');
+  const trustButton = page.locator(
+    'button:has-text("Trust author and enable plugins"), button:has-text("信任作者并启用插件")'
+  );
   if (await trustButton.isVisible({ timeout: 3000 }).catch(() => false)) {
     await trustButton.click();
     await page.waitForTimeout(2000);
   }
 
   // Alternative trust button text
-  const trustButton2 = page.locator('button:has-text("Trust")');
+  const trustButton2 = page.locator('button:has-text("Trust"), button:has-text("信任")');
   if (await trustButton2.isVisible({ timeout: 1000 }).catch(() => false)) {
     await trustButton2.click();
     await page.waitForTimeout(1000);
   }
 
   // Handle "Turn on community plugins" dialog if it appears
-  const enablePluginsButton = page.locator('button:has-text("Turn on community plugins")');
+  const enablePluginsButton = page.locator(
+    'button:has-text("Turn on community plugins"), button:has-text("开启第三方插件")'
+  );
   if (await enablePluginsButton.isVisible({ timeout: 2000 }).catch(() => false)) {
     await enablePluginsButton.click();
     await page.waitForTimeout(2000);
   }
 
   // Handle any "Enable" button for plugins
-  const enableButton = page.locator('button:has-text("Enable community plugins")');
+  const enableButton = page.locator(
+    'button:has-text("Enable community plugins"), button:has-text("启用第三方插件")'
+  );
   if (await enableButton.isVisible({ timeout: 1000 }).catch(() => false)) {
     await enableButton.click();
     await page.waitForTimeout(1000);

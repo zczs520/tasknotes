@@ -2,7 +2,7 @@ import { TranslationTree } from "../types";
 
 export const ja: TranslationTree = {
 	common: {
-		appName: "TaskNotes",
+		appName: "Dayquence",
 		new: "新規",
 		cancel: "キャンセル",
 		confirm: "確認",

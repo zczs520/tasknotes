@@ -2,7 +2,7 @@ import { TranslationTree } from "../types";
 
 export const zh: TranslationTree = {
 	common: {
-		appName: "TaskNotes",
+		appName: "Dayquence",
 		new: "新建",
 		cancel: "取消",
 		confirm: "确认",
@@ -595,19 +595,19 @@ export const zh: TranslationTree = {
 			}
 		},
 		releaseNotes: {
-			title: "TaskNotes {version} 的新功能",
-			header: "TaskNotes {version} 的新功能",
+			title: "Dayquence {version} 的新功能",
+			header: "Dayquence {version} 的新功能",
 			viewAllLink: "在 GitHub 上查看所有版本说明 →",
 			starMessage: "我们非常感谢所有反馈。如果有什么感觉不对，请在 GitHub 上告诉我们。如果你觉得 TaskNotes 有用，请考虑给它加星。",
 			baseFilesNotice: "> [!info] 关于默认 `.base` 文件\n> 默认生成的 `.base` 模板更新不会覆盖你现有的 `.base` 文件，因此你的自定义会被保留。\n> 如果你希望获得最新模板改进，请在 **设置 → TaskNotes → 常规 → 视图与 base 文件 → 创建文件** 中重新生成 base 文件。"
 		},
 		basesViewSettings: {
 			viewNames: {
-				taskList: "TaskNotes 任务列表",
-				kanban: "TaskNotes 看板",
-				calendar: "TaskNotes 日历",
-				miniCalendar: "TaskNotes 迷你日历",
-				timeStatistics: "TaskNotes 时间统计"
+				taskList: "Dayquence 任务列表",
+				kanban: "Dayquence 看板",
+				calendar: "Dayquence 日历",
+				miniCalendar: "Dayquence 迷你日历",
+				timeStatistics: "Dayquence 时间统计"
 			},
 			common: {
 				enableSearch: "启用搜索框",
@@ -846,10 +846,10 @@ export const zh: TranslationTree = {
 			},
 			uiLanguage: {
 				header: "界面语言",
-				description: "更改TaskNotes菜单、通知和视图的语言。",
+				description: "更改 Dayquence 菜单、通知和视图的语言。",
 				dropdown: {
 					name: "界面语言",
-					description: "选择TaskNotes界面文本使用的语言"
+					description: "选择 Dayquence 界面文本使用的语言"
 				}
 			},
 			pomodoroSound: {
@@ -2443,7 +2443,7 @@ export const zh: TranslationTree = {
 	notices: {
 		languageChanged: "语言已更改为{language}。",
 		releaseAvailable: {
-			message: "TaskNotes {version} 可用。",
+			message: "Dayquence {version} 可用。",
 			action: "在社区插件中打开"
 		},
 		exportTasksFailed: "导出任务为ICS文件失败",

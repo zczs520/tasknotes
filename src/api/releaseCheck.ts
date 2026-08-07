@@ -1,10 +1,11 @@
 import { requestUrl, requireApiVersion } from "obsidian";
 
 export const TASKNOTES_RELEASE_MANIFEST_URL =
-	"https://github.com/callumalpass/tasknotes/releases/latest/download/manifest.json";
+	"https://github.com/zczs520/tasknotes/releases/latest/download/manifest.json";
 export const TASKNOTES_VERSIONS_URL =
-	"https://raw.githubusercontent.com/callumalpass/tasknotes/main/versions.json";
-export const TASKNOTES_COMMUNITY_PLUGIN_URL = "obsidian://show-plugin?id=tasknotes";
+	"https://raw.githubusercontent.com/zczs520/tasknotes/main/versions.json";
+export const TASKNOTES_COMMUNITY_PLUGIN_URL =
+	"https://github.com/zczs520/tasknotes/releases/latest";
 
 interface PluginManifest {
 	version?: string;

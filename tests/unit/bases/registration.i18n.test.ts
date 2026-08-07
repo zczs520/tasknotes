@@ -58,7 +58,7 @@ describe("Bases registration localization", () => {
 		expect(kanbanCall).toBeDefined();
 
 		const registration = kanbanCall?.[2];
-		expect(registration?.name).toBe("TaskNotes 看板");
+		expect(registration?.name).toBe("Dayquence 看板");
 		const config = {
 			get: (key: string) =>
 				key === "availableSwimLanes"
@@ -96,6 +96,6 @@ describe("Bases registration localization", () => {
 		const timeStatisticsCall = registerMock.mock.calls.find(
 			(call) => call[1] === "tasknotesTimeStatistics"
 		);
-		expect(timeStatisticsCall?.[2].name).toBe("TaskNotes 时间统计");
+		expect(timeStatisticsCall?.[2].name).toBe("Dayquence 时间统计");
 	});
 });

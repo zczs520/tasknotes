@@ -35,12 +35,15 @@ When a change has user-facing documentation, include a canonical tasknotes.dev l
 
 ## Added
 
+- Added bilingual first-run guides for Dayquence. New users receive both Chinese and English pages, with the guide matching their interface language opened automatically.
 - Added a compact active-task control in the top-right of Obsidian with live elapsed time and an action to end the task.
 - Added an optional Kanban toolbar that combines task search with scheduled, created, or completed date filters for this week, last week, all tasks, or a custom date range. Scheduled date is the default.
 - Added a generated time statistics Base with a unified day, week, month, and year dashboard for totals, trends, task rankings, tag distribution, and recent time entries. It is available from a new ribbon shortcut and the command palette.
 
 ## Changed
 
+- Renamed the user-facing plugin to Dayquence, updated its author and project description, and moved in-app release checks to the independently maintained Dayquence repository.
+- Rewrote the project README around the current Dayquence workflow, iOS life-event sync, and the redesigned task capture, Kanban, active-task, calendar, and time-statistics experiences.
 - Task creation dialogs now create an untitled task as soon as they open and autosave every subsequent edit. The bottom Create task action has been removed, the header includes a direct Open note action, and closing or opening the note flushes pending title, details, property, relationship, and subtask changes first.
 - Time statistics now separates cumulative task time from total time, with overlapping task timers counted only once in the total across day, week, month, and year views.
 - Rebuilt the task creation and edit dialogs as a unified single-column task sheet with a compact icon-led property layout. Status, priority, scheduled time, and tags appear first; a control directly below the property list reveals only the remaining properties, while the full-height Markdown details stay visible and can be focused from anywhere in their blank region. Natural-language task capture now fills the form automatically with a faster, change-aware debounce, including Chinese phrases such as “明天下午三点.” Edit dialogs now save continuously like a normal note, place the icon-labeled “Open note” action beside the top close control, and no longer require a bottom action bar. The modal field settings now include status, priority, dates, recurrence, reminders, and edit-mode time tracking.

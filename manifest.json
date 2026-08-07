@@ -1,10 +1,10 @@
 {
 	"id": "tasknotes",
-	"name": "TaskNotes",
+	"name": "Dayquence",
 	"version": "4.11.1",
 	"minAppVersion": "1.12.2",
-	"description": "Note-based task management with calendar, pomodoro and time-tracking integration.",
-	"author": "Callum Alpass",
-	"authorUrl": "https://github.com/callumalpass",
+	"description": "An independent TaskNotes fork with task planning, calendars, Pomodoro, time tracking, and Dayquence iOS life-event sync.",
+	"author": "zhuxiaocong",
+	"authorUrl": "https://github.com/zczs520",
 	"isDesktopOnly": false
 }

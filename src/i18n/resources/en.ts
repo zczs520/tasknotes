@@ -2,7 +2,7 @@ import { TranslationTree } from "../types";
 
 export const en: TranslationTree = {
 	common: {
-		appName: "TaskNotes",
+		appName: "Dayquence",
 		new: "New",
 		cancel: "Cancel",
 		confirm: "Confirm",
@@ -609,8 +609,8 @@ export const en: TranslationTree = {
 			},
 		},
 		releaseNotes: {
-			title: "What's new in TaskNotes {version}",
-			header: "What's new in TaskNotes {version}",
+			title: "What's new in Dayquence {version}",
+			header: "What's new in Dayquence {version}",
 			viewAllLink: "View all release notes on GitHub →",
 			starMessage:
 				"We really appreciate all feedback. If something does not feel right, please let us know on GitHub. If you find TaskNotes useful, please consider giving it a star.",
@@ -619,11 +619,11 @@ export const en: TranslationTree = {
 		},
 		basesViewSettings: {
 			viewNames: {
-				taskList: "TaskNotes task list",
-				kanban: "TaskNotes Kanban",
-				calendar: "TaskNotes calendar",
-				miniCalendar: "TaskNotes mini calendar",
-				timeStatistics: "TaskNotes time statistics",
+				taskList: "Dayquence task list",
+				kanban: "Dayquence Kanban",
+				calendar: "Dayquence calendar",
+				miniCalendar: "Dayquence mini calendar",
+				timeStatistics: "Dayquence time statistics",
 			},
 			common: {
 				enableSearch: "Enable search box",
@@ -876,10 +876,10 @@ export const en: TranslationTree = {
 			},
 			uiLanguage: {
 				header: "Interface language",
-				description: "Change the language of TaskNotes menus, notices, and views.",
+				description: "Choose the language used by this plugin's menus, notices, and views.",
 				dropdown: {
 					name: "UI language",
-					description: "Select the language used for TaskNotes interface text",
+					description: "Select the language used for the plugin interface",
 				},
 			},
 			pomodoroSound: {
@@ -2603,7 +2603,7 @@ export const en: TranslationTree = {
 	notices: {
 		languageChanged: "Language changed to {language}.",
 		releaseAvailable: {
-			message: "TaskNotes {version} is available.",
+			message: "Dayquence {version} is available.",
 			action: "Open in community plugins",
 		},
 		exportTasksFailed: "Failed to export tasks as ICS file",

@@ -1,7 +1,7 @@
 {
-	"name": "tasknotes",
+	"name": "dayquence",
 	"version": "4.11.1",
-	"description": "Note-based task management with calendar, pomodoro and time-tracking integration.",
+	"description": "An independent TaskNotes fork with task planning, calendars, Pomodoro, time tracking, and Dayquence iOS life-event sync.",
 	"main": "main.js",
 	"scripts": {
 		"build": "npm run build-css && node generate-release-notes-import.mjs && tsc -noEmit --skipLibCheck && node esbuild.config.mjs production",
@@ -12,6 +12,8 @@
 		"e2e": "playwright test",
 		"e2e:docs": "playwright test e2e/docs-screenshots.spec.ts",
 		"e2e:release-gifs": "playwright test e2e/release-gifs.spec.ts",
+		"e2e:showcase": "playwright test e2e/demo-showcase.spec.ts",
+		"demo:generate": "node scripts/generate-demo-vault.mjs",
 		"e2e:docs:copy": "mkdir -p media/docs && cp test-results/docs/*.png media/docs/",
 		"e2e:setup": "bash e2e-setup.sh",
 		"e2e:launch": "bash e2e-launch.sh",
@@ -49,7 +51,7 @@
 		"i18n:generate-template": "i18n-state generate-template"
 	},
 	"keywords": [],
-	"author": "",
+	"author": "zhuxiaocong",
 	"license": "MIT",
 	"devDependencies": {
 		"@codemirror/autocomplete": "^6.19.1",
