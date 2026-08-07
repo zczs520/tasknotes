@@ -13,6 +13,7 @@ export class ProjectSubtasksService {
 
 	// Pre-computed reverse index: taskPath -> isUsedAsProject
 	private projectIndex = new Map<string, boolean>();
+	private projectSubtasksIndex = new Map<string, Set<string>>();
 	private indexLastBuilt = 0;
 	private readonly INDEX_TTL = 30000; // Rebuild index every 30 seconds
 
@@ -185,10 +186,57 @@ export class ProjectSubtasksService {
 	}
 
 	/**
+	 * Return completion progress for task notes that reference the given task as a project.
+	 * This uses the same relationship index as the Subtasks view, so Markdown checkboxes in
+	 * the parent note do not affect the result.
+	 */
+	getSubtaskProgressSync(
+		taskPath: string
+	): { completed: number; total: number; percent: number } | null {
+		this.ensureIndexBuilt();
+
+		const subtaskPaths = this.projectSubtasksIndex.get(taskPath);
+		if (!subtaskPaths || subtaskPaths.size === 0) {
+			return null;
+		}
+
+		const statusFieldName = this.plugin.fieldMapper.toUserField("status");
+		let total = 0;
+		let completed = 0;
+
+		for (const subtaskPath of subtaskPaths) {
+			const metadata = this.plugin.app.metadataCache.getCache(subtaskPath);
+			if (!metadata?.frontmatter) continue;
+			if (!this.plugin.cacheManager.isTaskFile(metadata.frontmatter)) continue;
+
+			total += 1;
+			const storedStatus = metadata.frontmatter[statusFieldName];
+			const status =
+				typeof storedStatus === "string" && storedStatus.trim() !== ""
+					? storedStatus
+					: this.plugin.settings.defaultTaskStatus;
+			if (this.plugin.statusManager.isCompletedStatus(status)) {
+				completed += 1;
+			}
+		}
+
+		if (total === 0) {
+			return null;
+		}
+
+		return {
+			completed,
+			total,
+			percent: Math.round((completed / total) * 100),
+		};
+	}
+
+	/**
 	 * Build reverse index of all project files (one scan instead of per-task scans)
 	 */
 	private buildProjectIndex(): void {
 		this.projectIndex.clear();
+		this.projectSubtasksIndex.clear();
 		this.stats.indexBuilds++;
 
 		try {
@@ -233,6 +281,12 @@ export class ProjectSubtasksService {
 
 					if (resolvedFile) {
 						projectPaths.add(resolvedFile.path);
+						let subtaskPaths = this.projectSubtasksIndex.get(resolvedFile.path);
+						if (!subtaskPaths) {
+							subtaskPaths = new Set<string>();
+							this.projectSubtasksIndex.set(resolvedFile.path, subtaskPaths);
+						}
+						subtaskPaths.add(sourcePath);
 					}
 				}
 			}
@@ -264,6 +318,7 @@ export class ProjectSubtasksService {
 
 	invalidateIndex(): void {
 		this.projectIndex.clear();
+		this.projectSubtasksIndex.clear();
 		this.indexLastBuilt = 0;
 	}
 

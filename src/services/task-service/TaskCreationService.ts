@@ -342,6 +342,7 @@ export class TaskCreationService {
 			runtime.emitter.trigger(EVENT_TASK_UPDATED, {
 				path: file.path,
 				updatedTask: taskInfo,
+				created: true,
 			});
 
 			if (this.deps.webhookNotifier) {

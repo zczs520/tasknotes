@@ -40,6 +40,27 @@ export interface DailyTimeStatistic {
 	segments: TimeStatisticsSegment[];
 }
 
+export function formatTimeStatisticsDuration(durationMs: number, isChinese: boolean): string {
+	const totalMinutes = Math.max(0, Math.round(durationMs / 60_000));
+	if (totalMinutes < 1) return isChinese ? "少于1分钟" : "<1m";
+
+	const totalHours = totalMinutes / 60;
+	const formatDecimal = (value: number): string => String(Math.round(value * 10) / 10);
+	if (totalHours >= 24 * 30) {
+		return `${formatDecimal(totalHours / (24 * 30))}${isChinese ? "个月" : "mo"}`;
+	}
+	if (totalHours >= 24) {
+		return `${formatDecimal(totalHours / 24)}${isChinese ? "天" : "d"}`;
+	}
+
+	const hours = Math.floor(totalMinutes / 60);
+	const minutes = totalMinutes % 60;
+	if (isChinese) {
+		return hours > 0 ? `${hours}小时${minutes > 0 ? `${minutes}分` : ""}` : `${minutes}分`;
+	}
+	return hours > 0 ? `${hours}h${minutes > 0 ? ` ${minutes}m` : ""}` : `${minutes}m`;
+}
+
 function isValidDate(date: Date): boolean {
 	return Number.isFinite(date.getTime());
 }
@@ -331,8 +352,7 @@ export function buildDailyTimeStatistics(
 export function calculateAverageTimePerActiveDay(
 	segments: readonly TimeStatisticsSegment[]
 ): number {
-	const activeDays = new Set(
-		segments.map((segment) => startOfLocalDay(segment.start).getTime())
-	).size;
+	const activeDays = new Set(segments.map((segment) => startOfLocalDay(segment.start).getTime()))
+		.size;
 	return activeDays > 0 ? calculateTimeStatisticsTotal(segments) / activeDays : 0;
 }

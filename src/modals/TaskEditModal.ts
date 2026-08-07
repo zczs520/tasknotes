@@ -296,8 +296,8 @@ export class TaskEditModal extends TaskModal {
 			onClick: () => {
 				void (async () => {
 					this.task = this.plugin.getActiveTimeSession(this.task)
-						? await this.plugin.stopTimeTracking(this.task)
-						: await this.plugin.startTimeTracking(this.task);
+						? await this.plugin.stopTask(this.task)
+						: await this.plugin.startTask(this.task);
 					this.options.task = this.task;
 					this.status = this.task.status;
 					this.updateIconStates();

@@ -6,6 +6,7 @@ import {
 	calculateAverageTimePerActiveDay,
 	calculateTimeStatisticsTotal,
 	calculateUniqueTimeStatisticsTotal,
+	formatTimeStatisticsDuration,
 	getTimeStatisticsRange,
 	isCurrentTimeStatisticsPeriod,
 	shiftTimeStatisticsReference,
@@ -24,6 +25,14 @@ function createTask(overrides: Partial<TaskInfo>): TaskInfo {
 }
 
 describe("time statistics", () => {
+	it("uses progressively larger units for long durations", () => {
+		expect(formatTimeStatisticsDuration(23.5 * 60 * 60_000, true)).toBe("23小时30分");
+		expect(formatTimeStatisticsDuration(24 * 60 * 60_000, true)).toBe("1天");
+		expect(formatTimeStatisticsDuration(36 * 60 * 60_000, true)).toBe("1.5天");
+		expect(formatTimeStatisticsDuration(30 * 24 * 60 * 60_000, true)).toBe("1个月");
+		expect(formatTimeStatisticsDuration(45 * 24 * 60 * 60_000, false)).toBe("1.5mo");
+	});
+
 	it("uses calendar-aligned day, week, month, and year ranges", () => {
 		const reference = new Date(2026, 6, 31, 14, 30);
 
@@ -94,27 +103,19 @@ describe("time statistics", () => {
 		const tasks = [
 			createTask({
 				path: "Tasks/alpha.md",
-				timeEntries: [
-					{ startTime: "2026-07-31T13:00:00", endTime: "2026-07-31T14:00:00" },
-				],
+				timeEntries: [{ startTime: "2026-07-31T13:00:00", endTime: "2026-07-31T14:00:00" }],
 			}),
 			createTask({
 				path: "Tasks/beta.md",
-				timeEntries: [
-					{ startTime: "2026-07-31T13:00:00", endTime: "2026-07-31T14:00:00" },
-				],
+				timeEntries: [{ startTime: "2026-07-31T13:00:00", endTime: "2026-07-31T14:00:00" }],
 			}),
 			createTask({
 				path: "Tasks/gamma.md",
-				timeEntries: [
-					{ startTime: "2026-07-31T13:00:00", endTime: "2026-07-31T14:00:00" },
-				],
+				timeEntries: [{ startTime: "2026-07-31T13:00:00", endTime: "2026-07-31T14:00:00" }],
 			}),
 			createTask({
 				path: "Tasks/delta.md",
-				timeEntries: [
-					{ startTime: "2026-07-31T13:00:00", endTime: "2026-07-31T14:00:00" },
-				],
+				timeEntries: [{ startTime: "2026-07-31T13:00:00", endTime: "2026-07-31T14:00:00" }],
 			}),
 		];
 		const range = getTimeStatisticsRange(new Date(2026, 6, 31), "day");
@@ -205,9 +206,7 @@ describe("time statistics", () => {
 			createTask({
 				path: "Tasks/beta.md",
 				title: "Beta",
-				timeEntries: [
-					{ startTime: "2026-07-31T12:00:00", endTime: "2026-07-31T12:30:00" },
-				],
+				timeEntries: [{ startTime: "2026-07-31T12:00:00", endTime: "2026-07-31T12:30:00" }],
 			}),
 		];
 		const range = getTimeStatisticsRange(new Date(2026, 6, 31), "week", 1);
@@ -223,9 +222,7 @@ describe("time statistics", () => {
 
 	it("includes empty dates when building daily chart buckets", () => {
 		const task = createTask({
-			timeEntries: [
-				{ startTime: "2026-07-27T09:00:00", endTime: "2026-07-27T10:00:00" },
-			],
+			timeEntries: [{ startTime: "2026-07-27T09:00:00", endTime: "2026-07-27T10:00:00" }],
 		});
 		const range = getTimeStatisticsRange(new Date(2026, 6, 29), "week", 1);
 		const days = buildDailyTimeStatistics(buildTimeStatisticsSegments([task], range), range);

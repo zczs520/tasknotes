@@ -1,4 +1,4 @@
-import { App, Notice, TFile } from "obsidian";
+import { App, Notice, setIcon, TFile } from "obsidian";
 import TaskNotesPlugin from "../main";
 import { TaskModal } from "./TaskModal";
 import { TaskInfo } from "../types";
@@ -20,6 +20,11 @@ import {
 	type TaskCreationPrepopulatedValues,
 } from "./taskCreationFormState";
 import { applyTaskCreationSubtaskAssignments } from "./taskCreationSubtasks";
+import { buildTaskEditChangesFromModalState } from "./taskEditChangeState";
+import {
+	applyTaskEditSubtaskChanges,
+	hasTaskEditSubtaskChanges,
+} from "./taskEditSubtasks";
 import { NLPSuggest } from "./taskCreationSuggest";
 import { shouldShowFilenameShortenedNotice } from "../utils/filenameGenerator";
 import { setTaskModalDetailsEditorValue } from "./taskModalDetailsEditor";
@@ -108,6 +113,21 @@ export class TaskCreationModal extends TaskModal {
 	private nlMarkdownEditor: EmbeddableMarkdownEditor | null = null;
 	private nlpSuggest: NLPSuggest | null = null; // Will be replaced with CodeMirror autocomplete
 	private nlpAutofillTimer: number | null = null;
+	private draftTask: TaskInfo | null = null;
+	private draftPath: string | null = null;
+	private draftCreationPromise: Promise<boolean> | null = null;
+	private autoCreateEnabled = false;
+	private autoSaveReady = false;
+	private autoSaveTimer: number | null = null;
+	private autoSaveInFlight: Promise<boolean> | null = null;
+	private autoSaveQueued = false;
+	private closeInProgress = false;
+	private navigationCleanupScheduled = false;
+	private initialTags = "";
+	private initialBlockedBy: TaskInfo["blockedBy"] = [];
+	private initialBlockingPaths: string[] = [];
+	private unresolvedBlockingEntries: string[] = [];
+	private static readonly AUTO_SAVE_DELAY_MS = 450;
 
 	// Track event listeners for cleanup
 	private eventListeners: Array<{
@@ -128,6 +148,41 @@ export class TaskCreationModal extends TaskModal {
 
 	protected isCreationMode(): boolean {
 		return true;
+	}
+
+	protected getCurrentTaskPath(): string | undefined {
+		return this.draftTask?.path;
+	}
+
+	onOpen(): void {
+		this.autoCreateEnabled = true;
+		super.onOpen();
+		this.createHeaderOpenNoteButton();
+	}
+
+	private createHeaderOpenNoteButton(): void {
+		const header = this.titleEl.parentElement;
+		if (!header) return;
+
+		header.querySelector(".tn-task-modal__header-open-note")?.remove();
+		const openButton = header.createEl("button", {
+			cls: "tn-task-modal__header-open-note",
+			attr: {
+				type: "button",
+				"aria-label": this.t("modals.task.buttons.openNote"),
+				title: this.t("modals.task.buttons.openNote"),
+			},
+		});
+		const icon = openButton.createSpan("tn-task-modal__header-open-note-icon");
+		setIcon(icon, "file-text");
+		openButton.createSpan({
+			cls: "tn-task-modal__header-open-note-label",
+			text: this.t("modals.task.buttons.openNote"),
+		});
+		openButton.addEventListener("click", () => {
+			void this.openTaskNote();
+		});
+		header.insertBefore(openButton, this.titleEl);
 	}
 
 	/**
@@ -317,7 +372,25 @@ export class TaskCreationModal extends TaskModal {
 	}
 
 	protected focusTitleInput(): void {
-		super.focusTitleInput();
+		if (!this.plugin.settings.enableNaturalLanguageInput) {
+			super.focusTitleInput();
+			return;
+		}
+
+		window.setTimeout(() => {
+			const codeMirror = this.nlMarkdownEditor?.editor?.cm;
+			if (codeMirror) {
+				codeMirror.focus();
+				codeMirror.scrollDOM.scrollTop = 0;
+				return;
+			}
+			if (this.nlInput) {
+				this.nlInput.focus({ preventScroll: true });
+				this.nlInput.select();
+				return;
+			}
+			super.focusTitleInput();
+		}, this.getInitialFocusDelay());
 	}
 
 	private scheduleNaturalLanguageAutofill(value: string): void {
@@ -351,6 +424,10 @@ export class TaskCreationModal extends TaskModal {
 		super.createActionBar(container);
 	}
 
+	protected createActionButtons(_container: HTMLElement): void {
+		// Creation is committed when the modal opens and every subsequent edit is autosaved.
+	}
+
 	private parseAndFillForm(input: string): void {
 		const parsed = this.nlParser.parseInput(input);
 		this.applyParsedData(parsed);
@@ -363,18 +440,22 @@ export class TaskCreationModal extends TaskModal {
 		let tagsChanged = false;
 		let timeEstimateChanged = false;
 		let propertyStateChanged = false;
+		let formStateChanged = false;
 
 		if (parsed.title && parsed.title !== this.title) {
 			this.title = parsed.title;
 			titleChanged = true;
+			formStateChanged = true;
 		}
 		if (parsed.status && parsed.status !== this.status) {
 			this.status = parsed.status;
 			propertyStateChanged = true;
+			formStateChanged = true;
 		}
 		if (parsed.priority && parsed.priority !== this.priority) {
 			this.priority = parsed.priority;
 			propertyStateChanged = true;
+			formStateChanged = true;
 		}
 
 		// Handle due date with time
@@ -385,6 +466,7 @@ export class TaskCreationModal extends TaskModal {
 			if (dueDate !== this.dueDate) {
 				this.dueDate = dueDate;
 				propertyStateChanged = true;
+				formStateChanged = true;
 			}
 		}
 
@@ -396,6 +478,7 @@ export class TaskCreationModal extends TaskModal {
 			if (scheduledDate !== this.scheduledDate) {
 				this.scheduledDate = scheduledDate;
 				propertyStateChanged = true;
+				formStateChanged = true;
 			}
 		}
 
@@ -404,6 +487,7 @@ export class TaskCreationModal extends TaskModal {
 			if (contexts !== this.contexts) {
 				this.contexts = contexts;
 				contextsChanged = true;
+				formStateChanged = true;
 			}
 		}
 		// Projects will be handled in the form input update section below
@@ -412,15 +496,18 @@ export class TaskCreationModal extends TaskModal {
 			if (tags !== this.tags) {
 				this.tags = tags;
 				tagsChanged = true;
+				formStateChanged = true;
 			}
 		}
 		if (parsed.details && parsed.details !== this.details) {
 			this.details = parsed.details;
 			detailsChanged = true;
+			formStateChanged = true;
 		}
 		if (parsed.recurrence && parsed.recurrence !== this.recurrenceRule) {
 			this.recurrenceRule = parsed.recurrence;
 			propertyStateChanged = true;
+			formStateChanged = true;
 		}
 		if (parsed.estimate !== undefined) {
 			const timeEstimate = parsed.estimate > 0 ? parsed.estimate : 0;
@@ -428,6 +515,7 @@ export class TaskCreationModal extends TaskModal {
 				this.timeEstimate = timeEstimate;
 				timeEstimateChanged = true;
 				propertyStateChanged = true;
+				formStateChanged = true;
 			}
 			if (timeEstimateChanged && this.timeEstimateInput) {
 				this.timeEstimateInput.value =
@@ -448,6 +536,7 @@ export class TaskCreationModal extends TaskModal {
 			this.addProjectsFromStrings(parsed.projects);
 			if (this.projects !== projectsBeforeUpdate) {
 				this.renderProjectsList();
+				formStateChanged = true;
 			}
 		}
 
@@ -466,11 +555,15 @@ export class TaskCreationModal extends TaskModal {
 			}
 			if (userFieldsChanged) {
 				this.updateUserFieldControls();
+				formStateChanged = true;
 			}
 		}
 
 		if (propertyStateChanged) {
 			this.updateIconStates();
+		}
+		if (formStateChanged) {
+			this.onFormStateChanged();
 		}
 	}
 
@@ -503,13 +596,33 @@ export class TaskCreationModal extends TaskModal {
 
 		this.details = this.normalizeDetails(this.details);
 		this.originalDetails = this.details;
+
+		if (this.autoCreateEnabled) {
+			await this.ensureDraftCreated();
+			this.autoSaveReady = true;
+		}
 	}
 
 	protected async handleSubmitShortcut(shift: boolean): Promise<void> {
-		await this.handleSave({ createAnother: shift });
+		void shift;
+		await this.flushAutoSave();
 	}
 
-	async handleSave(options: { createAnother?: boolean } = {}): Promise<void> {
+	async handleSave(_options: { createAnother?: boolean } = {}): Promise<void> {
+		if (!this.autoCreateEnabled) {
+			this.prepareNaturalLanguageState();
+			await this.ensureDraftCreated();
+			return;
+		}
+		await this.flushAutoSave();
+	}
+
+	private prepareNaturalLanguageState(): void {
+		if (this.nlpAutofillTimer !== null) {
+			window.clearTimeout(this.nlpAutofillTimer);
+			this.nlpAutofillTimer = null;
+		}
+
 		// If NLP is enabled and there's content in the NL field, parse it first
 		if (this.plugin.settings.enableNaturalLanguageInput) {
 			const nlContent = this.getNLPInputValue().trim();
@@ -519,24 +632,69 @@ export class TaskCreationModal extends TaskModal {
 				this.applyParsedData(parsed);
 			}
 		}
+	}
 
-		if (!this.validateForm()) {
-			new Notice(this.t("modals.taskCreation.notices.titleRequired"));
-			return;
-		}
+	private getDraftTitle(): string {
+		const enteredTitle = this.title.trim();
+		if (enteredTitle) return enteredTitle;
+		if (this.draftTask?.title) return this.draftTask.title;
 
+		const translated = this.t("modals.task.untitledTitlePlaceholder").trim();
+		return translated || "Untitled Task";
+	}
+
+	private async ensureDraftCreated(): Promise<boolean> {
+		if (this.draftTask) return true;
+		if (this.draftCreationPromise) return this.draftCreationPromise;
+
+		this.draftCreationPromise = this.createInitialDraft();
 		try {
-			const taskData = this.buildTaskData();
-			// Disable defaults since they were already applied to form fields in initializeFormData()
-			const result = await this.plugin.taskService.createTask(taskData, {
+			return await this.draftCreationPromise;
+		} finally {
+			this.draftCreationPromise = null;
+		}
+	}
+
+	private async createInitialDraft(): Promise<boolean> {
+		let result: Awaited<ReturnType<TaskNotesPlugin["taskService"]["createTask"]>>;
+		try {
+			const taskData = this.buildTaskData(this.getDraftTitle());
+			result = await this.plugin.taskService.createTask(taskData, {
 				applyDefaults: false,
 			});
-			let createdTask = result.taskInfo;
+		} catch (error) {
+			tasknotesLogger.error("Failed to create task draft:", {
+				category: "persistence",
+				operation: "create-task-draft",
+				error,
+			});
+			const message = getTaskCreationFailureNoticeMessage(error);
+			new Notice(this.t("modals.taskCreation.notices.failure", { message }));
+			return false;
+		}
 
+		if (!result.taskInfo) {
+			const error = new Error("Task creation returned no task data");
+			tasknotesLogger.error("Failed to create task draft:", {
+				category: "persistence",
+				operation: "create-task-draft",
+				error,
+			});
+			new Notice(
+				this.t("modals.taskCreation.notices.failure", { message: error.message })
+			);
+			return false;
+		}
+
+		let createdTask = result.taskInfo;
+		this.draftTask = createdTask;
+		this.draftPath = result.file.path;
+
+		try {
 			if (
 				shouldShowFilenameShortenedNotice(
 					this.plugin.settings,
-					result.taskInfo.title,
+					createdTask.title,
 					result.file.basename
 				)
 			) {
@@ -545,65 +703,289 @@ export class TaskCreationModal extends TaskModal {
 						title: createdTask.title,
 					})
 				);
-			} else {
+			}
+
+			createdTask = await this.applyInitialRelationships(createdTask);
+			this.draftTask = createdTask;
+		} catch (error) {
+			tasknotesLogger.error("Failed to apply initial task draft relationships:", {
+				category: "persistence",
+				operation: "initialize-task-draft-relationships",
+				error,
+			});
+			new Notice(
+				this.t("modals.taskCreation.notices.failure", {
+					message: error instanceof Error ? error.message : String(error),
+				})
+			);
+		}
+
+		this.originalDetails = createdTask.details ?? this.details;
+		if (!this.details && createdTask.details) {
+			this.details = createdTask.details;
+			this.originalDetails = createdTask.details;
+		}
+		this.initialTags = this.tags;
+		this.initialBlockedBy = (this.blockedByItems ?? []).map((item) => ({
+			...item.dependency,
+		}));
+		this.initialBlockingPaths = this.blockingItems.flatMap((item) =>
+			item.path ? [item.path] : []
+		);
+		this.initialSubtaskFiles = [...this.selectedSubtaskFiles];
+
+		try {
+			this.options.onTaskCreated?.(createdTask);
+		} catch (error) {
+			tasknotesLogger.error("Task-created callback failed:", {
+				category: "provider",
+				operation: "notify-task-draft-created",
+				error,
+			});
+		}
+		return true;
+	}
+
+	private async applyInitialRelationships(createdTask: TaskInfo): Promise<TaskInfo> {
+		if (this.blockingItems.length > 0) {
+			const blockingUpdates = buildCreationBlockingUpdates(this.blockingItems);
+			if (blockingUpdates.added.length > 0) {
+				await this.plugin.taskService.updateBlockingRelationships(
+					createdTask,
+					blockingUpdates.added,
+					[],
+					blockingUpdates.raw
+				);
+			}
+			if (blockingUpdates.unresolved.length > 0) {
 				new Notice(
-					this.t("modals.taskCreation.notices.success", { title: createdTask.title })
+					this.t("modals.taskCreation.notices.blockingUnresolved", {
+						entries: blockingUpdates.unresolved.join(", "),
+					})
+				);
+			}
+		}
+
+		if (this.selectedSubtaskFiles.length > 0) {
+			await this.applySubtaskAssignments(createdTask);
+		}
+
+		if (typeof this.plugin.cacheManager.getTaskInfo !== "function") {
+			return createdTask;
+		}
+		return (await this.plugin.cacheManager.getTaskInfo(createdTask.path)) ?? createdTask;
+	}
+
+	protected onFormStateChanged(): void {
+		if (!this.autoSaveReady || this.closeInProgress) return;
+
+		if (this.autoSaveTimer !== null) {
+			window.clearTimeout(this.autoSaveTimer);
+		}
+		this.autoSaveTimer = window.setTimeout(() => {
+			this.autoSaveTimer = null;
+			void this.flushAutoSave();
+		}, TaskCreationModal.AUTO_SAVE_DELAY_MS);
+	}
+
+	private async flushAutoSave(): Promise<boolean> {
+		this.prepareNaturalLanguageState();
+		if (this.autoSaveTimer !== null) {
+			window.clearTimeout(this.autoSaveTimer);
+			this.autoSaveTimer = null;
+		}
+
+		if (this.autoSaveInFlight) {
+			this.autoSaveQueued = true;
+			return this.autoSaveInFlight;
+		}
+
+		this.autoSaveInFlight = this.runAutoSaveLoop();
+		try {
+			return await this.autoSaveInFlight;
+		} finally {
+			this.autoSaveInFlight = null;
+		}
+	}
+
+	private async runAutoSaveLoop(): Promise<boolean> {
+		let saved = true;
+		do {
+			this.autoSaveQueued = false;
+			saved = await this.savePendingChanges();
+		} while (saved && this.autoSaveQueued);
+		return saved;
+	}
+
+	private async savePendingChanges(): Promise<boolean> {
+		if (!(await this.ensureDraftCreated()) || !this.draftTask) return false;
+
+		try {
+			const effectiveTitle = this.title.trim() || this.draftTask.title;
+			const result = buildTaskEditChangesFromModalState({
+				app: this.app,
+				task: this.draftTask,
+				title: effectiveTitle,
+				dueDate: this.dueDate,
+				scheduledDate: this.scheduledDate,
+				priority: this.priority,
+				status: this.status,
+				contexts: this.contexts,
+				projects: this.projects,
+				tags: this.tags,
+				initialTags: this.initialTags,
+				timeEstimate: this.timeEstimate,
+				recurrenceRule: this.recurrenceRule,
+				recurrenceAnchor: this.recurrenceAnchor,
+				reminders: this.reminders,
+				blockedByItems: this.blockedByItems,
+				initialBlockedBy: this.initialBlockedBy ?? [],
+				blockingItems: this.blockingItems,
+				initialBlockingPaths: this.initialBlockingPaths,
+				details: this.details,
+				originalDetails: this.originalDetails,
+				completedInstancesChanges: [],
+				skippedInstancesChanges: [],
+				userFields: this.userFields,
+				settings: {
+					userFields: this.plugin.settings?.userFields,
+					taskIdentificationMethod: this.plugin.settings.taskIdentificationMethod,
+					taskTag: this.plugin.settings.taskTag,
+					hideIdentifyingTagsMode: this.plugin.settings.hideIdentifyingTagsMode,
+					maintainDueDateOffsetInRecurring:
+						this.plugin.settings.maintainDueDateOffsetInRecurring,
+				},
+				normalizeDetails: (value) => this.normalizeDetails(value),
+			});
+			this.unresolvedBlockingEntries = result.unresolvedBlockingEntries;
+
+			const hasTaskChanges = Object.keys(result.changes).length > 0;
+			const hasBlockingChanges =
+				result.blockingUpdates.added.length > 0 ||
+				result.blockingUpdates.removed.length > 0;
+			const hasSubtaskChanges = hasTaskEditSubtaskChanges(
+				this.initialSubtaskFiles,
+				this.selectedSubtaskFiles
+			);
+
+			let updatedTask = this.draftTask;
+			if (hasTaskChanges) {
+				updatedTask = await this.plugin.taskService.updateTask(updatedTask, result.changes);
+			}
+			if (hasBlockingChanges) {
+				await this.plugin.taskService.updateBlockingRelationships(
+					updatedTask,
+					result.blockingUpdates.added,
+					result.blockingUpdates.removed,
+					result.blockingUpdates.raw
+				);
+				updatedTask =
+					(await this.plugin.cacheManager.getTaskInfo(updatedTask.path)) ?? updatedTask;
+			}
+			if (hasSubtaskChanges) {
+				await this.applySubtaskChanges(updatedTask);
+			}
+
+			if (this.unresolvedBlockingEntries.length > 0) {
+				new Notice(
+					this.t("modals.taskCreation.notices.blockingUnresolved", {
+						entries: this.unresolvedBlockingEntries.join(", "),
+					})
 				);
 			}
 
-			if (this.blockingItems.length > 0) {
-				const blockingUpdates = buildCreationBlockingUpdates(this.blockingItems);
-
-				if (blockingUpdates.added.length > 0) {
-					await this.plugin.taskService.updateBlockingRelationships(
-						createdTask,
-						blockingUpdates.added,
-						[],
-						blockingUpdates.raw
-					);
-					const refreshed = await this.plugin.cacheManager.getTaskInfo(createdTask.path);
-					if (refreshed) {
-						createdTask = refreshed;
-					}
-				}
-
-				if (blockingUpdates.unresolved.length > 0) {
-					new Notice(
-						this.t("modals.taskCreation.notices.blockingUnresolved", {
-							entries: blockingUpdates.unresolved.join(", "),
-						})
-					);
-				}
-
-				this.blockingItems = [];
-			}
-
-			// Handle subtask assignments
-			if (this.selectedSubtaskFiles.length > 0) {
-				await this.applySubtaskAssignments(createdTask);
-			}
-
-			if (this.options.onTaskCreated) {
-				this.options.onTaskCreated(createdTask);
-			}
-
-			await this.openCreatedTaskIfConfigured(result.file, options);
-
-			this.close();
-
-			if (options.createAnother) {
-				window.setTimeout(() => {
-					new TaskCreationModal(this.app, this.plugin, this.options).open();
-				}, 0);
-			}
+			this.draftTask = updatedTask;
+			this.draftPath = updatedTask.path;
+			this.originalDetails = this.normalizeDetails(this.details);
+			this.initialTags = this.tags;
+			this.initialBlockedBy = this.blockedByItems.map((item) => ({ ...item.dependency }));
+			this.initialBlockingPaths = this.blockingItems
+				.flatMap((item) => (item.path ? [item.path] : []));
+			this.initialSubtaskFiles = [...this.selectedSubtaskFiles];
+			this.unresolvedBlockingEntries = [];
+			return true;
 		} catch (error) {
-			tasknotesLogger.error("Failed to create task:", {
+			tasknotesLogger.error("Failed to autosave task draft:", {
 				category: "persistence",
-				operation: "create-task",
+				operation: "autosave-task-draft",
 				error: error,
 			});
 			const message = getTaskCreationFailureNoticeMessage(error);
 			new Notice(this.t("modals.taskCreation.notices.failure", { message }));
+			return false;
+		}
+	}
+
+	private async applySubtaskChanges(task: TaskInfo): Promise<void> {
+		const parentTaskFile = this.app.vault.getAbstractFileByPath(task.path);
+		if (!(parentTaskFile instanceof TFile)) return;
+
+		await applyTaskEditSubtaskChanges({
+			parentTaskFile,
+			selectedSubtaskFiles: this.selectedSubtaskFiles,
+			initialSubtaskFiles: this.initialSubtaskFiles,
+			getTaskInfo: (path) => this.plugin.cacheManager.getTaskInfo(path),
+			buildProjectReference: (targetFile, sourcePath) =>
+				this.buildProjectReference(targetFile, sourcePath),
+			updateTaskProjects: (subtaskInfo, projects) =>
+				this.plugin.updateTaskProperty(subtaskInfo, "projects", projects),
+			onAddError: (error) => {
+				tasknotesLogger.error("Failed to assign subtask:", {
+					category: "persistence",
+					operation: "autosave-add-subtask",
+					error,
+				});
+			},
+			onRemoveError: (error) => {
+				tasknotesLogger.error("Failed to remove subtask:", {
+					category: "persistence",
+					operation: "autosave-remove-subtask",
+					error,
+				});
+			},
+		});
+	}
+
+	protected async openTaskNote(): Promise<void> {
+		try {
+			if (!(await this.flushAutoSave()) || !this.draftTask) return;
+
+			const file = this.app.vault.getAbstractFileByPath(this.draftTask.path);
+			if (!(file instanceof TFile)) {
+				new Notice(
+					this.t("modals.taskEdit.notices.fileMissing", { path: this.draftTask.path })
+				);
+				return;
+			}
+
+			this.containerEl.hidden = true;
+			const leaf = this.app.workspace.getLeaf(false);
+			const openPromise = leaf.openFile(file);
+			this.scheduleNavigationModalCleanup();
+			await openPromise;
+		} catch (error) {
+			tasknotesLogger.error("Failed to open newly created task note:", {
+				category: "persistence",
+				operation: "open-created-task-note",
+				error,
+			});
+			new Notice(this.t("modals.taskEdit.notices.openNoteFailure"));
+		}
+	}
+
+	private scheduleNavigationModalCleanup(): void {
+		if (this.navigationCleanupScheduled) return;
+		this.navigationCleanupScheduled = true;
+		const cleanupWindow = this.containerEl.ownerDocument.defaultView ?? window;
+		const cleanup = (): void => {
+			this.deferDetailsEditorCleanupOnClose();
+			this.forceClose();
+		};
+
+		if (typeof cleanupWindow.requestIdleCallback === "function") {
+			cleanupWindow.requestIdleCallback(cleanup, { timeout: 200 });
+		} else {
+			cleanupWindow.setTimeout(cleanup, 50);
 		}
 	}
 
@@ -628,9 +1010,9 @@ export class TaskCreationModal extends TaskModal {
 		}
 	}
 
-	private buildTaskData(): Partial<TaskInfo> {
+	private buildTaskData(titleOverride?: string): Partial<TaskInfo> {
 		const taskData = buildTaskCreationData({
-			title: this.title,
+			title: titleOverride ?? this.title,
 			dueDate: this.dueDate,
 			scheduledDate: this.scheduledDate,
 			priority: this.priority,
@@ -687,7 +1069,38 @@ export class TaskCreationModal extends TaskModal {
 		});
 	}
 
+	/** Close immediately after the draft and all queued edits have been persisted. */
+	forceClose(): void {
+		super.close();
+	}
+
+	close(): void {
+		if (!this.autoCreateEnabled) {
+			this.forceClose();
+			return;
+		}
+		if (this.closeInProgress) return;
+
+		this.closeInProgress = true;
+		void this.flushAutoSave().then(async (saved) => {
+			this.closeInProgress = false;
+			if (!saved) return;
+			const draftFile = this.draftPath
+				? this.app.vault.getAbstractFileByPath(this.draftPath)
+				: null;
+			if (draftFile instanceof TFile) {
+				await this.openCreatedTaskIfConfigured(draftFile, {});
+			}
+			this.forceClose();
+		});
+	}
+
 	onClose(): void {
+		this.autoSaveReady = false;
+		if (this.autoSaveTimer !== null) {
+			window.clearTimeout(this.autoSaveTimer);
+			this.autoSaveTimer = null;
+		}
 		if (this.nlpAutofillTimer !== null) {
 			window.clearTimeout(this.nlpAutofillTimer);
 			this.nlpAutofillTimer = null;

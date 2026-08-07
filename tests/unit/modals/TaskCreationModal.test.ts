@@ -404,7 +404,7 @@ describe("TaskCreationModal - Fixed Implementation", () => {
 				{ applyDefaults: false }
 			);
 
-			expect(Notice).toHaveBeenCalledWith('Task "Test Task" created successfully');
+			expect(Notice).not.toHaveBeenCalled();
 		});
 
 		it("should handle task creation errors", async () => {
@@ -415,7 +415,7 @@ describe("TaskCreationModal - Fixed Implementation", () => {
 
 			expect(console.error).toHaveBeenCalledWith(
 				expect.stringContaining(
-					"[TaskNotes][Modals/TaskCreationModal][persistence][create-task] Failed to create task:"
+					"[TaskNotes][Modals/TaskCreationModal][persistence][create-task-draft] Failed to create task draft:"
 				),
 				expect.any(Error)
 			);
@@ -454,7 +454,7 @@ describe("TaskCreationModal - Fixed Implementation", () => {
 			);
 		});
 
-		it("should reopen a fresh creation modal when saving and creating another task", async () => {
+		it("does not create another task from the obsolete submit shortcut", async () => {
 			jest.useFakeTimers();
 			const openSpy = jest
 				.spyOn(TaskCreationModal.prototype, "open")
@@ -475,7 +475,8 @@ describe("TaskCreationModal - Fixed Implementation", () => {
 
 				expect(openSpy).not.toHaveBeenCalled();
 				jest.runOnlyPendingTimers();
-				expect(openSpy).toHaveBeenCalledTimes(1);
+				expect(openSpy).not.toHaveBeenCalled();
+				expect(mockPlugin.taskService.createTask).toHaveBeenCalledTimes(1);
 			} finally {
 				jest.useRealTimers();
 			}
@@ -590,7 +591,7 @@ describe("TaskCreationModal - Fixed Implementation", () => {
 
 			expect(console.error).toHaveBeenCalledWith(
 				expect.stringContaining(
-					"[TaskNotes][Modals/TaskCreationModal][persistence][create-task] Failed to create task:"
+					"[TaskNotes][Modals/TaskCreationModal][persistence][create-task-draft] Failed to create task draft:"
 				),
 				expect.any(Error)
 			);
@@ -640,6 +641,7 @@ describe("TaskCreationModal - Fixed Implementation", () => {
 		});
 
 		it("keeps title first and gives it the initial focus", () => {
+			mockPlugin.settings.enableNaturalLanguageInput = false;
 			const titleInput = document.createElement("input");
 			document.body.appendChild(titleInput);
 			const privateModal = modal as unknown as {

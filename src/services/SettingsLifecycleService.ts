@@ -1,7 +1,7 @@
 import type { EventRef } from "obsidian";
 import type TaskNotesPlugin from "../main";
 import type { TaskInfo } from "../types";
-import { EVENT_TASK_UPDATED } from "../types";
+import { EVENT_TASK_DELETED, EVENT_TASK_UPDATED } from "../types";
 import type { TaskNotesSettings } from "../types/settings";
 import { createTaskNotesLogger } from "../utils/tasknotesLogger";
 import { publishUserNotice } from "../core/userNotices";
@@ -12,6 +12,14 @@ interface TaskUpdateEventData {
 	path?: string;
 	originalTask?: TaskInfo;
 	updatedTask?: TaskInfo;
+	task?: TaskInfo;
+	taskInfo?: TaskInfo;
+	created?: boolean;
+}
+
+interface TaskDeleteEventData {
+	path?: string;
+	deletedTask?: Pick<TaskInfo, "path">;
 }
 
 interface CacheSettingsSnapshot {
@@ -47,7 +55,10 @@ export class SettingsLifecycleService {
 	private previousTimeTrackingSettings: TimeTrackingSettingsSnapshot | null = null;
 	private autoStopTimeTrackingListener: unknown = null;
 	private statusTimeTrackingListener: unknown = null;
+	private statusTimeTrackingDeleteListener: unknown = null;
 	private statusTimeTrackingReconciliation: Promise<void> | null = null;
+	private readonly taskStatusSnapshots = new Map<string, string>();
+	private readonly statusTimeTrackingOperations = new Map<string, Promise<void>>();
 	private saveSettingsPromise: Promise<void> | null = null;
 	private saveSettingsRequested = false;
 
@@ -68,11 +79,24 @@ export class SettingsLifecycleService {
 			this.plugin.emitter.offref(this.statusTimeTrackingListener as EventRef);
 			this.statusTimeTrackingListener = null;
 		}
+		if (this.statusTimeTrackingDeleteListener) {
+			this.plugin.emitter.offref(this.statusTimeTrackingDeleteListener as EventRef);
+			this.statusTimeTrackingDeleteListener = null;
+		}
 
 		this.statusTimeTrackingListener = this.plugin.emitter.on(
 			EVENT_TASK_UPDATED,
 			async (data: TaskUpdateEventData) => {
 				await this.handleStatusTimeTrackingLink(data);
+			}
+		);
+		this.statusTimeTrackingDeleteListener = this.plugin.emitter.on(
+			EVENT_TASK_DELETED,
+			(data: TaskDeleteEventData) => {
+				const path = data.path ?? data.deletedTask?.path;
+				if (path) {
+					this.taskStatusSnapshots.delete(path);
+				}
 			}
 		);
 
@@ -198,11 +222,40 @@ export class SettingsLifecycleService {
 			this.plugin.emitter.offref(this.statusTimeTrackingListener as EventRef);
 			this.statusTimeTrackingListener = null;
 		}
+		if (this.statusTimeTrackingDeleteListener) {
+			this.plugin.emitter.offref(this.statusTimeTrackingDeleteListener as EventRef);
+			this.statusTimeTrackingDeleteListener = null;
+		}
+		this.taskStatusSnapshots.clear();
+		this.statusTimeTrackingOperations.clear();
 	}
 
 	private async handleStatusTimeTrackingLink(data: TaskUpdateEventData): Promise<void> {
-		const { originalTask, updatedTask } = data;
-		if (!originalTask || !updatedTask) {
+		const updatedTask = data.updatedTask ?? data.taskInfo ?? data.task;
+		if (!updatedTask) {
+			return;
+		}
+
+		const path = updatedTask.path || data.path;
+		if (!path) {
+			return;
+		}
+
+		const originalPath = data.originalTask?.path;
+		const previousStatus =
+			this.taskStatusSnapshots.get(path) ??
+			(originalPath ? this.taskStatusSnapshots.get(originalPath) : undefined) ??
+			data.originalTask?.status;
+		const isMetadataCacheEvent = data.task !== undefined || data.taskInfo !== undefined;
+		const isNewTask =
+			data.created === true || (previousStatus === undefined && isMetadataCacheEvent);
+
+		if (originalPath && originalPath !== path) {
+			this.taskStatusSnapshots.delete(originalPath);
+		}
+		this.taskStatusSnapshots.set(path, updatedTask.status);
+
+		if (previousStatus === undefined && !isNewTask) {
 			return;
 		}
 
@@ -216,28 +269,53 @@ export class SettingsLifecycleService {
 		const normalizeStatus = (status: string) =>
 			this.plugin.statusManager.normalizeStatusValue(status);
 		const inProgressValue = normalizeStatus(inProgressStatus.value);
-		const wasInProgress = normalizeStatus(originalTask.status) === inProgressValue;
+		const wasInProgress = isNewTask
+			? false
+			: normalizeStatus(previousStatus as string) === inProgressValue;
 		const isInProgress = normalizeStatus(updatedTask.status) === inProgressValue;
-		const isTracking = this.plugin.getActiveTimeSession(updatedTask) !== null;
-		const action = planStatusTimeTrackingAction({
-			wasInProgress,
-			isInProgress,
-			isTracking,
-		});
-
-		try {
-			if (action === "start") {
-				await this.plugin.startTimeTracking(updatedTask);
-			} else if (action === "stop") {
-				await this.plugin.stopTimeTracking(updatedTask);
-			}
-		} catch (error) {
-			tasknotesLogger.error("Error linking task status and time tracking:", {
-				category: "configuration",
-				operation: "linking-task-status-time-tracking",
-				error,
-			});
+		if (wasInProgress === isInProgress) {
+			return;
 		}
+
+		const previousOperation = this.statusTimeTrackingOperations.get(path);
+		const operation = (previousOperation ?? Promise.resolve())
+			.catch(() => undefined)
+			.then(async () => {
+				try {
+					const freshTask =
+						(await this.plugin.cacheManager.getTaskInfo(path)) ?? updatedTask;
+					const freshIsInProgress =
+						normalizeStatus(freshTask.status) === inProgressValue;
+					if (freshIsInProgress !== isInProgress) {
+						return;
+					}
+
+					const action = planStatusTimeTrackingAction({
+						wasInProgress,
+						isInProgress,
+						isTracking: this.plugin.getActiveTimeSession(freshTask) !== null,
+					});
+					if (action === "start") {
+						await this.plugin.startTimeTracking(freshTask);
+					} else if (action === "stop") {
+						await this.plugin.stopTimeTracking(freshTask);
+					}
+				} catch (error) {
+					tasknotesLogger.error("Error linking task status and time tracking:", {
+						category: "configuration",
+						operation: "linking-task-status-time-tracking",
+						details: { taskPath: path },
+						error,
+					});
+				}
+			});
+
+		this.statusTimeTrackingOperations.set(path, operation);
+		await operation.finally(() => {
+			if (this.statusTimeTrackingOperations.get(path) === operation) {
+				this.statusTimeTrackingOperations.delete(path);
+			}
+		});
 	}
 
 	private async reconcileStatusTimeTrackingState(): Promise<void> {
@@ -253,6 +331,11 @@ export class SettingsLifecycleService {
 				this.plugin.statusManager.normalizeStatusValue(status);
 			const inProgressValue = normalizeStatus(inProgressStatus.value);
 			const tasks = await this.plugin.cacheManager.getAllTasks();
+			for (const task of tasks) {
+				if (!this.taskStatusSnapshots.has(task.path)) {
+					this.taskStatusSnapshots.set(task.path, task.status);
+				}
+			}
 			const inconsistentTasks = tasks.filter(
 				(task) =>
 					normalizeStatus(task.status) !== inProgressValue &&
@@ -261,7 +344,15 @@ export class SettingsLifecycleService {
 
 			for (const task of inconsistentTasks) {
 				try {
-					await this.plugin.taskService.stopTimeTracking(task);
+					const freshTask =
+						(await this.plugin.cacheManager.getTaskInfo(task.path)) ?? task;
+					if (
+						normalizeStatus(freshTask.status) === inProgressValue ||
+						this.plugin.getActiveTimeSession(freshTask) === null
+					) {
+						continue;
+					}
+					await this.plugin.taskService.stopTimeTracking(freshTask);
 				} catch (error) {
 					tasknotesLogger.error("Error reconciling task status and time tracking:", {
 						category: "persistence",

@@ -85,6 +85,7 @@ describe("Issue #1576 - Display Progress Bar on task cards", () => {
 			projectSubtasksService: {
 				isTaskUsedAsProject: jest.fn().mockResolvedValue(false),
 				isTaskUsedAsProjectSync: jest.fn().mockReturnValue(false),
+				getSubtaskProgressSync: jest.fn().mockReturnValue(null),
 			},
 			i18n: {
 				translate: jest.fn((key: string) => key),
@@ -109,32 +110,21 @@ describe("Issue #1576 - Display Progress Bar on task cards", () => {
 		jest.restoreAllMocks();
 	});
 
-	function listItem(taskChar: string, parent: number, line: number) {
-		return {
-			task: taskChar,
-			parent,
-			position: {
-				start: { line, col: 0, offset: 0 },
-				end: { line, col: 10, offset: 10 },
-			},
-		};
-	}
-
-	it("renders checklist progress and ignores nested checkboxes", () => {
+	it("renders linked subtask progress instead of Markdown checkbox progress", () => {
 		const task = TaskFactory.createTask({
 			path: "tasks/progress-task.md",
-			title: "Checklist task",
+			title: "Parent task",
 		});
 
-		MockObsidian.createTestFile(task.path, "# Checklist task");
+		MockObsidian.createTestFile(task.path, "# Parent task");
 		app.metadataCache.setCache(task.path, {
 			frontmatter: { title: task.title },
-			listItems: [
-				listItem("x", -1, 10), // top-level complete
-				listItem(" ", -1, 11), // top-level incomplete
-				listItem("x", 10, 12), // nested complete (ignored)
-				listItem(" ", 11, 13), // nested incomplete (ignored)
-			],
+			listItems: [{ task: "x", parent: -1 }],
+		});
+		plugin.projectSubtasksService.getSubtaskProgressSync.mockReturnValue({
+			completed: 1,
+			total: 2,
+			percent: 50,
 		});
 
 		const card = createTaskCard(task, plugin, ["checklistProgress"]);
@@ -145,7 +135,7 @@ describe("Issue #1576 - Display Progress Bar on task cards", () => {
 		expect((card.querySelector(".task-card__progress-fill") as HTMLElement).style.width).toBe("50%");
 	});
 
-	it("does not render checklist progress when only nested checkboxes exist", () => {
+	it("does not render progress when the task has no linked subtasks", () => {
 		const task = TaskFactory.createTask({
 			path: "tasks/nested-only-task.md",
 			title: "Nested only",
@@ -154,10 +144,7 @@ describe("Issue #1576 - Display Progress Bar on task cards", () => {
 		MockObsidian.createTestFile(task.path, "# Nested only");
 		app.metadataCache.setCache(task.path, {
 			frontmatter: { title: task.title },
-			listItems: [
-				listItem("x", 5, 10),
-				listItem(" ", 5, 11),
-			],
+			listItems: [{ task: "x", parent: -1 }],
 		});
 
 		const card = createTaskCard(task, plugin, ["checklistProgress"]);
@@ -167,30 +154,26 @@ describe("Issue #1576 - Display Progress Bar on task cards", () => {
 		expect(metadata.style.display).toBe("none");
 	});
 
-	it("updates checklist progress after metadata cache changes", () => {
+	it("updates progress after linked subtask statuses change", () => {
 		const task = TaskFactory.createTask({
 			path: "tasks/update-progress-task.md",
 			title: "Update progress",
 		});
 
 		MockObsidian.createTestFile(task.path, "# Update progress");
-		app.metadataCache.setCache(task.path, {
-			frontmatter: { title: task.title },
-			listItems: [
-				listItem("x", -1, 10),
-				listItem(" ", -1, 11),
-			],
+		plugin.projectSubtasksService.getSubtaskProgressSync.mockReturnValue({
+			completed: 1,
+			total: 2,
+			percent: 50,
 		});
 
 		const card = createTaskCard(task, plugin, ["checklistProgress"]);
 		expect(card.querySelector(".task-card__progress-label")?.textContent).toBe("1/2");
 
-		app.metadataCache.setCache(task.path, {
-			frontmatter: { title: task.title },
-			listItems: [
-				listItem("x", -1, 10),
-				listItem("x", -1, 11),
-			],
+		plugin.projectSubtasksService.getSubtaskProgressSync.mockReturnValue({
+			completed: 2,
+			total: 2,
+			percent: 100,
 		});
 
 		updateTaskCard(card, task, plugin, ["checklistProgress"]);
@@ -199,23 +182,20 @@ describe("Issue #1576 - Display Progress Bar on task cards", () => {
 		expect((card.querySelector(".task-card__progress-fill") as HTMLElement).style.width).toBe("100%");
 	});
 
-	it("treats non-x task markers as incomplete", () => {
+	it("renders an empty bar when none of the linked subtasks are complete", () => {
 		const task = TaskFactory.createTask({
 			path: "tasks/custom-marker-task.md",
 			title: "Custom marker",
 		});
 
-		MockObsidian.createTestFile(task.path, "# Custom marker");
-		app.metadataCache.setCache(task.path, {
-			frontmatter: { title: task.title },
-			listItems: [
-				listItem("-", -1, 10), // not completed
-				listItem("x", -1, 11), // completed
-			],
+		plugin.projectSubtasksService.getSubtaskProgressSync.mockReturnValue({
+			completed: 0,
+			total: 3,
+			percent: 0,
 		});
 
 		const card = createTaskCard(task, plugin, ["checklistProgress"]);
-		expect(card.querySelector(".task-card__progress-label")?.textContent).toBe("1/2");
-		expect((card.querySelector(".task-card__progress-fill") as HTMLElement).style.width).toBe("50%");
+		expect(card.querySelector(".task-card__progress-label")?.textContent).toBe("0/3");
+		expect((card.querySelector(".task-card__progress-fill") as HTMLElement).style.width).toBe("0%");
 	});
 });

@@ -9,7 +9,7 @@ These settings control the visual appearance of the plugin, including the calend
 
 Use **Default visible properties** to decide what metadata appears on task cards without opening each task. This is the primary control for card density.
 
-Checklist progress is available as a visible property in task cards. In Bases view `order` arrays, the corresponding source property is `file.tasks` (shown as `tasks` in Bases property pickers once present in the view `order` list).
+Subtask progress is available as a visible property in task cards. It counts task notes linked to the parent through their Projects field and uses the configured completed statuses. In Bases view `order` arrays, the corresponding compatibility source property remains `file.tasks` (shown as `tasks` in Bases property pickers once present in the view `order` list).
 
 Nested task cards use CSS variables for their indentation. Add a CSS snippet if
 you want a denser hierarchy than the default:

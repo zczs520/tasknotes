@@ -83,7 +83,7 @@ Each task card displays information based on the visible properties configured i
 
 Use the **Card Layout** setting when a board needs a different density from other task views. Existing boards use **Default** unless `cardLayout: compact` is set in the view options.
 
-To show checklist progress on cards, include `file.tasks` in the view `order` array.
+To show linked subtask progress on cards, include `file.tasks` in the view `order` array.
 For existing `.base` files, add this in YAML manually first; after it is in `order`, it appears in the Bases picker as `tasks`.
 
 Click a card to open the task file for editing. Right-click to access the context menu for task actions. Drag cards between columns or swimlane cells to update the task's properties.

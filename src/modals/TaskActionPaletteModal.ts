@@ -201,10 +201,10 @@ export class TaskActionPaletteModal extends FuzzySuggestModal<TaskAction> {
 			execute: async (task) => {
 				const currentSession = this.plugin.getActiveTimeSession(task);
 				if (currentSession) {
-					await this.plugin.stopTimeTracking(task);
+					await this.plugin.stopTask(task);
 					new Notice("Time tracking stopped");
 				} else {
-					await this.plugin.startTimeTracking(task);
+					await this.plugin.startTask(task);
 					new Notice("Time tracking started");
 				}
 			},

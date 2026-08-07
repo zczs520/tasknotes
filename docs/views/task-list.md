@@ -90,7 +90,7 @@ TaskNotes properties are accessed in Bases YAML using these paths:
 | Projects | `note.projects` | Associated projects |
 | Contexts | `note.contexts` | Task contexts |
 | Tags | `file.tags` | File tags |
-| Checklist progress | `file.tasks` | First-level markdown checkbox progress shown as the TaskNotes checklist progress bar |
+| Subtask progress | `file.tasks` | Completion progress for task notes linked to this task as subtasks |
 | Time estimate | `note.timeEstimate` | Estimated duration |
 | Recurrence | `note.recurrence` | Recurrence pattern |
 | Blocked by | `note.blockedBy` | Blocking dependencies |

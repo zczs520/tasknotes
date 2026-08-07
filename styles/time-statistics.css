@@ -183,7 +183,7 @@
 
 .tn-time-statistics__metric-value {
 	overflow: hidden;
-	font-size: 30px;
+	font-size: 26px;
 	font-variant-numeric: tabular-nums;
 	font-weight: 680;
 	letter-spacing: -1px;
@@ -603,6 +603,10 @@
 .tn-time-statistics__insights {
 	padding: 0;
 	overflow: hidden;
+}
+
+.tn-time-statistics__ranking {
+	padding-bottom: 24px;
 }
 
 .tn-time-statistics__side-section {

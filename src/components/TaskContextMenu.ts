@@ -390,9 +390,9 @@ export class TaskContextMenu {
 			item.onClick(async () => {
 				const activeSession = plugin.getActiveTimeSession(task);
 				if (activeSession) {
-					await plugin.stopTimeTracking(task);
+					await plugin.stopTask(task);
 				} else {
-					await plugin.startTimeTracking(task);
+					await plugin.startTask(task);
 				}
 				this.options.onUpdate?.();
 			});

@@ -161,8 +161,8 @@ function mapPropertyToBasesProperty(property: string, plugin: TaskNotesPlugin): 
 			// totalTrackedTime is computed from timeEntries, use the timeEntries property
 			return fm.toUserField("timeEntries");
 		case "checklistProgress":
-			// checklistProgress is computed from markdown checklist items.
-			// Use file.tasks as the selectable Bases source property.
+			// The legacy checklistProgress ID now renders linked subtask completion.
+			// Keep file.tasks as the selectable Bases source property for compatibility.
 			return "file.tasks";
 	}
 

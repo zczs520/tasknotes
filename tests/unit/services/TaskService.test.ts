@@ -669,7 +669,8 @@ describe('TaskService', () => {
 
       expect(mockPlugin.emitter.trigger).toHaveBeenCalledWith('task-updated', {
         path: expect.stringMatching(/event-test-task\.md$/),
-        updatedTask: expect.objectContaining({ title: 'Event Test Task' })
+        updatedTask: expect.objectContaining({ title: 'Event Test Task' }),
+        created: true
       });
     });
 
@@ -1423,7 +1424,8 @@ describe('TaskService', () => {
       // Verify event emission
       expect(mockPlugin.emitter.trigger).toHaveBeenCalledWith('task-updated', {
         path: taskInfo.path,
-        updatedTask: taskInfo
+        updatedTask: taskInfo,
+        created: true
       });
 
       // Verify task info structure

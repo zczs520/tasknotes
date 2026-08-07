@@ -11,6 +11,7 @@ import {
 	calculateAverageTimePerActiveDay,
 	calculateTimeStatisticsTotal,
 	calculateUniqueTimeStatisticsTotal,
+	formatTimeStatisticsDuration,
 	getTimeStatisticsRange,
 	isCurrentTimeStatisticsPeriod,
 	shiftTimeStatisticsReference,
@@ -138,15 +139,10 @@ export class TimeStatisticsView extends BasesViewBase {
 	}
 
 	private formatDuration(durationMs: number): string {
-		const totalMinutes = Math.max(0, Math.round(durationMs / 60_000));
-		const locale = this.plugin.i18n.getCurrentLocale();
-		if (totalMinutes < 1) return locale === "zh" ? "少于1分钟" : "<1m";
-		const hours = Math.floor(totalMinutes / 60);
-		const minutes = totalMinutes % 60;
-		if (locale === "zh") {
-			return hours > 0 ? `${hours}小时${minutes > 0 ? `${minutes}分` : ""}` : `${minutes}分`;
-		}
-		return hours > 0 ? `${hours}h${minutes > 0 ? ` ${minutes}m` : ""}` : `${minutes}m`;
+		return formatTimeStatisticsDuration(
+			durationMs,
+			this.plugin.i18n.getCurrentLocale() === "zh"
+		);
 	}
 
 	private formatCompactDuration(durationMs: number): string {
@@ -366,7 +362,10 @@ export class TimeStatisticsView extends BasesViewBase {
 				live.createSpan({ cls: "tn-time-statistics__live-dot" });
 				live.createSpan({ text: this.translate("running") });
 			}
-			const value = item.createDiv({ cls: "tn-time-statistics__metric-value" });
+			const value = item.createDiv({
+				cls: "tn-time-statistics__metric-value",
+				attr: { title: `${metric.value}${metric.unit ?? ""}` },
+			});
 			value.createSpan({ text: metric.value });
 			if (metric.unit) {
 				value.createSpan({ cls: "tn-time-statistics__metric-unit", text: metric.unit });
@@ -643,13 +642,10 @@ export class TimeStatisticsView extends BasesViewBase {
 	}
 
 	private renderTaskRanking(parent: HTMLElement, tasks: readonly TaskTimeStatistic[]): void {
-		const section = parent.createDiv({ cls: "tn-time-statistics__side-section" });
-		section.createEl("h3", {
-			cls: "tn-time-statistics__panel-title",
-			text: this.translate("ranking.title"),
-		});
+		const section = this.createPanel(parent, this.translate("ranking.title"));
+		section.addClass("tn-time-statistics__ranking");
 		const maxDuration = Math.max(1, tasks[0]?.durationMs ?? 1);
-		for (const task of tasks.slice(0, 5)) {
+		for (const task of tasks) {
 			const primaryTag = task.tags[0] ?? null;
 			const colorKey = primaryTag ?? "untagged";
 			const row = section.createEl("button", {
@@ -660,7 +656,11 @@ export class TimeStatisticsView extends BasesViewBase {
 			row.createSpan({
 				cls: `tn-time-statistics__color-dot is-color-${colorIndexForValue(colorKey)}`,
 			});
-			row.createSpan({ cls: "tn-time-statistics__rank-name", text: task.taskTitle });
+			row.createSpan({
+				cls: "tn-time-statistics__rank-name",
+				text: task.taskTitle,
+				attr: { title: task.taskTitle },
+			});
 			row.createSpan({
 				cls: "tn-time-statistics__rank-duration",
 				text: this.formatDuration(task.durationMs),
@@ -693,7 +693,7 @@ export class TimeStatisticsView extends BasesViewBase {
 			});
 			segment.style.width = `${attributedTotal > 0 ? (tag.durationMs / attributedTotal) * 100 : 0}%`;
 		}
-		for (const tag of tags.slice(0, 6)) {
+		for (const tag of tags) {
 			const key = tag.tag ?? "untagged";
 			const percentage =
 				attributedTotal > 0 ? Math.round((tag.durationMs / attributedTotal) * 100) : 0;
@@ -713,15 +713,10 @@ export class TimeStatisticsView extends BasesViewBase {
 		}
 	}
 
-	private renderInsights(
-		parent: HTMLElement,
-		tasks: readonly TaskTimeStatistic[],
-		tags: readonly TagTimeStatistic[]
-	): void {
+	private renderInsights(parent: HTMLElement, tags: readonly TagTimeStatistic[]): void {
 		const panel = parent.createDiv({
 			cls: "tn-time-statistics__panel tn-time-statistics__insights",
 		});
-		this.renderTaskRanking(panel, tasks);
 		this.renderTagDistribution(panel, tags);
 	}
 
@@ -847,7 +842,8 @@ export class TimeStatisticsView extends BasesViewBase {
 			}
 			const dashboard = shell.createDiv({ cls: "tn-time-statistics__dashboard" });
 			this.renderMainChart(dashboard, range, segments, dailyStats);
-			this.renderInsights(dashboard, taskStats, tagStats);
+			this.renderInsights(dashboard, tagStats);
+			this.renderTaskRanking(shell, taskStats);
 			this.renderRecords(shell, segments);
 		} catch (error) {
 			tasknotesLogger.error("Failed to render time statistics", {

@@ -41,6 +41,7 @@ When a change has user-facing documentation, include a canonical tasknotes.dev l
 
 ## Changed
 
+- Task creation dialogs now create an untitled task as soon as they open and autosave every subsequent edit. The bottom Create task action has been removed, the header includes a direct Open note action, and closing or opening the note flushes pending title, details, property, relationship, and subtask changes first.
 - Time statistics now separates cumulative task time from total time, with overlapping task timers counted only once in the total across day, week, month, and year views.
 - Rebuilt the task creation and edit dialogs as a unified single-column task sheet with a compact icon-led property layout. Status, priority, scheduled time, and tags appear first; a control directly below the property list reveals only the remaining properties, while the full-height Markdown details stay visible and can be focused from anywhere in their blank region. Natural-language task capture now fills the form automatically with a faster, change-aware debounce, including Chinese phrases such as “明天下午三点.” Edit dialogs now save continuously like a normal note, place the icon-labeled “Open note” action beside the top close control, and no longer require a bottom action bar. The modal field settings now include status, priority, dates, recurrence, reminders, and edit-mode time tracking.
 - Active task controls now separate stopping from completing: the blue Stop action ends timing and returns the task to its configured pending status, while the green Complete action ends timing and completes the task.
@@ -50,7 +51,7 @@ When a change has user-facing documentation, include a canonical tasknotes.dev l
 - Kanban views can now use a centered fixed width or full width with configurable side margins. The floating active-task control can be dragged anywhere in the workspace and remembers its position.
 - Kanban task creation now inherits the current column and swimlane values for tags and other writable note properties, and the task card menu includes a direct delete action.
 - Task note header cards now keep the start/end task action visible and show a compact in-progress label while a task is active.
-- Refined the time statistics dashboard to match the day timeline, monthly heatmap, tag-stacked period chart with immediate tag breakdowns, compact task rankings, distribution, and date-grouped record layout across day, week, month, and year views. Time-entry tags remain fully visible without adding card borders to each row.
+- Refined the time statistics dashboard to match the day timeline, monthly heatmap, tag-stacked period chart with immediate tag breakdowns, full task rankings, distribution, and date-grouped record layout across day, week, month, and year views. Rankings now appear above time records, all recorded tasks and tags remain visible, long summary values show their full text on hover, and longer durations automatically switch from hours to days and months. Time-entry tags remain fully visible without adding card borders to each row.
 - Task cards now distinguish the saved in-progress status from an active timer: status-only cards show the configured status label, while actively timed cards show a dedicated tracking label.
 - Starting a timer now moves the task to the configured in-progress status, and moving a task into that status starts its timer.
 - Moving a task out of the configured in-progress status now stops its active timer and refreshes the floating active-task control. Existing active timers attached to another status are reconciled when the plugin loads.
@@ -70,6 +71,8 @@ When a change has user-facing documentation, include a canonical tasknotes.dev l
 
 ## Fixed
 
+- Task card progress bars now count linked subtask notes and their configured completion statuses instead of Markdown checkboxes in the parent note.
+- Fixed tasks created or moved into the in-progress Kanban column through embedded Bases, metadata-only updates, or other task entry points not reliably starting time tracking and showing the floating active-task control. Duplicate update events are now reconciled once, and user-facing stop controls also return the task to its pending status so the saved status and floating timer cannot drift apart.
 - Opening a task note from the edit dialog now reuses the active tab and dismisses the dialog before Markdown and embedded queries finish rendering, while still saving pending edits first.
 - Fixed continuous edit-modal autosave errors after renaming a task stored in the vault root; root filenames now keep canonical paths, and previously generated leading-slash paths are recovered automatically.
 - Fixed task modal tag suggestions only searching tags already used by tasks; suggestions now include hierarchical tags from the entire vault, matching Markdown tag completion.

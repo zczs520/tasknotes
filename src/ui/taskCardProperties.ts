@@ -1,4 +1,4 @@
-import { Notice, setTooltip, TFile, type CachedMetadata } from "obsidian";
+import { Notice, setTooltip } from "obsidian";
 import TaskNotesPlugin from "../main";
 import { ICSEvent, TaskInfo } from "../types";
 import { DateContextMenu } from "../components/DateContextMenu";
@@ -219,55 +219,6 @@ export function getDefaultVisibleProperties(plugin: TaskNotesPlugin): string[] {
 	];
 
 	return convertInternalToUserProperties(internalDefaults, plugin);
-}
-
-interface ChecklistProgress {
-	completed: number;
-	total: number;
-	percent: number;
-}
-
-function getChecklistProgress(taskPath: string, plugin: TaskNotesPlugin): ChecklistProgress | null {
-	const file = plugin.app.vault.getAbstractFileByPath(taskPath);
-	if (!(file instanceof TFile)) return null;
-
-	const fileCache = plugin.app.metadataCache.getFileCache(file);
-	return calculateChecklistProgress(fileCache);
-}
-
-function calculateChecklistProgress(cache: unknown): ChecklistProgress | null {
-	if (cache === null || cache === undefined) {
-		return null;
-	}
-
-	const listItems = (cache as CachedMetadata).listItems;
-	if (!Array.isArray(listItems) || listItems.length === 0) {
-		return null;
-	}
-
-	let total = 0;
-	let completed = 0;
-
-	for (const item of listItems) {
-		if (!item || typeof item.task !== "string") continue;
-		const isNested = typeof item.parent === "number" && item.parent >= 0;
-		if (isNested) continue;
-
-		total += 1;
-		if (item.task.toLowerCase() === "x") {
-			completed += 1;
-		}
-	}
-
-	if (total === 0) {
-		return null;
-	}
-
-	return {
-		completed,
-		total,
-		percent: Math.round((completed / total) * 100),
-	};
 }
 
 type PropertyRenderer = (
@@ -554,7 +505,7 @@ const PROPERTY_RENDERERS: Record<string, PropertyRenderer> = {
 		}
 	},
 	checklistProgress: (element, _value, task, plugin) => {
-		const progress = getChecklistProgress(task.path, plugin);
+		const progress = plugin.projectSubtasksService.getSubtaskProgressSync(task.path);
 		if (!progress) {
 			return;
 		}
@@ -575,7 +526,7 @@ const PROPERTY_RENDERERS: Record<string, PropertyRenderer> = {
 
 		setTooltip(
 			progressEl,
-			`${progress.percent}% complete (${progress.completed}/${progress.total})`,
+			`${progress.percent}% complete (${progress.completed}/${progress.total} subtasks)`,
 			{
 				placement: "top",
 			}
