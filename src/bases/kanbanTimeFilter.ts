@@ -1,7 +1,13 @@
 import type { TaskInfo } from "../types";
 
 export type KanbanTimeFilterField = "scheduled" | "created" | "completed";
-export type KanbanTimeFilterPreset = "this-week" | "last-week" | "all" | "custom";
+export type KanbanTimeFilterPreset =
+	| "today"
+	| "yesterday"
+	| "this-week"
+	| "last-week"
+	| "all"
+	| "custom";
 
 export interface KanbanTimeFilterState {
 	field: KanbanTimeFilterField;
@@ -35,7 +41,13 @@ export function normalizeKanbanTimeFilterField(value: unknown): KanbanTimeFilter
 }
 
 export function normalizeKanbanTimeFilterPreset(value: unknown): KanbanTimeFilterPreset {
-	return value === "last-week" || value === "all" || value === "custom" ? value : "this-week";
+	return value === "today" ||
+		value === "yesterday" ||
+		value === "last-week" ||
+		value === "all" ||
+		value === "custom"
+		? value
+		: "this-week";
 }
 
 function startOfLocalDay(date: Date): Date {
@@ -118,6 +130,21 @@ export function getKanbanTimeRange(
 ): KanbanTimeRange {
 	if (state.preset === "all") {
 		return { start: null, endExclusive: null };
+	}
+
+	const todayStart = startOfLocalDay(now);
+	if (state.preset === "today") {
+		return {
+			start: todayStart,
+			endExclusive: addLocalDays(todayStart, 1),
+		};
+	}
+
+	if (state.preset === "yesterday") {
+		return {
+			start: addLocalDays(todayStart, -1),
+			endExclusive: todayStart,
+		};
 	}
 
 	const thisWeekStart = startOfLocalWeek(now);

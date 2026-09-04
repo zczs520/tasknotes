@@ -929,6 +929,45 @@
     border-top: 1px solid var(--background-modifier-border);
 }
 
+/* Confirmation actions stay legible even when the active theme gives warning
+   buttons a pale disabled-looking treatment. */
+.modal.tasknotes-confirmation-modal {
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 18px;
+}
+
+.modal.tasknotes-confirmation-modal .modal-button-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 24px;
+}
+
+.modal.tasknotes-confirmation-modal .tasknotes-confirmation-modal__cancel,
+.modal.tasknotes-confirmation-modal .tasknotes-confirmation-modal__confirm {
+    min-width: 72px;
+    min-height: 36px;
+    padding: 0 16px;
+    border-radius: 10px;
+    box-shadow: none;
+    font-weight: var(--font-semibold);
+}
+
+.modal.tasknotes-confirmation-modal--destructive .tasknotes-confirmation-modal__confirm.mod-warning {
+    color: #ffffff;
+    background: #d94b3d;
+    border-color: #d94b3d;
+    opacity: 1;
+}
+
+.modal.tasknotes-confirmation-modal--destructive .tasknotes-confirmation-modal__confirm.mod-warning:hover,
+.modal.tasknotes-confirmation-modal--destructive .tasknotes-confirmation-modal__confirm.mod-warning:focus-visible {
+    color: #ffffff;
+    background: #bd3c31;
+    border-color: #bd3c31;
+    opacity: 1;
+}
+
 /* =====================================================================
    ICS EVENT INFO MODAL
    ===================================================================== */

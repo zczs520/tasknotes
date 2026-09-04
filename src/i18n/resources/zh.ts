@@ -344,6 +344,8 @@ export const zh: TranslationTree = {
 					created: "创建时间",
 					completed: "完成时间"
 				},
+				today: "今日",
+				yesterday: "昨日",
 				thisWeek: "本周",
 				lastWeek: "上周",
 				all: "全部",

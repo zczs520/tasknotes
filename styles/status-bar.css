@@ -70,13 +70,13 @@
     color: var(--text-normal);
 }
 
-/* Global active-task control. It is anchored to Obsidian's workspace so it
-   remains visible while notes and views change without using fixed positioning. */
+/* Global active-task control. Mounting it at the document level lets it remain
+   visible above Obsidian modals, including while a creation modal starts a task. */
 .tasknotes-active-task-control {
     position: absolute;
     top: calc(var(--header-height, 40px) + var(--size-4-2, 8px));
     right: max(var(--size-4-3, 12px), env(safe-area-inset-right));
-    z-index: var(--tn-z-dropdown);
+    z-index: var(--layer-tooltip, var(--tn-z-tooltip));
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -233,5 +233,111 @@
         right: var(--size-4-2, 8px);
         width: calc(100% - 16px);
         max-height: 32vh;
+    }
+}
+
+/* Dayquence floating timer: one compact paper surface shared across notes and views. */
+.tasknotes-plugin.tasknotes-active-task-control {
+    --tn-active-surface: #fffdf9;
+    --tn-active-soft: #fbf3e9;
+    --tn-active-line: #ece0d1;
+    --tn-active-line-strong: #ddcdb9;
+    --tn-active-text: #3a2f27;
+    --tn-active-muted: #7c6d60;
+    --tn-active-coral: #e2643c;
+    --tn-active-green: #4f8a63;
+    gap: 0;
+    padding: 0;
+    overflow: hidden auto;
+    border-color: var(--tn-active-line);
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--tn-active-surface) 94%, transparent);
+    box-shadow: 0 2px 5px rgb(58 47 39 / 8%), 0 14px 34px rgb(58 47 39 / 14%);
+    backdrop-filter: blur(14px);
+}
+
+.theme-dark .tasknotes-plugin.tasknotes-active-task-control {
+    --tn-active-surface: #262120;
+    --tn-active-soft: #2d2725;
+    --tn-active-line: #372f2c;
+    --tn-active-line-strong: #453b36;
+    --tn-active-text: #f0e8e0;
+    --tn-active-muted: #b5a79b;
+    --tn-active-coral: #f0885f;
+    --tn-active-green: #74b18a;
+    box-shadow: 0 2px 7px rgb(0 0 0 / 34%), 0 16px 38px rgb(0 0 0 / 30%);
+}
+
+.tasknotes-plugin.tasknotes-active-task-control .tasknotes-active-task-control__summary {
+    padding: 7px 10px 4px;
+    color: var(--tn-active-muted);
+}
+
+.tasknotes-plugin.tasknotes-active-task-control .tasknotes-active-task-control__task {
+    min-height: 44px;
+    padding: 6px 8px;
+    border: 0;
+    border-radius: 13px;
+    background: var(--tn-active-surface);
+}
+
+.tasknotes-plugin.tasknotes-active-task-control .tasknotes-active-task-control__task:hover {
+    background: var(--tn-active-soft);
+}
+
+.tasknotes-plugin.tasknotes-active-task-control .tasknotes-active-task-control__task + .tasknotes-active-task-control__task {
+    border-top: 1px solid var(--tn-active-line);
+    border-radius: 0;
+}
+
+.tasknotes-plugin.tasknotes-active-task-control .tasknotes-active-task-control__marker {
+    border-radius: 50%;
+    background: var(--tn-active-green);
+    animation: tn-active-task-breathe 2.4s ease-in-out infinite;
+}
+
+.tasknotes-plugin.tasknotes-active-task-control .tasknotes-active-task-control__open {
+    color: var(--tn-active-text);
+}
+
+.tasknotes-plugin.tasknotes-active-task-control .tasknotes-active-task-control__title {
+    font-weight: var(--font-semibold);
+}
+
+.tasknotes-plugin.tasknotes-active-task-control .tasknotes-active-task-control__elapsed {
+    color: var(--tn-active-coral);
+}
+
+.tasknotes-plugin.tasknotes-active-task-control .tasknotes-active-task-control__action {
+    border-radius: 8px;
+}
+
+.tasknotes-plugin.tasknotes-active-task-control .tasknotes-active-task-control__stop {
+    border-color: var(--tn-active-line-strong);
+    background: var(--tn-active-surface);
+}
+
+.tasknotes-plugin.tasknotes-active-task-control .tasknotes-active-task-control__complete,
+.tasknotes-plugin.tasknotes-active-task-control .tasknotes-active-task-control__complete:hover {
+    border-color: var(--tn-active-green);
+    background: var(--tn-active-green);
+    color: #ffffff;
+}
+
+@keyframes tn-active-task-breathe {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.48;
+        transform: scale(0.72);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tasknotes-plugin.tasknotes-active-task-control .tasknotes-active-task-control__marker {
+        animation: none;
     }
 }

@@ -502,6 +502,8 @@ export class KanbanView extends BasesViewBase {
 				"views.kanban.timeFilter.fieldButtonLabel",
 				{ field }
 			),
+			today: this.plugin.i18n.translate("views.kanban.timeFilter.today"),
+			yesterday: this.plugin.i18n.translate("views.kanban.timeFilter.yesterday"),
 			thisWeek: this.plugin.i18n.translate("views.kanban.timeFilter.thisWeek"),
 			lastWeek: this.plugin.i18n.translate("views.kanban.timeFilter.lastWeek"),
 			all: this.plugin.i18n.translate("views.kanban.timeFilter.all"),
@@ -1647,6 +1649,29 @@ export class KanbanView extends BasesViewBase {
 		setTooltip(element, "Status is not defined in TaskNotes settings");
 	}
 
+	private applyStatusTone(
+		element: HTMLElement,
+		groupKey: string,
+		groupByPropertyId: string | null
+	): void {
+		if (!groupByPropertyId || !this.isStatusGroupingProperty(groupByPropertyId)) {
+			return;
+		}
+
+		const statusConfig = this.findStatusConfigForGroupKey(groupKey);
+		if (!statusConfig) {
+			return;
+		}
+
+		let tone = "pending";
+		if (statusConfig.isCompleted) {
+			tone = "completed";
+		} else if (statusConfig.id === "in-progress") {
+			tone = "in-progress";
+		}
+		element.setAttribute("data-status-tone", tone);
+	}
+
 	private async renderFlat(
 		groups: Map<string, TaskInfo[]>,
 		allGroups: Map<string, TaskInfo[]>
@@ -1800,6 +1825,7 @@ export class KanbanView extends BasesViewBase {
 			const headerCell = headerRow.createEl("div", {
 				cls: "kanban-view__column-header-cell",
 			});
+			this.applyStatusTone(headerCell, columnKey, groupByPropertyId);
 			headerCell.setAttribute("draggable", "true");
 			headerCell.setAttribute("data-column-key", columnKey);
 			const isUnknownStatusColumn = this.isUnknownStatusGroup(columnKey, groupByPropertyId);
@@ -1930,6 +1956,7 @@ export class KanbanView extends BasesViewBase {
 						"data-swimlane": swimLaneKey,
 					},
 				});
+				this.applyStatusTone(cell, columnKey, groupByPropertyId);
 				if (isUnknownStatusColumn) {
 					this.markUnknownStatusColumn(cell, columnKey);
 				}
@@ -1994,6 +2021,7 @@ export class KanbanView extends BasesViewBase {
 		column.className = "kanban-view__column";
 		column.style.width = `${this.columnWidth}px`;
 		column.setAttribute("data-group", groupKey);
+		this.applyStatusTone(column, groupKey, groupByPropertyId);
 		const isUnknownStatusColumn = this.isUnknownStatusGroup(groupKey, groupByPropertyId);
 		if (isUnknownStatusColumn) {
 			this.markUnknownStatusColumn(column, groupKey);
@@ -4254,6 +4282,7 @@ export class KanbanView extends BasesViewBase {
 					if (dropPlan.changedTaskProp) {
 						try {
 							const originalTask =
+								currentTask ??
 								this.taskInfoCache.get(path) ??
 								(await this.plugin.cacheManager.getTaskInfo(path));
 							const sideEffectPlan = planKanbanDropSideEffect({

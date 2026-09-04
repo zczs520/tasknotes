@@ -347,6 +347,8 @@ export const fr: TranslationTree = {
 					created: "Date de création",
 					completed: "Date d’achèvement",
 				},
+				today: "Aujourd’hui",
+				yesterday: "Hier",
 				thisWeek: "Cette semaine",
 				lastWeek: "Semaine dernière",
 				all: "Tout",

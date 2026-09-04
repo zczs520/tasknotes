@@ -439,6 +439,37 @@ export function addEmptyKanbanStatusGroups(
 	}
 }
 
+/**
+ * Drop stale, empty status columns left behind by a saved column order or pin.
+ * Unknown statuses that still contain tasks remain visible so existing task data
+ * is never hidden, and the unassigned `None` column stays available.
+ */
+export function removeEmptyUnconfiguredKanbanStatusGroups(
+	groups: Map<string, TaskInfo[]>,
+	groupByPropertyId: string,
+	statusConfigs: readonly StatusConfig[],
+	isStatusGroupingProperty: (propertyId: string) => boolean,
+	getStatusGroupKeyAliases: (statusConfig: StatusConfig) => ReadonlySet<string>
+): void {
+	if (!isStatusGroupingProperty(groupByPropertyId)) {
+		return;
+	}
+
+	for (const [groupKey, tasks] of groups) {
+		const normalizedGroupKey = groupKey.trim();
+		if (tasks.length > 0 || !normalizedGroupKey || normalizedGroupKey === "None") {
+			continue;
+		}
+
+		const isConfigured = statusConfigs.some((statusConfig) =>
+			getStatusGroupKeyAliases(statusConfig).has(normalizedGroupKey)
+		);
+		if (!isConfigured) {
+			groups.delete(groupKey);
+		}
+	}
+}
+
 export function addEmptyKanbanPriorityGroups(
 	groups: Map<string, TaskInfo[]>,
 	groupByPropertyId: string,
@@ -628,6 +659,13 @@ export function buildKanbanTaskGroups(options: KanbanTaskGroupingOptions): Map<s
 		options.isPriorityGroupingProperty
 	);
 	addPinnedColumnGroups(groups, options.pinnedColumns);
+	removeEmptyUnconfiguredKanbanStatusGroups(
+		groups,
+		options.groupByPropertyId,
+		options.statusConfigs,
+		options.isStatusGroupingProperty,
+		options.getStatusGroupKeyAliases
+	);
 
 	return groups;
 }

@@ -38,6 +38,23 @@
 	color: var(--text-normal);
 }
 
+.tasknotes-view-active .tn-bases-new-task-btn > button.text-icon-button {
+    min-height: 36px;
+    padding: 7px 13px;
+    color: #ffffff;
+    font-weight: var(--font-medium);
+    background: #e2643c;
+    border: 1px solid color-mix(in srgb, #e2643c 82%, #8f3b24);
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgb(58 47 39 / 8%);
+}
+
+.tasknotes-view-active .tn-bases-new-task-btn > button.text-icon-button:hover {
+    color: #ffffff;
+    background: color-mix(in srgb, #e2643c 88%, #8f3b24);
+    border-color: color-mix(in srgb, #e2643c 72%, #8f3b24);
+}
+
 .tn-bases-new-task-btn > button.text-icon-button:focus-visible {
 	outline: 2px solid var(--background-modifier-border-focus);
 	outline-offset: 2px;

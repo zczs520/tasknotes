@@ -340,6 +340,8 @@ export const ko: TranslationTree = {
 					created: "생성 시간",
 					completed: "완료 날짜",
 				},
+				today: "오늘",
+				yesterday: "어제",
 				thisWeek: "이번 주",
 				lastWeek: "지난주",
 				all: "전체",

@@ -15,6 +15,7 @@ import {
 import { createPriorityClickHandler, createStatusCycleHandler } from "./taskCardActions";
 import {
 	applyTaskCardPriorityColor,
+	applyTaskCardStatusColors,
 	createPriorityIndicator,
 	createStatusIndicator,
 	updatePriorityIndicator,
@@ -165,6 +166,9 @@ export function createTaskCard(
 	});
 
 	applyTaskCardPriorityColor(card, task, plugin);
+	// Apply status colors even when Kanban consolidates the status indicator into
+	// the column header and therefore does not render a status dot on the card.
+	applyTaskCardStatusColors(card, effectiveStatus, plugin);
 
 	createStatusIndicator({
 		mainRow,
@@ -259,7 +263,9 @@ export function createTaskCard(
 			(event: MouseEvent) => {
 				if (event.button !== 0 || event.shiftKey) return;
 				const target = event.target as Element | null;
-				if (target?.closest('[data-tn-action="edit-date"]')) return;
+				if (target?.closest('[data-tn-action="edit-date"], [data-tn-no-drag="true"]')) {
+					return;
+				}
 				event.preventDefault();
 				event.stopPropagation();
 				event.stopImmediatePropagation();

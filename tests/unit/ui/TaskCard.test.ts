@@ -292,6 +292,32 @@ describe('TaskCard Component', () => {
       expect(titleEl?.textContent).toBe(task.title);
     });
 
+    it('should retain a semantic status tone when the status indicator is hidden', () => {
+      const pendingCard = createTaskCard(
+        TaskFactory.createTask({ status: 'open' }),
+        mockPlugin,
+        undefined,
+        { hideStatusIndicator: true }
+      );
+      const activeCard = createTaskCard(
+        TaskFactory.createTask({ status: 'in-progress' }),
+        mockPlugin,
+        undefined,
+        { hideStatusIndicator: true }
+      );
+      const completedCard = createTaskCard(
+        TaskFactory.createTask({ status: 'done' }),
+        mockPlugin,
+        undefined,
+        { hideStatusIndicator: true }
+      );
+
+      expect(pendingCard.querySelector('.task-card__status-dot')).toBeNull();
+      expect(pendingCard.dataset.statusTone).toBe('pending');
+      expect(activeCard.dataset.statusTone).toBe('in-progress');
+      expect(completedCard.dataset.statusTone).toBe('completed');
+    });
+
     it('should render wikilinks in task titles as clickable internal links (#1733)', () => {
       const linkedFile = new TFile('Lidl.md');
       mockPlugin.app.metadataCache.getFirstLinkpathDest.mockReturnValue(linkedFile);
@@ -1336,6 +1362,23 @@ describe('TaskCard Component', () => {
     });
   });
   describe('Kanban card edit click mode', () => {
+    it('does not open the editor when an interactive hover action is clicked', () => {
+      const task = TaskFactory.createTask({ title: 'Kanban task' });
+      const card = createTaskCard(task, mockPlugin, [], {
+        openEditOnAnyClick: true
+      });
+      const action = document.createElement('button');
+      const actionHandler = jest.fn();
+      action.dataset.tnNoDrag = 'true';
+      action.addEventListener('click', actionHandler);
+      card.appendChild(action);
+
+      action.click();
+
+      expect(actionHandler).toHaveBeenCalledTimes(1);
+      expect(mockPlugin.openTaskEditModal).not.toHaveBeenCalled();
+    });
+
     it('opens the scheduled-date popover without opening the task editor', () => {
       const task = TaskFactory.createTask({
         title: 'Kanban task',

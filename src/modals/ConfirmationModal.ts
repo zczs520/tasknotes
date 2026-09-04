@@ -40,6 +40,11 @@ export class ConfirmationModal extends Modal {
 	onOpen() {
 		const { contentEl } = this;
 		contentEl.empty();
+		this.modalEl.addClass("tasknotes-confirmation-modal");
+		this.modalEl.toggleClass(
+			"tasknotes-confirmation-modal--destructive",
+			Boolean(this.options.isDestructive)
+		);
 
 		new Setting(contentEl).setName(this.options.title).setHeading();
 
@@ -98,7 +103,10 @@ export class ConfirmationModal extends Modal {
 			});
 		}
 
-		const cancelButton = buttonContainer.createEl("button", { text: this.options.cancelText });
+		const cancelButton = buttonContainer.createEl("button", {
+			text: this.options.cancelText,
+			cls: "tasknotes-confirmation-modal__cancel",
+		});
 		cancelButton.addEventListener("click", () => {
 			this.resolve(false);
 			this.close();
@@ -106,7 +114,7 @@ export class ConfirmationModal extends Modal {
 
 		const confirmButton = buttonContainer.createEl("button", {
 			text: this.options.confirmText,
-			cls: this.options.isDestructive ? "mod-warning" : "mod-cta",
+			cls: `tasknotes-confirmation-modal__confirm ${this.options.isDestructive ? "mod-warning" : "mod-cta"}`,
 		});
 
 		if (this.options.isDestructive) {

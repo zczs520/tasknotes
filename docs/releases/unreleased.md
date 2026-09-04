@@ -37,7 +37,7 @@ When a change has user-facing documentation, include a canonical tasknotes.dev l
 
 - Added bilingual first-run guides for Dayquence. New users receive both Chinese and English pages, with the guide matching their interface language opened automatically.
 - Added a compact active-task control in the top-right of Obsidian with live elapsed time and an action to end the task.
-- Added an optional Kanban toolbar that combines task search with scheduled, created, or completed date filters for this week, last week, all tasks, or a custom date range. Scheduled date is the default.
+- Added an optional Kanban toolbar that combines task search with scheduled, created, or completed date filters for today, yesterday, this week, last week, all tasks, or a custom date range. Scheduled date is the default.
 - Added a generated time statistics Base with a unified day, week, month, and year dashboard for totals, trends, task rankings, tag distribution, and recent time entries. It is available from a new ribbon shortcut and the command palette.
 
 ## Changed
@@ -50,11 +50,18 @@ When a change has user-facing documentation, include a canonical tasknotes.dev l
 - Active task controls now separate stopping from completing: the blue Stop action ends timing and returns the task to its configured pending status, while the green Complete action ends timing and completes the task.
 - Unified task date entry points around a compact visual calendar with today, tomorrow, Friday, and Sunday shortcuts while retaining optional time selection and natural-language date entry without unused modal space.
 - Refreshed the custom Bases Kanban view with soft color-coded columns, cleaner standalone task cards, collapsible and persistently reorderable swimlanes, per-view swimlane visibility controls, and labeled creation actions.
+- Kanban boards now use one continuous flat background, keep cards shadow-free at rest, and lift every card into a yellow pending, blue in-progress, or green completed hover surface with a small depth cue while hiding extra action icons and stale empty status columns.
+- Ordinary Markdown notes now offer a clear coral convert-to-task action in the document header, and the ribbon's create-task shortcut uses a consistently visible icon.
+- Refined the Kanban, task list, task-note header, and floating timer with a consistent warm paper visual system, clearer hierarchy, semantic status color, denser metadata, responsive layouts, and reduced-motion support.
+- Task notes now place time records and subtasks/relationships in separate full-width rows below the document, with subtasks beneath time records. Time records show per-entry start, end, duration, notes, live active timing, and the task total.
 - Kanban scheduled dates can now be changed directly from each card with quick choices for today, tomorrow, Friday, Sunday, and a compact calendar. Custom date filters now use a visual range calendar with shortcuts for this month, last month, and the recent three months.
 - Kanban views can now use a centered fixed width or full width with configurable side margins. The floating active-task control can be dragged anywhere in the workspace and remembers its position.
 - Kanban task creation now inherits the current column and swimlane values for tags and other writable note properties, and the task card menu includes a direct delete action.
 - Task note header cards now keep the start/end task action visible and show a compact in-progress label while a task is active.
-- Refined the time statistics dashboard to match the day timeline, monthly heatmap, tag-stacked period chart with immediate tag breakdowns, full task rankings, distribution, and date-grouped record layout across day, week, month, and year views. Rankings now appear above time records, all recorded tasks and tags remain visible, long summary values show their full text on hover, and longer durations automatically switch from hours to days and months. Time-entry tags remain fully visible without adding card borders to each row.
+- Refined the time statistics dashboard into a flat time ledger with a prominent elapsed total, full-width timeline, a cohesive period navigator, side-by-side tag distribution and task rankings, and a full-width record list below across day, week, month, and year views. All recorded tasks and tags remain visible, and long summary values show their full text on hover.
+- Task ranking rows in time statistics are now borderless for a cleaner compact list.
+- Active task-note cards and the floating timer now use single-layer compact surfaces without nested padding, while retaining a clear mint state and matching green controls.
+- Refined the default Tasks list into a denser ledger with inline metadata, quieter controls, and shadow-free rows, and improved destructive confirmation dialogs so the delete action remains clearly visible.
 - Task cards now distinguish the saved in-progress status from an active timer: status-only cards show the configured status label, while actively timed cards show a dedicated tracking label.
 - Starting a timer now moves the task to the configured in-progress status, and moving a task into that status starts its timer.
 - Moving a task out of the configured in-progress status now stops its active timer and refreshes the floating active-task control. Existing active timers attached to another status are reconciled when the plugin loads.
@@ -74,7 +81,10 @@ When a change has user-facing documentation, include a canonical tasknotes.dev l
 
 ## Fixed
 
+- Fixed completed time-entry rows in task notes continuing to accumulate duration whenever another entry was actively running; only unfinished entries now update live and totals remain accurate.
+- Extended the day time-statistics timeline from 08:00–21:00 to 08:00–24:00 so evening task records remain visible.
 - Task card progress bars now count linked subtask notes and their configured completion statuses instead of Markdown checkboxes in the parent note.
+- Fixed the floating active-task control being hidden behind the task creation dialog when a newly created task is set to in progress.
 - Fixed tasks created or moved into the in-progress Kanban column through embedded Bases, metadata-only updates, or other task entry points not reliably starting time tracking and showing the floating active-task control. Duplicate update events are now reconciled once, and user-facing stop controls also return the task to its pending status so the saved status and floating timer cannot drift apart.
 - Opening a task note from the edit dialog now reuses the active tab and dismisses the dialog before Markdown and embedded queries finish rendering, while still saving pending edits first.
 - Fixed continuous edit-modal autosave errors after renaming a task stored in the vault root; root filenames now keep canonical paths, and previously generated leading-slash paths are recovered automatically.

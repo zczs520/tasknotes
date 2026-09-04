@@ -108,8 +108,8 @@ export class StatusBarService {
 		const workspace = this.plugin.app?.workspace as
 			| { containerEl?: HTMLElement }
 			| undefined;
-		const parent = workspace?.containerEl ?? activeDocument.body;
-		const doc = parent.ownerDocument;
+		const doc = workspace?.containerEl?.ownerDocument ?? activeDocument;
+		const parent = doc.body;
 		const element = doc.createElement("section");
 		element.className = "tasknotes-plugin tasknotes-active-task-control";
 		element.hidden = true;

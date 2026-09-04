@@ -122,12 +122,12 @@ describe("active task floating control", () => {
 
 	it("shows the active task and updates elapsed time without the bottom status bar", async () => {
 		const task = createTask();
-		const { plugin, workspaceContainer } = createHarness([task]);
+		const { plugin } = createHarness([task]);
 		const service = new StatusBarService(plugin as never);
 		service.initialize();
 		await (service as unknown as { updateStatusBar: () => Promise<void> }).updateStatusBar();
 
-		const control = workspaceContainer.querySelector<HTMLElement>(
+		const control = document.body.querySelector<HTMLElement>(
 			".tasknotes-active-task-control"
 		);
 		expect(control?.hidden).toBe(false);
@@ -154,16 +154,36 @@ describe("active task floating control", () => {
 		expect(plugin.cacheManager.getAllTasks).toHaveBeenCalledTimes(1);
 
 		service.destroy();
-		expect(workspaceContainer.querySelector(".tasknotes-active-task-control")).toBeNull();
+		expect(document.body.querySelector(".tasknotes-active-task-control")).toBeNull();
+	});
+
+	it("mounts outside the workspace so an open creation modal cannot cover it", async () => {
+		const task = createTask();
+		const { plugin, workspaceContainer } = createHarness([task]);
+		const modalContainer = document.createElement("div");
+		modalContainer.className = "modal-container";
+		document.body.appendChild(modalContainer);
+		const service = new StatusBarService(plugin as never);
+		service.initialize();
+		await (service as unknown as { updateStatusBar: () => Promise<void> }).updateStatusBar();
+
+		const control = document.body.querySelector<HTMLElement>(
+			".tasknotes-active-task-control"
+		);
+		expect(control?.parentElement).toBe(document.body);
+		expect(workspaceContainer.contains(control)).toBe(false);
+		expect(control?.hidden).toBe(false);
+
+		service.destroy();
 	});
 
 	it("stops tracking before marking the task completed", async () => {
 		const task = createTask();
-		const { plugin, workspaceContainer } = createHarness([task]);
+		const { plugin } = createHarness([task]);
 		const service = new StatusBarService(plugin as never);
 		service.initialize();
 		await (service as unknown as { updateStatusBar: () => Promise<void> }).updateStatusBar();
-		const endButton = workspaceContainer.querySelector<HTMLButtonElement>(
+		const endButton = document.body.querySelector<HTMLButtonElement>(
 			".tasknotes-active-task-control__complete"
 		);
 		expect(endButton).not.toBeNull();
@@ -176,7 +196,7 @@ describe("active task floating control", () => {
 
 		expect(plugin.endTask).toHaveBeenCalledWith(task);
 		expect(
-			workspaceContainer.querySelector<HTMLElement>(".tasknotes-active-task-control")?.hidden
+			document.body.querySelector<HTMLElement>(".tasknotes-active-task-control")?.hidden
 		).toBe(true);
 
 		service.destroy();
@@ -184,11 +204,11 @@ describe("active task floating control", () => {
 
 	it("stops tracking and returns the task to pending without completing it", async () => {
 		const task = createTask();
-		const { plugin, workspaceContainer } = createHarness([task]);
+		const { plugin } = createHarness([task]);
 		const service = new StatusBarService(plugin as never);
 		service.initialize();
 		await (service as unknown as { updateStatusBar: () => Promise<void> }).updateStatusBar();
-		const stopButton = workspaceContainer.querySelector<HTMLButtonElement>(
+		const stopButton = document.body.querySelector<HTMLButtonElement>(
 			".tasknotes-active-task-control__stop"
 		);
 
@@ -201,7 +221,7 @@ describe("active task floating control", () => {
 		expect(plugin.stopTask).toHaveBeenCalledWith(task);
 		expect(plugin.endTask).not.toHaveBeenCalled();
 		expect(
-			workspaceContainer.querySelector<HTMLElement>(".tasknotes-active-task-control")?.hidden
+			document.body.querySelector<HTMLElement>(".tasknotes-active-task-control")?.hidden
 		).toBe(true);
 
 		service.destroy();
@@ -209,17 +229,17 @@ describe("active task floating control", () => {
 
 	it("drags the floating control and saves its position", async () => {
 		const task = createTask();
-		const { plugin, workspaceContainer } = createHarness([task]);
+		const { plugin } = createHarness([task]);
 		const service = new StatusBarService(plugin as never);
 		service.initialize();
 		await (service as unknown as { updateStatusBar: () => Promise<void> }).updateStatusBar();
-		const control = workspaceContainer.querySelector<HTMLElement>(
+		const control = document.body.querySelector<HTMLElement>(
 			".tasknotes-active-task-control"
 		)!;
 		const openButton = control.querySelector<HTMLElement>(
 			".tasknotes-active-task-control__open"
 		)!;
-		workspaceContainer.getBoundingClientRect = () =>
+		document.body.getBoundingClientRect = () =>
 			({ left: 0, top: 0, width: 1000, height: 700 } as DOMRect);
 		Object.defineProperty(control, "offsetWidth", { value: 300 });
 		Object.defineProperty(control, "offsetHeight", { value: 50 });
@@ -258,7 +278,7 @@ describe("active task floating control", () => {
 
 	it("shows a newly restarted task instead of reusing the previous empty result", async () => {
 		const task = createTask();
-		const { plugin, workspaceContainer, setTasks } = createHarness([]);
+		const { plugin, setTasks } = createHarness([]);
 		const service = new StatusBarService(plugin as never);
 		service.initialize();
 		await (service as unknown as { updateStatusBar: () => Promise<void> }).updateStatusBar();
@@ -267,7 +287,7 @@ describe("active task floating control", () => {
 		setTasks([task]);
 		await (service as unknown as { updateStatusBar: () => Promise<void> }).updateStatusBar();
 
-		const control = workspaceContainer.querySelector<HTMLElement>(
+		const control = document.body.querySelector<HTMLElement>(
 			".tasknotes-active-task-control"
 		);
 		expect(control?.hidden).toBe(false);

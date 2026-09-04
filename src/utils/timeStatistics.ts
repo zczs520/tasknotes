@@ -43,16 +43,6 @@ export interface DailyTimeStatistic {
 export function formatTimeStatisticsDuration(durationMs: number, isChinese: boolean): string {
 	const totalMinutes = Math.max(0, Math.round(durationMs / 60_000));
 	if (totalMinutes < 1) return isChinese ? "少于1分钟" : "<1m";
-
-	const totalHours = totalMinutes / 60;
-	const formatDecimal = (value: number): string => String(Math.round(value * 10) / 10);
-	if (totalHours >= 24 * 30) {
-		return `${formatDecimal(totalHours / (24 * 30))}${isChinese ? "个月" : "mo"}`;
-	}
-	if (totalHours >= 24) {
-		return `${formatDecimal(totalHours / 24)}${isChinese ? "天" : "d"}`;
-	}
-
 	const hours = Math.floor(totalMinutes / 60);
 	const minutes = totalMinutes % 60;
 	if (isChinese) {

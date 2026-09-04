@@ -282,10 +282,14 @@ export class SettingsLifecycleService {
 			.catch(() => undefined)
 			.then(async () => {
 				try {
-					const freshTask =
-						(await this.plugin.cacheManager.getTaskInfo(path)) ?? updatedTask;
-					const freshIsInProgress =
-						normalizeStatus(freshTask.status) === inProgressValue;
+					// Explicit service events already carry the authoritative post-write task.
+					// Metadata can still expose the previous status for a short window after a
+					// Kanban drop, so consulting it here can incorrectly cancel timer startup.
+					const hasExplicitTransition = Boolean(data.originalTask && data.updatedTask);
+					const freshTask = hasExplicitTransition
+						? updatedTask
+						: ((await this.plugin.cacheManager.getTaskInfo(path)) ?? updatedTask);
+					const freshIsInProgress = normalizeStatus(freshTask.status) === inProgressValue;
 					if (freshIsInProgress !== isInProgress) {
 						return;
 					}

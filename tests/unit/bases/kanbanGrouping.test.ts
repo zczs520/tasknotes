@@ -23,6 +23,7 @@ import {
 	isKanbanStatusGroupingProperty,
 	normalizeKanbanOrderConfig,
 	normalizeKanbanWipLimitsConfig,
+	removeEmptyUnconfiguredKanbanStatusGroups,
 	valueToKanbanGroupString,
 	valueToKanbanListGroupKeys,
 } from "../../../src/bases/kanbanGrouping";
@@ -310,6 +311,28 @@ describe("Kanban grouping helpers", () => {
 		});
 
 		expect([...priorityGroups.keys()]).toEqual(["high", "low"]);
+	});
+
+	it("removes stale empty status columns without hiding tasks that still use an unknown status", () => {
+		const statuses = [status("todo", "To Do")];
+		const aliases = (config: StatusConfig) => getKanbanStatusGroupKeyAliases(config);
+		const unknownTask = taskInfo("legacy.md", { status: "legacy" });
+		const groups = new Map<string, TaskInfo[]>([
+			["todo", []],
+			["completed", []],
+			["legacy", [unknownTask]],
+			["None", []],
+		]);
+
+		removeEmptyUnconfiguredKanbanStatusGroups(
+			groups,
+			"task.status",
+			statuses,
+			(propertyId) => isKanbanStatusGroupingProperty(propertyId, "status"),
+			aliases
+		);
+
+		expect([...groups.keys()]).toEqual(["todo", "legacy", "None"]);
 	});
 
 	it("derives swimlane keys from exploded lists or formula-backed properties", () => {

@@ -13,6 +13,8 @@ describe("Kanban time filter controls", () => {
 			labels: {
 				ariaLabel: "按计划时间筛选",
 				fieldButtonLabel: "时间筛选依据：计划时间",
+				today: "今日",
+				yesterday: "昨日",
 				thisWeek: "本周",
 				lastWeek: "上周",
 				all: "全部",
@@ -31,25 +33,27 @@ describe("Kanban time filter controls", () => {
 		expect(fieldButton?.dataset.field).toBe("scheduled");
 		expect(fieldButton?.getAttribute("aria-label")).toBe("时间筛选依据：计划时间");
 		expect(presetButtons.map((button) => button.textContent)).toEqual([
+			"今日",
+			"昨日",
 			"本周",
 			"上周",
 			"全部",
 			"自定义时间",
 		]);
-		expect(presetButtons[0].getAttribute("aria-pressed")).toBe("true");
+		expect(presetButtons[2].getAttribute("aria-pressed")).toBe("true");
 
 		fieldButton?.click();
 		expect(onChooseField).toHaveBeenCalledWith(fieldButton);
 
-		presetButtons[1].click();
+		presetButtons[3].click();
 		expect(onSelectPreset).toHaveBeenCalledWith("last-week");
 		controls.update("completed", "last-week", {
 			ariaLabel: "按完成时间筛选",
 			fieldButtonLabel: "时间筛选依据：完成时间",
 		});
 		expect(fieldButton?.dataset.field).toBe("completed");
-		expect(presetButtons[1].getAttribute("aria-pressed")).toBe("true");
-		expect(presetButtons[0].getAttribute("aria-pressed")).toBe("false");
+		expect(presetButtons[3].getAttribute("aria-pressed")).toBe("true");
+		expect(presetButtons[2].getAttribute("aria-pressed")).toBe("false");
 	});
 });
 

@@ -56,6 +56,7 @@ import { createTaskNotesLogger } from "../utils/tasknotesLogger";
 import { TASKNOTES_RUNTIME_LIFECYCLE_RAW_EVENTS } from "../api/runtime-api";
 import { showNotice } from "../ui/notifications";
 import { EVENT_USER_NOTICE, type UserNoticePayload } from "../core/userNotices";
+import { setupNoteTaskConversionActions } from "../editor/NoteTaskConversionAction";
 
 const tasknotesLogger = createTaskNotesLogger({ tag: "Bootstrap/PluginBootstrap" });
 
@@ -216,7 +217,7 @@ export function registerRibbonIcons(plugin: TaskNotesPlugin): void {
 	);
 
 	plugin.addRibbonIcon(
-		"tasknotes-simple",
+		"square-plus",
 		plugin.i18n.translate("commands.createNewTask"),
 		() => {
 			plugin.openTaskCreationModal();
@@ -335,6 +336,7 @@ function registerEditorIntegrations(plugin: TaskNotesPlugin): void {
 	plugin.registerEditorExtension(createRelationshipsDecorations(plugin));
 	plugin.relationshipsReadingModeCleanup = setupRelationshipsReadingMode(plugin);
 	plugin.registerMarkdownPostProcessor(createReadingModeTaskLinkProcessor(plugin));
+	plugin.register(setupNoteTaskConversionActions(plugin));
 }
 
 export function initializeServicesLazily(plugin: TaskNotesPlugin): void {

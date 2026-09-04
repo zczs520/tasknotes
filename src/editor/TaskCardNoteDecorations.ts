@@ -128,6 +128,10 @@ function createTaskCardWidget(plugin: TaskNotesPlugin, task: TaskInfo): HTMLElem
 
 	// Add specific styling for the note widget
 	taskCard.classList.add("task-card-note-widget__card");
+	container.classList.toggle(
+		"task-card-note-widget--actively-tracked",
+		taskCard.classList.contains("task-card--actively-tracked")
+	);
 
 	container.appendChild(taskCard);
 

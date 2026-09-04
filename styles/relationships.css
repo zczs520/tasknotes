@@ -7,18 +7,40 @@
  */
 
 .tasknotes-relationships-widget {
+    --tn-note-footer-surface: #fffdf9;
+    --tn-note-footer-soft: #fbf3e9;
+    --tn-note-footer-line: #ece0d1;
+    --tn-note-footer-line-strong: #ddcdb9;
+    --tn-note-footer-text: #3a2f27;
+    --tn-note-footer-muted: #7c6d60;
+    --tn-note-footer-faint: #a89a8c;
+    --tn-note-footer-coral: #e2643c;
+    --tn-note-footer-green: #4f8a63;
+    --tn-note-footer-green-soft: #e4efe5;
     display: block;
     width: auto;
-    margin-block: var(--tn-relationships-widget-margin-top, 1.5em) 2em;
+    margin-block: var(--tn-relationships-widget-margin-top, 2.25em) 2.5em;
     margin-inline: var(--file-margins, 0);
-    padding: 1em;
-    border: 1px dashed var(--background-modifier-border-hover);
-    border-radius: var(--radius-s);
+    padding: 0;
+    color: var(--tn-note-footer-text);
     clear: both;
     z-index: 10; /* Higher z-index to allow dropdowns to appear above other content */
 
     /* Allow filter dropdowns to extend beyond widget boundaries */
     overflow: visible;
+}
+
+.theme-dark .tasknotes-relationships-widget {
+    --tn-note-footer-surface: #262120;
+    --tn-note-footer-soft: #2d2725;
+    --tn-note-footer-line: #372f2c;
+    --tn-note-footer-line-strong: #453b36;
+    --tn-note-footer-text: #f0e8e0;
+    --tn-note-footer-muted: #b5a79b;
+    --tn-note-footer-faint: #85786c;
+    --tn-note-footer-coral: #f0885f;
+    --tn-note-footer-green: #74b18a;
+    --tn-note-footer-green-soft: #22302a;
 }
 
 .is-readable-line-width .tasknotes-relationships-widget {
@@ -32,6 +54,189 @@
     min-height: 50px;
 }
 
+.tasknotes-plugin .tasknotes-note-footer {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+    align-items: start;
+}
+
+.tasknotes-plugin .tasknotes-note-footer__time-card,
+.tasknotes-plugin .tasknotes-note-footer__relationships-card {
+    grid-column: 1 / -1;
+}
+
+.tasknotes-plugin.tasknotes-relationships-widget:not(.tasknotes-relationships-widget--task-note) .tasknotes-note-footer__relationships-card {
+    grid-column: 1 / -1;
+}
+
+.tasknotes-plugin .tasknotes-note-footer__card {
+    min-width: 0;
+    overflow: hidden;
+    background: var(--tn-note-footer-surface);
+    border: 1px solid var(--tn-note-footer-line);
+    border-radius: 16px;
+    box-shadow: none;
+}
+
+.theme-dark .tasknotes-plugin .tasknotes-note-footer__card {
+    box-shadow: none;
+}
+
+.tasknotes-plugin .tasknotes-note-footer__header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 50px;
+    padding: 10px 14px;
+    background: var(--tn-note-footer-soft);
+    border-bottom: 1px solid var(--tn-note-footer-line);
+}
+
+.tasknotes-plugin .tasknotes-note-footer__heading {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0;
+}
+
+.tasknotes-plugin .tasknotes-note-footer__heading h3 {
+    margin: 0;
+    color: var(--tn-note-footer-text);
+    font-family: var(--font-interface);
+    font-size: var(--font-ui-small);
+    font-weight: var(--font-semibold);
+    letter-spacing: -0.01em;
+}
+
+.tasknotes-plugin .tasknotes-note-footer__count {
+    color: var(--tn-note-footer-faint);
+    font-family: var(--font-monospace);
+    font-size: var(--font-ui-smaller);
+    white-space: nowrap;
+}
+
+.tasknotes-plugin .tasknotes-note-footer__total {
+    margin-inline-start: auto;
+    color: var(--tn-note-footer-coral);
+    font-family: var(--font-monospace);
+    font-size: var(--font-ui-small);
+    font-weight: var(--font-medium);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.tasknotes-plugin .tasknotes-note-footer__hint {
+    min-width: 0;
+    margin-inline-start: auto;
+    overflow: hidden;
+    color: var(--tn-note-footer-faint);
+    font-size: var(--font-ui-smaller);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tasknotes-plugin .tasknotes-note-footer__empty {
+    min-height: 102px;
+    padding: 28px 22px;
+    color: var(--tn-note-footer-muted);
+    font-size: var(--font-ui-small);
+    line-height: 1.65;
+    text-align: center;
+    text-wrap: pretty;
+}
+
+.tasknotes-plugin .tasknotes-note-footer__time-table {
+    overflow-x: auto;
+    scrollbar-width: thin;
+}
+
+.tasknotes-plugin .tasknotes-note-footer__time-row {
+    display: grid;
+    grid-template-columns: minmax(92px, 1.1fr) minmax(62px, 0.7fr) minmax(66px, 0.75fr) minmax(70px, 0.8fr) minmax(110px, 1.4fr);
+    align-items: center;
+    min-width: 520px;
+    border-bottom: 1px solid var(--tn-note-footer-line);
+    color: var(--tn-note-footer-text);
+    font-family: var(--font-monospace);
+    font-size: var(--font-ui-smaller);
+    font-variant-numeric: tabular-nums;
+}
+
+.tasknotes-plugin .tasknotes-note-footer__time-row:last-child {
+    border-bottom: 0;
+}
+
+.tasknotes-plugin .tasknotes-note-footer__time-row > span {
+    min-width: 0;
+    padding: 10px 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tasknotes-plugin .tasknotes-note-footer__time-row--header {
+    background: color-mix(in srgb, var(--tn-note-footer-soft) 72%, var(--tn-note-footer-surface));
+    color: var(--tn-note-footer-faint);
+    font-family: var(--font-interface);
+    font-size: 11px;
+}
+
+.tasknotes-plugin .tasknotes-note-footer__time-row.is-active {
+    background: var(--tn-note-footer-green-soft);
+}
+
+.tasknotes-plugin .tasknotes-note-footer__time-row.is-active .tasknotes-note-footer__entry-end,
+.tasknotes-plugin .tasknotes-note-footer__time-row.is-active .tasknotes-note-footer__entry-duration {
+    color: var(--tn-note-footer-green);
+    font-weight: var(--font-medium);
+}
+
+.tasknotes-plugin .tasknotes-note-footer__time-row.is-active .tasknotes-note-footer__entry-end::before {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin-inline-end: 6px;
+    background: currentcolor;
+    border-radius: 50%;
+    content: "";
+    animation: tn-note-footer-breathe 2.4s ease-in-out infinite;
+}
+
+.tasknotes-plugin .tasknotes-note-footer__entry-note {
+    color: var(--tn-note-footer-muted);
+}
+
+.tasknotes-plugin .tasknotes-note-footer__relationships-card .relationships__bases-container {
+    padding: 4px 8px 8px;
+}
+
+.tasknotes-plugin .tasknotes-note-footer__relationships-card :is(.internal-embed, .markdown-embed) {
+    margin: 0;
+    border: 0;
+}
+
+.tasknotes-plugin .tasknotes-note-footer__relationships-card .tn-bases-empty {
+    min-height: 102px;
+    margin: 0;
+    padding: 28px 18px;
+    color: var(--tn-note-footer-muted);
+    background: transparent;
+    border: 0;
+}
+
+@keyframes tn-note-footer-breathe {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.5;
+        transform: scale(0.72);
+    }
+}
+
 .tasknotes-plugin .relationships__error {
     color: var(--text-error);
     padding: 1em;
@@ -41,19 +246,34 @@
 
 /* Responsive design */
 @media (max-width: 768px) {
-    .tasknotes-plugin .tasknotes-relationships-widget {
-        margin-block: 1em;
+    .tasknotes-plugin.tasknotes-relationships-widget {
+        margin-block: 1.5em 2em;
         margin-inline: var(--file-margins, 0);
-        padding: 0.8em;
+        padding: 0;
     }
 
-    .is-readable-line-width .tasknotes-plugin .tasknotes-relationships-widget {
+    .is-readable-line-width .tasknotes-plugin.tasknotes-relationships-widget {
         margin-inline: auto;
+    }
+
+    .tasknotes-plugin .tasknotes-note-footer {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .tasknotes-plugin .tasknotes-note-footer__header {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .tasknotes-plugin .tasknotes-note-footer__hint {
+        flex-basis: 100%;
+        margin-inline-start: 0;
+        white-space: normal;
     }
 }
 
-/* Dark mode adjustments */
-.theme-dark .tasknotes-plugin .tasknotes-relationships-widget {
-    background-color: var(--background-secondary);
-    border-color: var(--background-modifier-border);
+@media (prefers-reduced-motion: reduce) {
+    .tasknotes-plugin .tasknotes-note-footer__time-row.is-active .tasknotes-note-footer__entry-end::before {
+        animation: none;
+    }
 }

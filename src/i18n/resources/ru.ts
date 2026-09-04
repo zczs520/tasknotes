@@ -342,6 +342,8 @@ export const ru: TranslationTree = {
 					created: "Время создания",
 					completed: "Дата завершения",
 				},
+				today: "Сегодня",
+				yesterday: "Вчера",
 				thisWeek: "Эта неделя",
 				lastWeek: "Прошлая неделя",
 				all: "Все",

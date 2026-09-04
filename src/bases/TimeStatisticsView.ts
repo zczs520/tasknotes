@@ -28,6 +28,8 @@ import { identifyTaskNotesFromBasesData } from "./helpers";
 
 const tasknotesLogger = createTaskNotesLogger({ tag: "Bases/TimeStatisticsView" });
 const PERIODS: readonly TimeStatisticsPeriod[] = ["day", "week", "month", "year"];
+export const DAY_TIMELINE_START_HOUR = 8;
+export const DAY_TIMELINE_END_HOUR = 24;
 
 interface PositionedSegment {
 	segment: TimeStatisticsSegment;
@@ -67,6 +69,12 @@ function formatClockTime(date: Date): string {
 
 function getMinuteOfDay(date: Date): number {
 	return date.getHours() * 60 + date.getMinutes() + date.getSeconds() / 60;
+}
+
+export function getDayTimelineEndMinute(segment: TimeStatisticsSegment): number {
+	return getLocalDateKey(segment.end) === getLocalDateKey(segment.start)
+		? getMinuteOfDay(segment.end)
+		: DAY_TIMELINE_END_HOUR * 60;
 }
 
 function colorIndexForValue(value: string): number {
@@ -351,7 +359,9 @@ export class TimeStatisticsView extends BasesViewBase {
 		];
 		const summary = parent.createDiv({ cls: "tn-time-statistics__summary" });
 		metrics.forEach((metric, index) => {
-			const item = summary.createDiv({ cls: "tn-time-statistics__metric" });
+			const item = summary.createDiv({
+				cls: `tn-time-statistics__metric${index === 0 ? " tn-time-statistics__metric--primary" : ""}`,
+			});
 			const label = item.createDiv({ cls: "tn-time-statistics__metric-label" });
 			label.createSpan({
 				text: metric.label,
@@ -404,11 +414,11 @@ export class TimeStatisticsView extends BasesViewBase {
 			parent,
 			this.getChartTitle(),
 			this.plugin.i18n.getCurrentLocale() === "zh"
-				? "08:00 – 21:00 · 按标签着色"
+				? "08:00 – 24:00 · 按标签着色"
 				: this.translate("chart.dayHint")
 		);
-		const startHour = 8;
-		const endHour = 21;
+		const startHour = DAY_TIMELINE_START_HOUR;
+		const endHour = DAY_TIMELINE_END_HOUR;
 		const spanMinutes = Math.max(60, (endHour - startHour) * 60);
 		const positioned = positionOverlappingSegments(segments);
 		const laneCount = Math.max(1, ...positioned.map((item) => item.laneCount));
@@ -422,7 +432,7 @@ export class TimeStatisticsView extends BasesViewBase {
 		}
 		for (const { segment, lane } of positioned) {
 			const start = Math.max(getMinuteOfDay(segment.start), startHour * 60);
-			const end = Math.min(getMinuteOfDay(segment.end), endHour * 60);
+			const end = Math.min(getDayTimelineEndMinute(segment), endHour * 60);
 			if (end <= start) continue;
 			const startPercentage = ((start - startHour * 60) / spanMinutes) * 100;
 			const widthPercentage = Math.max(0.7, ((end - start) / spanMinutes) * 100);
@@ -776,7 +786,7 @@ export class TimeStatisticsView extends BasesViewBase {
 			for (const segment of group.segments) {
 				const colorKey = getPrimaryTag(segment.tags);
 				const row = list.createEl("button", {
-					cls: "tn-time-statistics__record-row",
+					cls: `tn-time-statistics__record-row${segment.isActive ? " is-active" : ""}`,
 					attr: { type: "button" },
 				});
 				row.addEventListener("click", () => this.openTask(segment.taskPath));
@@ -840,11 +850,13 @@ export class TimeStatisticsView extends BasesViewBase {
 				this.renderEmptyState(shell);
 				return;
 			}
-			const dashboard = shell.createDiv({ cls: "tn-time-statistics__dashboard" });
-			this.renderMainChart(dashboard, range, segments, dailyStats);
-			this.renderInsights(dashboard, tagStats);
-			this.renderTaskRanking(shell, taskStats);
-			this.renderRecords(shell, segments);
+			const overview = shell.createDiv({ cls: "tn-time-statistics__overview" });
+			this.renderMainChart(overview, range, segments, dailyStats);
+			const details = shell.createDiv({ cls: "tn-time-statistics__details" });
+			const breakdown = details.createDiv({ cls: "tn-time-statistics__breakdown" });
+			this.renderInsights(breakdown, tagStats);
+			this.renderTaskRanking(breakdown, taskStats);
+			this.renderRecords(details, segments);
 		} catch (error) {
 			tasknotesLogger.error("Failed to render time statistics", {
 				category: "internal",

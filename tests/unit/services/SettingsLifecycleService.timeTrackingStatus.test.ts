@@ -104,6 +104,16 @@ describe("status and time tracking linkage", () => {
 		expect(plugin.updateTaskProperty).not.toHaveBeenCalled();
 	});
 
+	it("trusts the explicit Kanban transition while metadata still has the previous status", async () => {
+		const originalTask = createTask({ status: "open" });
+		const updatedTask = createTask({ status: "in-progress" });
+		const { plugin, listener } = createHarness({ tasks: [originalTask] });
+
+		await listener({ originalTask, updatedTask });
+
+		expect(plugin.startTimeTracking).toHaveBeenCalledWith(updatedTask);
+	});
+
 	it("starts tracking when a task is created in the in-progress status", async () => {
 		const { plugin, listener } = createHarness();
 		const createdTask = createTask({ status: "in-progress" });
@@ -310,7 +320,11 @@ describe("status and time tracking linkage", () => {
 		const recreatedTask = createTask({ status: "in-progress" });
 		setTask(recreatedTask);
 
-		await listener({ task: recreatedTask, taskInfo: recreatedTask, updatedTask: recreatedTask });
+		await listener({
+			task: recreatedTask,
+			taskInfo: recreatedTask,
+			updatedTask: recreatedTask,
+		});
 
 		expect(plugin.startTimeTracking).toHaveBeenCalledWith(recreatedTask);
 	});

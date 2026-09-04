@@ -340,6 +340,8 @@ export const ja: TranslationTree = {
 					created: "作成日時",
 					completed: "完了日",
 				},
+				today: "今日",
+				yesterday: "昨日",
 				thisWeek: "今週",
 				lastWeek: "先週",
 				all: "すべて",

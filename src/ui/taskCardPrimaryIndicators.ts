@@ -53,6 +53,21 @@ export function applyTaskCardStatusColors(
 	plugin: TaskNotesPlugin
 ): void {
 	const statusConfig = plugin.statusManager.getStatusConfig(effectiveStatus);
+	const isCompleted =
+		statusConfig?.isCompleted === true ||
+		plugin.statusManager.isCompletedStatus(effectiveStatus);
+	const normalizedStatus = String(effectiveStatus ?? "")
+		.trim()
+		.toLowerCase();
+	const normalizedStatusId = statusConfig?.id?.trim().toLowerCase();
+	let statusTone = "pending";
+	if (isCompleted) {
+		statusTone = "completed";
+	} else if (normalizedStatusId === "in-progress" || normalizedStatus === "in-progress") {
+		statusTone = "in-progress";
+	}
+	card.dataset.statusTone = statusTone;
+
 	if (statusConfig?.color) {
 		card.style.setProperty("--current-status-color", statusConfig.color);
 	} else {

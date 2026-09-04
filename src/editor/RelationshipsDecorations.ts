@@ -52,6 +52,7 @@ import {
 import { Extension } from "@codemirror/state";
 
 import TaskNotesPlugin from "../main";
+import { EVENT_TASK_DELETED, EVENT_TASK_UPDATED, type TaskInfo, type TimeEntry } from "../types";
 import { EVENT_DEPENDENCY_CACHE_CHANGED } from "../utils/DependencyCache";
 import {
 	ReadingModeInjectionContext,
@@ -66,6 +67,7 @@ import { FilterUtils } from "../utils/FilterUtils";
 import { collectCacheTags } from "../utils/tagExtraction";
 import { getProjectPropertyFilter, matchesProjectProperty } from "../utils/projectFilterUtils";
 import { createTaskNotesLogger } from "../utils/tasknotesLogger";
+import { formatTimeStatisticsDuration } from "../utils/timeStatistics";
 
 const tasknotesLogger = createTaskNotesLogger({ tag: "Editor/RelationshipsDecorations" });
 
@@ -78,6 +80,168 @@ const EVENT_TASK_CARD_INJECTED = "task-card-injected";
 // Interface to track component lifecycle
 interface HTMLElementWithComponent extends HTMLElement {
 	component?: Component;
+}
+
+function isChineseInterface(plugin: TaskNotesPlugin): boolean {
+	return plugin.i18n.getCurrentLocale() === "zh";
+}
+
+function getTimeEntryEnd(entry: TimeEntry, now: Date): Date | null {
+	const end = entry.endTime ? new Date(entry.endTime) : now;
+	return Number.isFinite(end.getTime()) ? end : null;
+}
+
+function getTimeEntryStart(entry: TimeEntry): Date | null {
+	const start = new Date(entry.startTime);
+	return Number.isFinite(start.getTime()) ? start : null;
+}
+
+export function getTaskNoteTimeEntryDurationMs(entry: TimeEntry, now = new Date()): number {
+	const start = getTimeEntryStart(entry);
+	const end = getTimeEntryEnd(entry, now);
+	if (!start || !end) return 0;
+	return Math.max(0, end.getTime() - start.getTime());
+}
+
+export function getTaskNoteTotalTrackedDurationMs(
+	entries: readonly TimeEntry[],
+	now = new Date()
+): number {
+	return entries.reduce((total, entry) => total + getTaskNoteTimeEntryDurationMs(entry, now), 0);
+}
+
+function formatTaskNoteTime(date: Date | null): string {
+	if (!date) return "—";
+	return new Intl.DateTimeFormat(undefined, {
+		hour: "2-digit",
+		minute: "2-digit",
+		hour12: false,
+	}).format(date);
+}
+
+function formatTaskNoteDate(date: Date | null, isChinese: boolean): string {
+	if (!date) return "—";
+	return new Intl.DateTimeFormat(isChinese ? "zh-CN" : undefined, {
+		month: "2-digit",
+		day: "2-digit",
+		weekday: "short",
+	}).format(date);
+}
+
+export function refreshLiveDurations(
+	container: HTMLElement,
+	isChinese: boolean,
+	now = new Date()
+): void {
+	container.querySelectorAll<HTMLElement>("[data-tasknotes-entry-start]").forEach((element) => {
+		const startTime = element.dataset.tasknotesEntryStart;
+		if (!startTime) return;
+		const duration = getTaskNoteTimeEntryDurationMs(
+			{
+				startTime,
+				endTime: element.dataset.tasknotesEntryEnd || undefined,
+			},
+			now
+		);
+		element.textContent = formatTimeStatisticsDuration(duration, isChinese);
+	});
+	const total = container.querySelector<HTMLElement>("[data-tasknotes-time-total]");
+	if (total) {
+		const entries = Array.from(
+			container.querySelectorAll<HTMLElement>("[data-tasknotes-entry-start]")
+		).map((element) => ({
+			startTime: element.dataset.tasknotesEntryStart ?? "",
+			endTime: element.dataset.tasknotesEntryEnd || undefined,
+		}));
+		total.textContent = formatTimeStatisticsDuration(
+			getTaskNoteTotalTrackedDurationMs(entries, now),
+			isChinese
+		);
+	}
+}
+
+function createTimeEntriesCard(
+	plugin: TaskNotesPlugin,
+	task: TaskInfo,
+	component: Component
+): HTMLElement {
+	const isChinese = isChineseInterface(plugin);
+	const entries = [...(task.timeEntries ?? [])].reverse();
+	const card = activeDocument.createElement("section");
+	card.className = "tasknotes-note-footer__card tasknotes-note-footer__time-card";
+
+	const header = card.createDiv({ cls: "tasknotes-note-footer__header" });
+	const heading = header.createDiv({ cls: "tasknotes-note-footer__heading" });
+	heading.createEl("h3", { text: isChinese ? "计时记录" : "Time entries" });
+	heading.createSpan({
+		cls: "tasknotes-note-footer__count",
+		text: isChinese ? `${entries.length} 段` : `${entries.length} sessions`,
+	});
+	header.createSpan({
+		cls: "tasknotes-note-footer__total",
+		attr: { "data-tasknotes-time-total": "true" },
+		text: formatTimeStatisticsDuration(getTaskNoteTotalTrackedDurationMs(entries), isChinese),
+	});
+
+	if (entries.length === 0) {
+		card.createDiv({
+			cls: "tasknotes-note-footer__empty",
+			text: isChinese
+				? "还没有计时记录。开始计时后，每一段投入都会出现在这里。"
+				: "No time entries yet. Start tracking to add your first session.",
+		});
+		return card;
+	}
+
+	const table = card.createDiv({ cls: "tasknotes-note-footer__time-table" });
+	const tableHeader = table.createDiv({
+		cls: "tasknotes-note-footer__time-row tasknotes-note-footer__time-row--header",
+	});
+	for (const label of isChinese
+		? ["日期", "开始", "结束", "时长", "备注"]
+		: ["Date", "Start", "End", "Duration", "Note"]) {
+		tableHeader.createSpan({ text: label });
+	}
+
+	let hasActiveEntry = false;
+	for (const entry of entries) {
+		const start = getTimeEntryStart(entry);
+		const end = getTimeEntryEnd(entry, new Date());
+		const row = table.createDiv({ cls: "tasknotes-note-footer__time-row" });
+		if (!entry.endTime) {
+			row.addClass("is-active");
+			hasActiveEntry = true;
+		}
+		row.createSpan({ text: formatTaskNoteDate(start, isChinese) });
+		row.createSpan({ text: formatTaskNoteTime(start) });
+		row.createSpan({
+			cls: "tasknotes-note-footer__entry-end",
+			text: entry.endTime ? formatTaskNoteTime(end) : isChinese ? "进行中" : "Running",
+		});
+		row.createSpan({
+			cls: "tasknotes-note-footer__entry-duration",
+			attr: {
+				"data-tasknotes-entry-start": entry.startTime,
+				"data-tasknotes-entry-end": entry.endTime ?? "",
+			},
+			text: formatTimeStatisticsDuration(getTaskNoteTimeEntryDurationMs(entry), isChinese),
+		});
+		row.createSpan({
+			cls: "tasknotes-note-footer__entry-note",
+			text: entry.description?.trim() || "—",
+		});
+	}
+
+	if (hasActiveEntry) {
+		const timerWindow = card.ownerDocument.defaultView;
+		if (timerWindow) {
+			component.registerInterval(
+				timerWindow.setInterval(() => refreshLiveDurations(card, isChinese), 1_000)
+			);
+		}
+	}
+
+	return card;
 }
 
 function getHTMLElementChildren(element: HTMLElement): HTMLElement[] {
@@ -260,15 +424,50 @@ async function createRelationshipsWidget(
 	container.setAttribute("data-widget-type", "relationships");
 	container.dataset.relationshipSourcePath = notePath;
 
-	// Create container for embedded Bases view
-	const basesContainer = activeDocument.createElement("div");
-	basesContainer.className = "relationships__bases-container";
-	container.appendChild(basesContainer);
-
 	// Create component for lifecycle management
 	const component = new Component();
 	component.load();
 	container.component = component;
+
+	const task = plugin.cacheManager.getCachedTaskInfoSync(notePath);
+	const footerGrid = container.createDiv({ cls: "tasknotes-note-footer" });
+	if (task) {
+		container.addClass("tasknotes-relationships-widget--task-note");
+		footerGrid.appendChild(createTimeEntriesCard(plugin, task, component));
+	}
+
+	const relationshipsCard = footerGrid.createEl("section", {
+		cls: "tasknotes-note-footer__card tasknotes-note-footer__relationships-card",
+	});
+	const relationshipHeader = relationshipsCard.createDiv({
+		cls: "tasknotes-note-footer__header tasknotes-note-footer__relationships-header",
+	});
+	const relationshipHeading = relationshipHeader.createDiv({
+		cls: "tasknotes-note-footer__heading",
+	});
+	relationshipHeading.createEl("h3", {
+		text: task
+			? isChineseInterface(plugin)
+				? "子任务与关系"
+				: "Subtasks & relationships"
+			: isChineseInterface(plugin)
+				? "关系"
+				: "Relationships",
+	});
+	if (task) {
+		relationshipHeader.createSpan({
+			cls: "tasknotes-note-footer__hint",
+			text: isChineseInterface(plugin)
+				? "新建子任务会继承当前任务的标签和项目"
+				: "New subtasks inherit this task's tags and projects",
+		});
+	}
+
+	// Keep the configured Bases view as the source of truth for subtasks,
+	// projects, occurrences, and dependency relationships.
+	const basesContainer = activeDocument.createElement("div");
+	basesContainer.className = "relationships__bases-container";
+	relationshipsCard.appendChild(basesContainer);
 
 	try {
 		// Get the Bases file path from settings
@@ -388,7 +587,13 @@ class RelationshipsDecorationsPlugin implements PluginValue {
 		const settingsListener = this.plugin.emitter.on("settings-changed", () => {
 			this.debouncedInjectWidget(this.view);
 		});
-		this.eventListeners.push(settingsListener);
+		const taskUpdateListener = this.plugin.emitter.on(EVENT_TASK_UPDATED, () => {
+			this.debouncedInjectWidget(this.view);
+		});
+		const taskDeleteListener = this.plugin.emitter.on(EVENT_TASK_DELETED, () => {
+			this.debouncedInjectWidget(this.view);
+		});
+		this.eventListeners.push(settingsListener, taskUpdateListener, taskDeleteListener);
 
 		const dependencyCacheListener = this.plugin.dependencyCache?.on(
 			EVENT_DEPENDENCY_CACHE_CHANGED,
@@ -851,6 +1056,7 @@ export function setupReadingModeHandlers(plugin: TaskNotesPlugin): () => void {
 	const workspaceRefs: EventRef[] = [];
 	const metadataCacheRefs: EventRef[] = [];
 	const dependencyCacheRefs: EventRef[] = [];
+	const emitterRefs: EventRef[] = [];
 	const scheduler = new ReadingModeInjectionScheduler();
 	const scheduleInjection = (leaf: WorkspaceLeaf) => {
 		scheduler.schedule(leaf, (context) => injectReadingModeWidget(leaf, plugin, context));
@@ -910,6 +1116,11 @@ export function setupReadingModeHandlers(plugin: TaskNotesPlugin): () => void {
 		dependencyCacheRefs.push(dependencyCacheChangeRef);
 	}
 
+	emitterRefs.push(
+		plugin.emitter.on(EVENT_TASK_UPDATED, debouncedRefresh),
+		plugin.emitter.on(EVENT_TASK_DELETED, debouncedRefresh)
+	);
+
 	// Initial injection for any already-open reading views
 	const leaves = plugin.app.workspace.getLeavesOfType("markdown");
 	leaves.forEach((leaf) => {
@@ -924,5 +1135,6 @@ export function setupReadingModeHandlers(plugin: TaskNotesPlugin): () => void {
 		workspaceRefs.forEach((ref) => plugin.app.workspace.offref(ref));
 		metadataCacheRefs.forEach((ref) => plugin.app.metadataCache.offref(ref));
 		dependencyCacheRefs.forEach((ref) => plugin.dependencyCache?.offref(ref));
+		emitterRefs.forEach((ref) => plugin.emitter.offref(ref));
 	};
 }

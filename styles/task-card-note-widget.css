@@ -1,13 +1,71 @@
 /* Task Card Note Widget - minimal widget for inline task cards in notes */
 
+/* Ordinary notes expose conversion as a compact native header action instead
+   of interrupting the document body with a full-width prompt. */
+.view-action.tasknotes-convert-note-action {
+    display: inline-flex;
+    width: auto;
+    min-width: 92px;
+    height: 34px;
+    padding: 0 13px;
+    gap: 7px;
+    color: white;
+    background: #e9623b;
+    border: 1px solid #e9623b;
+    border-radius: 11px;
+    box-shadow: none;
+    font-size: 13px;
+    font-weight: 650;
+}
+
+.view-action.tasknotes-convert-note-action:hover,
+.view-action.tasknotes-convert-note-action:focus-visible {
+    color: white;
+    background: #d9532f;
+    border-color: #d9532f;
+    box-shadow: none;
+}
+
+.view-action.tasknotes-convert-note-action svg {
+    width: 15px;
+    height: 15px;
+}
+
+.tasknotes-convert-note-action__label {
+    white-space: nowrap;
+}
+
 .task-card-note-widget {
+    --tn-note-card-surface: #fffdf9;
+    --tn-note-card-soft: #fbf3e9;
+    --tn-note-card-line: #ece0d1;
+    --tn-note-card-line-strong: #ddcdb9;
+    --tn-note-card-text: #3a2f27;
+    --tn-note-card-muted: #7c6d60;
+    --tn-note-card-green: #2f9e68;
+    --tn-note-card-green-soft: #e8f7ef;
     display: block;
     box-sizing: border-box;
-    border-radius: var(--radius-s);
-    border: 1px solid var(--background-modifier-border);
-    margin-block: var(--cs-spacing-md);
+    border-radius: 16px;
+    border: 1px solid var(--tn-note-card-line);
+    margin-block: 18px;
     margin-inline: var(--file-margins, 0);
-    padding: var(--cs-spacing-sm);
+    padding: 0;
+    overflow: hidden;
+    background: var(--tn-note-card-surface);
+    box-shadow: none;
+}
+
+.theme-dark .task-card-note-widget {
+    --tn-note-card-surface: #262120;
+    --tn-note-card-soft: #2d2725;
+    --tn-note-card-line: #372f2c;
+    --tn-note-card-line-strong: #453b36;
+    --tn-note-card-text: #f0e8e0;
+    --tn-note-card-muted: #b5a79b;
+    --tn-note-card-green: #65c58d;
+    --tn-note-card-green-soft: #19382a;
+    box-shadow: none;
 }
 
 /* Keep widget aligned with the centered readable column when enabled */
@@ -20,4 +78,43 @@
 .task-card-note-widget__card {
     /* Reset margins for the inner task card */
     margin: 0;
+    padding: 12px 14px;
+    color: var(--tn-note-card-text);
+    border-radius: 15px;
+}
+
+.task-card-note-widget__card:hover {
+    background: var(--tn-note-card-soft);
+}
+
+.task-card-note-widget__card.task-card--actively-tracked {
+    background: transparent;
+}
+
+.task-card-note-widget--actively-tracked {
+    background: var(--tn-note-card-green-soft);
+    border-color: color-mix(in srgb, var(--tn-note-card-green) 52%, var(--tn-note-card-line));
+}
+
+.task-card-note-widget__card .task-card__title,
+.task-card-note-widget__card .task-card__title-text {
+    color: var(--tn-note-card-text);
+    font-size: 15px;
+    font-weight: var(--font-semibold);
+}
+
+.task-card-note-widget__card .task-card__metadata {
+    color: var(--tn-note-card-muted);
+    font-size: 12px;
+}
+
+.task-card-note-widget__card .task-card__time-tracking-control {
+    border-color: var(--tn-note-card-line-strong);
+    border-radius: 9px;
+    background: var(--tn-note-card-surface);
+}
+
+.task-card-note-widget__card .task-card__time-tracking-control--active {
+    border-color: color-mix(in srgb, var(--tn-note-card-green) 38%, var(--tn-note-card-line));
+    background: color-mix(in srgb, var(--tn-note-card-surface) 58%, transparent);
 }

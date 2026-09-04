@@ -73,6 +73,23 @@ describe("Kanban time filter", () => {
 		expect(filtered.map((item) => item.path)).toEqual(["today.md", "next-sunday.md"]);
 	});
 
+	it("can filter today and yesterday using local day boundaries", () => {
+		expect(
+			filterKanbanTasksByTime(tasks, { field: "scheduled", preset: "today" }, now).map(
+				(item) => item.path
+			)
+		).toEqual(["today.md"]);
+
+		const withYesterday = [...tasks, task("yesterday.md", { scheduled: "2026-07-29 23:59" })];
+		expect(
+			filterKanbanTasksByTime(
+				withYesterday,
+				{ field: "scheduled", preset: "yesterday" },
+				now
+			).map((item) => item.path)
+		).toEqual(["yesterday.md"]);
+	});
+
 	it("can filter by completion date and excludes tasks without one", () => {
 		const filtered = filterKanbanTasksByTime(
 			tasks,
@@ -141,6 +158,8 @@ describe("Kanban time filter", () => {
 		expect(normalizeKanbanTimeFilterField(undefined)).toBe("scheduled");
 		expect(normalizeKanbanTimeFilterField("unexpected")).toBe("scheduled");
 		expect(normalizeKanbanTimeFilterPreset(undefined)).toBe("this-week");
+		expect(normalizeKanbanTimeFilterPreset("today")).toBe("today");
+		expect(normalizeKanbanTimeFilterPreset("yesterday")).toBe("yesterday");
 		expect(normalizeKanbanTimeFilterPreset("unexpected")).toBe("this-week");
 		expect(validateKanbanCustomDateRange("2026-07-01", "2026-07-31")).toBe(true);
 		expect(validateKanbanCustomDateRange("2026-08-01", "2026-07-31")).toBe(false);

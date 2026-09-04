@@ -12,6 +12,11 @@ import {
 	shiftTimeStatisticsReference,
 } from "../../../src/utils/timeStatistics";
 import type { TaskInfo } from "../../../src/types";
+import {
+	DAY_TIMELINE_END_HOUR,
+	DAY_TIMELINE_START_HOUR,
+	getDayTimelineEndMinute,
+} from "../../../src/bases/TimeStatisticsView";
 
 function createTask(overrides: Partial<TaskInfo>): TaskInfo {
 	return {
@@ -25,12 +30,29 @@ function createTask(overrides: Partial<TaskInfo>): TaskInfo {
 }
 
 describe("time statistics", () => {
-	it("uses progressively larger units for long durations", () => {
+	it("shows the day timeline from 08:00 through midnight", () => {
+		expect(DAY_TIMELINE_START_HOUR).toBe(8);
+		expect(DAY_TIMELINE_END_HOUR).toBe(24);
+		expect(
+			getDayTimelineEndMinute({
+				taskPath: "Tasks/late.md",
+				taskTitle: "Late task",
+				tags: [],
+				start: new Date(2026, 6, 31, 23, 30),
+				end: new Date(2026, 7, 1, 0, 0),
+				durationMs: 30 * 60_000,
+				sessionKey: "late:0",
+				isActive: false,
+			})
+		).toBe(24 * 60);
+	});
+
+	it("keeps long durations in hours", () => {
 		expect(formatTimeStatisticsDuration(23.5 * 60 * 60_000, true)).toBe("23小时30分");
-		expect(formatTimeStatisticsDuration(24 * 60 * 60_000, true)).toBe("1天");
-		expect(formatTimeStatisticsDuration(36 * 60 * 60_000, true)).toBe("1.5天");
-		expect(formatTimeStatisticsDuration(30 * 24 * 60 * 60_000, true)).toBe("1个月");
-		expect(formatTimeStatisticsDuration(45 * 24 * 60 * 60_000, false)).toBe("1.5mo");
+		expect(formatTimeStatisticsDuration(24 * 60 * 60_000, true)).toBe("24小时");
+		expect(formatTimeStatisticsDuration(36.5 * 60 * 60_000, true)).toBe("36小时30分");
+		expect(formatTimeStatisticsDuration(30 * 24 * 60 * 60_000, true)).toBe("720小时");
+		expect(formatTimeStatisticsDuration(45 * 24 * 60 * 60_000, false)).toBe("1080h");
 	});
 
 	it("uses calendar-aligned day, week, month, and year ranges", () => {

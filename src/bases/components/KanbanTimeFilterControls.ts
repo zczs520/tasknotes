@@ -4,6 +4,8 @@ import type { KanbanTimeFilterField, KanbanTimeFilterPreset } from "../kanbanTim
 export interface KanbanTimeFilterLabels {
 	ariaLabel: string;
 	fieldButtonLabel: string;
+	today: string;
+	yesterday: string;
 	thisWeek: string;
 	lastWeek: string;
 	all: string;
@@ -19,9 +21,18 @@ export interface KanbanTimeFilterControlsOptions {
 	onSelectPreset: (preset: KanbanTimeFilterPreset) => void;
 }
 
-const FILTER_PRESETS: KanbanTimeFilterPreset[] = ["this-week", "last-week", "all", "custom"];
+const FILTER_PRESETS: KanbanTimeFilterPreset[] = [
+	"today",
+	"yesterday",
+	"this-week",
+	"last-week",
+	"all",
+	"custom",
+];
 
 function getPresetLabel(preset: KanbanTimeFilterPreset, labels: KanbanTimeFilterLabels): string {
+	if (preset === "today") return labels.today;
+	if (preset === "yesterday") return labels.yesterday;
 	if (preset === "this-week") return labels.thisWeek;
 	if (preset === "last-week") return labels.lastWeek;
 	if (preset === "all") return labels.all;

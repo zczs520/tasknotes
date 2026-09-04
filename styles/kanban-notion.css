@@ -5,26 +5,56 @@
    ================================================================= */
 
 .tasknotes-plugin.tn-tasknotesKanban {
-    --tn-kanban-tone-strength: 58%;
-    --tn-kanban-card-border: color-mix(in srgb, var(--background-modifier-border) 82%, transparent);
-    --tn-kanban-card-shadow: 0 1px 2px rgb(15 15 15 / 4%), 0 2px 8px rgb(15 15 15 / 3%);
-    background: var(--background-primary);
+    --tn-kanban-page: #fffdf9;
+    --tn-kanban-surface: #fffdf9;
+    --tn-kanban-soft: #fbf3e9;
+    --tn-kanban-line: #ece0d1;
+    --tn-kanban-line-strong: #ddcdb9;
+    --tn-kanban-text: #3a2f27;
+    --tn-kanban-muted: #7c6d60;
+    --tn-kanban-faint: #a89a8c;
+    --tn-kanban-coral: #e2643c;
+    --tn-kanban-green: #2f9e68;
+    --tn-kanban-green-soft: #e8f7ef;
+    --tn-kanban-card-hover: #fff4e8;
+    --tn-kanban-tone-strength: 100%;
+    --tn-kanban-card-border: var(--tn-kanban-line);
+    --tn-kanban-card-shadow: none;
+    color: var(--tn-kanban-text);
+    background: var(--tn-kanban-page);
 }
 
 .tasknotes-plugin.tn-tasknotesKanban.tn-kanban-layout-frame {
     margin-inline: auto;
+    padding-block: 8px 18px;
 }
 
 body.theme-dark .tasknotes-plugin.tn-tasknotesKanban {
-    --tn-kanban-tone-strength: 14%;
-    --tn-kanban-card-shadow: 0 1px 2px rgb(0 0 0 / 18%), 0 4px 12px rgb(0 0 0 / 12%);
+    --tn-kanban-page: #262120;
+    --tn-kanban-surface: #262120;
+    --tn-kanban-soft: #2d2725;
+    --tn-kanban-line: #372f2c;
+    --tn-kanban-line-strong: #453b36;
+    --tn-kanban-text: #f0e8e0;
+    --tn-kanban-muted: #b5a79b;
+    --tn-kanban-faint: #85786c;
+    --tn-kanban-coral: #f0885f;
+    --tn-kanban-green: #65c58d;
+    --tn-kanban-green-soft: #19382a;
+    --tn-kanban-card-hover: #332925;
+    --tn-kanban-card-shadow: none;
 }
 
 .tasknotes-plugin.tn-tasknotesKanban .kanban-view__board {
     align-items: flex-start;
     gap: 16px;
-    padding: 14px;
-    background: transparent;
+    margin: 8px 14px 0;
+    padding: 16px 18px 22px;
+    overflow: auto;
+    background: var(--tn-kanban-page);
+    border: 1px solid var(--tn-kanban-line);
+    border-radius: 18px;
+    box-shadow: none;
 }
 
 /* Stable, low-saturation column pigments. Position is the visual identity: the
@@ -34,8 +64,8 @@ body.theme-dark .tasknotes-plugin.tn-tasknotesKanban {
     .kanban-view__column-header-cell,
     .kanban-view__swimlane-column
 ):nth-child(6n + 1) {
-    --tn-kanban-tone: #eadfd6;
-    --tn-kanban-tone-ink: #8a5a3b;
+    --tn-kanban-tone: #f3e9dc;
+    --tn-kanban-tone-ink: #7c6d60;
 }
 
 .tasknotes-plugin.tn-tasknotesKanban :is(
@@ -43,8 +73,8 @@ body.theme-dark .tasknotes-plugin.tn-tasknotesKanban {
     .kanban-view__column-header-cell,
     .kanban-view__swimlane-column
 ):nth-child(6n + 2) {
-    --tn-kanban-tone: #f3e9b8;
-    --tn-kanban-tone-ink: #846b16;
+    --tn-kanban-tone: #e3ecf3;
+    --tn-kanban-tone-ink: #4d7fa6;
 }
 
 .tasknotes-plugin.tn-tasknotesKanban :is(
@@ -52,8 +82,8 @@ body.theme-dark .tasknotes-plugin.tn-tasknotesKanban {
     .kanban-view__column-header-cell,
     .kanban-view__swimlane-column
 ):nth-child(6n + 3) {
-    --tn-kanban-tone: #e8dcf1;
-    --tn-kanban-tone-ink: #74508c;
+    --tn-kanban-tone: #e4efe5;
+    --tn-kanban-tone-ink: #4f8a63;
 }
 
 .tasknotes-plugin.tn-tasknotesKanban :is(
@@ -61,8 +91,8 @@ body.theme-dark .tasknotes-plugin.tn-tasknotesKanban {
     .kanban-view__column-header-cell,
     .kanban-view__swimlane-column
 ):nth-child(6n + 4) {
-    --tn-kanban-tone: #dbeade;
-    --tn-kanban-tone-ink: #467454;
+    --tn-kanban-tone: #f8ebd4;
+    --tn-kanban-tone-ink: #c58a29;
 }
 
 .tasknotes-plugin.tn-tasknotesKanban :is(
@@ -70,8 +100,8 @@ body.theme-dark .tasknotes-plugin.tn-tasknotesKanban {
     .kanban-view__column-header-cell,
     .kanban-view__swimlane-column
 ):nth-child(6n + 5) {
-    --tn-kanban-tone: #dce8f1;
-    --tn-kanban-tone-ink: #466d88;
+    --tn-kanban-tone: #fae2df;
+    --tn-kanban-tone-ink: #c9493f;
 }
 
 .tasknotes-plugin.tn-tasknotesKanban :is(
@@ -83,32 +113,60 @@ body.theme-dark .tasknotes-plugin.tn-tasknotesKanban {
     --tn-kanban-tone-ink: #67635d;
 }
 
+/* Status grouping uses semantic tones so reordered columns and swimlanes keep
+   pending yellow, in-progress blue, and completed green. */
+.tasknotes-plugin.tn-tasknotesKanban [data-status-tone="pending"] {
+    --tn-kanban-tone: #f8ebd4;
+    --tn-kanban-tone-ink: #c58a29;
+}
+
+.tasknotes-plugin.tn-tasknotesKanban [data-status-tone="in-progress"] {
+    --tn-kanban-tone: #e3ecf3;
+    --tn-kanban-tone-ink: #4d7fa6;
+}
+
+.tasknotes-plugin.tn-tasknotesKanban [data-status-tone="completed"] {
+    --tn-kanban-tone: #e4efe5;
+    --tn-kanban-tone-ink: #4f8a63;
+}
+
+body.theme-dark .tasknotes-plugin.tn-tasknotesKanban [data-status-tone="pending"] {
+    --tn-kanban-tone: #3a3021;
+    --tn-kanban-tone-ink: #e3b45a;
+}
+
+body.theme-dark .tasknotes-plugin.tn-tasknotesKanban [data-status-tone="in-progress"] {
+    --tn-kanban-tone: #233342;
+    --tn-kanban-tone-ink: #75a9d1;
+}
+
+body.theme-dark .tasknotes-plugin.tn-tasknotesKanban [data-status-tone="completed"] {
+    --tn-kanban-tone: #24382b;
+    --tn-kanban-tone-ink: #7dba90;
+}
+
 /* Flat board */
 .tasknotes-plugin.tn-tasknotesKanban .kanban-view__column {
     gap: 8px;
-    padding: 8px;
-    background: color-mix(
-        in srgb,
-        var(--tn-kanban-tone, #e8e6e2) var(--tn-kanban-tone-strength),
-        var(--background-primary)
-    );
-    border: 0;
-    border-radius: 12px;
+    padding: 0;
+    background: transparent;
+    border: 1px solid var(--tn-kanban-line);
+    border-radius: 14px;
     box-shadow: none;
 }
 
 .tasknotes-plugin.tn-tasknotesKanban .kanban-view__column-header {
     position: static;
     gap: 6px;
-    min-height: 34px;
-    padding: 5px 7px;
-    background: transparent;
+    min-height: 44px;
+    padding: 8px 12px;
+    background: var(--tn-kanban-tone, var(--tn-kanban-soft));
     border: 0;
-    border-radius: 8px;
+    border-radius: 13px 13px 10px 10px;
 }
 
 .tasknotes-plugin.tn-tasknotesKanban .kanban-view__column-title {
-    color: var(--text-normal);
+    color: var(--tn-kanban-tone-ink, var(--tn-kanban-text));
     font-family: var(--font-interface);
     font-size: var(--font-ui-small);
     font-weight: var(--font-semibold);
@@ -117,7 +175,7 @@ body.theme-dark .tasknotes-plugin.tn-tasknotesKanban {
 
 .tasknotes-plugin.tn-tasknotesKanban .kanban-view__column-count {
     margin-inline-start: 1px;
-    color: var(--text-faint);
+    color: color-mix(in srgb, var(--tn-kanban-tone-ink, var(--tn-kanban-muted)) 72%, transparent);
     font-size: var(--font-ui-smaller);
     font-variant-numeric: tabular-nums;
 }
@@ -134,7 +192,7 @@ body.theme-dark .tasknotes-plugin.tn-tasknotesKanban {
     align-items: flex-start;
     gap: 20px;
     min-height: 0;
-    padding: 14px;
+    padding: 16px 18px 22px;
 }
 
 .tasknotes-plugin.tn-tasknotesKanban .kanban-view__swimlane-section {
@@ -155,7 +213,7 @@ body.theme-dark .tasknotes-plugin.tn-tasknotesKanban {
     gap: 5px;
     min-height: 28px;
     padding: 2px 3px;
-    background: color-mix(in srgb, var(--background-primary) 94%, transparent);
+    background: color-mix(in srgb, var(--tn-kanban-surface) 94%, transparent);
     border-radius: 8px;
 }
 
@@ -230,12 +288,12 @@ body.theme-dark .tasknotes-plugin.tn-tasknotesKanban {
 .tasknotes-plugin.tn-tasknotesKanban .kanban-view__swimlane-title {
     width: fit-content;
     padding: 3px 8px;
-    color: var(--text-normal);
+    color: var(--tn-kanban-muted);
     font-family: var(--font-interface);
     font-size: var(--font-ui-small);
     font-weight: var(--font-medium);
     line-height: 1.25;
-    background: var(--background-secondary);
+    background: transparent;
     border-radius: 999px;
 }
 
@@ -274,30 +332,22 @@ body.theme-dark .tasknotes-plugin.tn-tasknotesKanban {
     top: 0;
     z-index: 10;
     padding-bottom: 2px;
-    background: color-mix(in srgb, var(--background-primary) 96%, transparent);
+    background: color-mix(in srgb, var(--tn-kanban-surface) 96%, transparent);
 }
 
 .tasknotes-plugin.tn-tasknotesKanban .kanban-view__column-header-cell {
     gap: 6px;
     min-height: 38px;
     padding: 7px 10px;
-    background: color-mix(
-        in srgb,
-        var(--tn-kanban-tone, #e8e6e2) var(--tn-kanban-tone-strength),
-        var(--background-primary)
-    );
+    background: var(--tn-kanban-tone, var(--tn-kanban-soft));
     border: 0;
     border-radius: 10px;
 }
 
 .tasknotes-plugin.tn-tasknotesKanban .kanban-view__swimlane-column {
-    min-height: 96px;
-    padding: 8px;
-    background: color-mix(
-        in srgb,
-        var(--tn-kanban-tone, #e8e6e2) var(--tn-kanban-tone-strength),
-        var(--background-primary)
-    );
+    min-height: 84px;
+    padding: 0;
+    background: transparent;
     border: 0;
     border-radius: 12px;
 }
@@ -312,21 +362,26 @@ body.theme-dark .tasknotes-plugin.tn-tasknotesKanban {
 .tasknotes-plugin.tn-tasknotesKanban .kanban-view__card-wrapper > .task-card:first-child,
 .tasknotes-plugin.tn-tasknotesKanban .kanban-view__card-wrapper > .task-card:last-child,
 .tasknotes-plugin.tn-tasknotesKanban .kanban-view__card-wrapper > .task-card:first-child:last-child {
+    position: relative;
     gap: 0;
     margin: 0;
-    padding: 11px 12px;
-    background: var(--background-primary);
+    padding: 12px 13px;
+    background: var(--tn-kanban-surface);
     border: 1px solid var(--tn-kanban-card-border);
-    border-radius: 10px;
+    border-radius: 13px;
     box-shadow: var(--tn-kanban-card-shadow);
     transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease, background-color 140ms ease;
 }
 
-.tasknotes-plugin.tn-tasknotesKanban .kanban-view__card-wrapper > .task-card:hover {
-    background: var(--background-primary);
-    border-color: color-mix(in srgb, var(--background-modifier-border-hover) 85%, transparent);
-    box-shadow: 0 2px 4px rgb(15 15 15 / 6%), 0 7px 18px rgb(15 15 15 / 6%);
-    transform: translateY(-1px);
+.tasknotes-plugin.tn-tasknotesKanban .kanban-view__card-wrapper {
+    padding-block-start: 4px;
+}
+
+.tasknotes-plugin.tn-tasknotesKanban .kanban-view__card-wrapper:hover > .task-card[data-status-tone] {
+    background-color: var(--tn-kanban-tone, var(--tn-kanban-card-hover));
+    border-color: color-mix(in srgb, var(--tn-kanban-tone-ink, var(--tn-kanban-coral)) 32%, var(--tn-kanban-line));
+    box-shadow: 0 4px 10px color-mix(in srgb, var(--tn-kanban-tone-ink, var(--tn-kanban-text)) 13%, transparent);
+    transform: translateY(-3px);
 }
 
 .tasknotes-plugin.tn-tasknotesKanban .kanban-view__card-wrapper > .task-card:focus-visible {
@@ -350,7 +405,7 @@ body.theme-dark .tasknotes-plugin.tn-tasknotesKanban {
 
 .tasknotes-plugin.tn-tasknotesKanban .task-card__title,
 .tasknotes-plugin.tn-tasknotesKanban .task-card__title-text {
-    color: var(--text-normal);
+    color: var(--tn-kanban-text);
     font-family: var(--font-text);
     font-size: 14px;
     font-weight: var(--font-semibold);
@@ -364,7 +419,7 @@ body.theme-dark .tasknotes-plugin.tn-tasknotesKanban {
     align-items: stretch;
     width: 100%;
     gap: 5px;
-    color: var(--text-muted);
+    color: var(--tn-kanban-faint);
     font-size: var(--font-ui-smaller);
     line-height: 1.4;
 }
@@ -437,6 +492,11 @@ body.theme-dark .tasknotes-plugin.tn-tasknotesKanban {
 
 .tasknotes-plugin.tn-tasknotesKanban .task-card__priority-dot {
     grid-column: 2;
+    width: 3px;
+    min-width: 3px;
+    height: 18px;
+    margin: 1px 2px 0 0;
+    border-radius: 999px;
 }
 
 .tasknotes-plugin.tn-tasknotesKanban .task-card__badges {
@@ -444,13 +504,47 @@ body.theme-dark .tasknotes-plugin.tn-tasknotesKanban {
     margin-top: 1px;
 }
 
-.tasknotes-plugin.tn-tasknotesKanban .task-card__context-menu {
-    grid-column: 5;
-    margin-top: 1px;
-}
-
 .tasknotes-plugin.tn-tasknotesKanban .task-card--completed {
     opacity: 0.7;
+}
+
+.tasknotes-plugin.tn-tasknotesKanban .kanban-view__card-wrapper:hover > .task-card--completed {
+    opacity: 1;
+}
+
+.tasknotes-plugin.tn-tasknotesKanban .kanban-view__card-wrapper > .task-card.task-card--actively-tracked {
+    background: var(--tn-kanban-green-soft);
+    border-color: color-mix(in srgb, var(--tn-kanban-green) 36%, var(--tn-kanban-line));
+    box-shadow: none;
+}
+
+.tasknotes-plugin.tn-tasknotesKanban .kanban-view__card-wrapper:hover > .task-card.task-card--actively-tracked {
+    background-color: var(--tn-kanban-tone, var(--tn-kanban-card-hover));
+    border-color: color-mix(in srgb, var(--tn-kanban-tone-ink, var(--tn-kanban-green)) 52%, var(--tn-kanban-line));
+    box-shadow: 0 4px 10px color-mix(in srgb, var(--tn-kanban-tone-ink, var(--tn-kanban-green)) 16%, transparent);
+}
+
+.tasknotes-plugin.tn-tasknotesKanban .task-card--actively-tracked .task-card__title::after {
+    flex: 0 0 auto;
+    width: 6px;
+    height: 6px;
+    margin-inline-start: 2px;
+    background: var(--tn-kanban-green);
+    border-radius: 50%;
+    content: "";
+    animation: tn-kanban-breathe 2.4s ease-in-out infinite;
+}
+
+@keyframes tn-kanban-breathe {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.5;
+        transform: scale(0.72);
+    }
 }
 
 /* The creation action is a readable row, matching the reference instead of an
@@ -473,16 +567,16 @@ body.theme-dark .tasknotes-plugin.tn-tasknotesKanban {
     font-family: var(--font-interface);
     font-size: var(--font-ui-small);
     text-align: left;
-    background: color-mix(in srgb, var(--background-primary) 62%, transparent);
-    border: 1px solid color-mix(in srgb, var(--tn-kanban-tone-ink, var(--text-faint)) 22%, transparent);
-    border-radius: 8px;
+    background: transparent;
+    border: 1px dashed var(--tn-kanban-line-strong);
+    border-radius: 12px;
     opacity: 0.82;
 }
 
 .tasknotes-plugin.tn-tasknotesKanban .kanban-view__add-task-button:hover,
 .tasknotes-plugin.tn-tasknotesKanban .kanban-view__add-task-button:focus-visible {
     color: var(--text-normal);
-    background: color-mix(in srgb, var(--background-primary) 84%, transparent);
+    background: var(--tn-kanban-soft);
     border-color: color-mix(in srgb, var(--tn-kanban-tone-ink, var(--text-muted)) 35%, transparent);
     opacity: 1;
 }
@@ -524,9 +618,10 @@ body.theme-dark .tasknotes-plugin.tn-tasknotesKanban {
         transition: none;
     }
 
-    .tasknotes-plugin.tn-tasknotesKanban .kanban-view__card-wrapper > .task-card:hover {
+    .tasknotes-plugin.tn-tasknotesKanban .kanban-view__card-wrapper:hover > .task-card[data-status-tone] {
         transform: none;
     }
+
 }
 
 @media (max-width: 768px) {
@@ -550,21 +645,21 @@ body.theme-dark .tasknotes-plugin.tn-tasknotesKanban {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 12px 14px 0;
+    padding: 8px 14px 0;
 }
 
 .tasknotes-plugin.tn-tasknotesKanban .tn-search-box {
-    flex: 1 1 320px;
-    min-width: 220px;
+    flex: 1 1 240px;
+    min-width: 180px;
     padding: 0;
 }
 
 .tasknotes-plugin.tn-tasknotesKanban .tn-search-box__input-wrapper {
     min-height: 40px;
     padding: 0 10px;
-    background: var(--background-primary);
-    border: 1px solid var(--background-modifier-border);
-    border-radius: 9px;
+    background: var(--tn-kanban-surface);
+    border: 1px solid var(--tn-kanban-line);
+    border-radius: 12px;
 }
 
 .tasknotes-plugin.tn-tasknotesKanban .tn-search-box__input-wrapper:focus-within {
@@ -593,9 +688,9 @@ body.theme-dark .tasknotes-plugin.tn-tasknotesKanban {
     min-height: 40px;
     padding: 3px;
     overflow-x: auto;
-    background: var(--background-primary);
-    border: 1px solid var(--background-modifier-border);
-    border-radius: 9px;
+    background: var(--tn-kanban-soft);
+    border: 1px solid var(--tn-kanban-line);
+    border-radius: 12px;
     scrollbar-width: none;
 }
 
@@ -663,9 +758,10 @@ body.theme-dark .tasknotes-plugin.tn-tasknotesKanban {
 }
 
 .tasknotes-plugin.tn-tasknotesKanban .tn-kanban-time-filter__button.is-active {
-    color: var(--text-accent);
+    color: var(--tn-kanban-text);
     font-weight: var(--font-medium);
-    background: color-mix(in srgb, var(--interactive-accent) 16%, var(--background-primary));
+    background: var(--tn-kanban-surface);
+    box-shadow: none;
 }
 
 .tasknotes-plugin.tn-tasknotesKanban .kanban-view__card-wrapper > .task-card {
@@ -690,5 +786,11 @@ body.theme-dark .tasknotes-plugin.tn-tasknotesKanban {
 	.tasknotes-plugin.tn-tasknotesKanban .tn-kanban-time-filter {
         flex-basis: 100%;
         width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tasknotes-plugin.tn-tasknotesKanban .task-card--actively-tracked .task-card__title::after {
+        animation: none;
     }
 }
