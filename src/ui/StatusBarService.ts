@@ -7,7 +7,6 @@ import {
 	PomodoroState,
 	TaskInfo,
 } from "../types";
-import { RequestDeduplicator } from "../utils/RequestDeduplicator";
 import { EventRef, setIcon, setTooltip, TFile } from "obsidian";
 import { openTaskSelector } from "../modals/TaskSelectorWithCreateModal";
 import { formatPomodoroTime } from "../utils/pomodoroTime";
@@ -33,7 +32,9 @@ export class StatusBarService {
 	private statusBarElement: HTMLElement | null = null;
 	private pomodoroStatusBarElement: HTMLElement | null = null;
 	private activeTaskControlElement: HTMLElement | null = null;
-	private requestDeduplicator: RequestDeduplicator;
+	private trackedTaskUpdate: Promise<void> | null = null;
+	private trackedTaskUpdateRequested = false;
+	private destroyed = false;
 	private updateTimeout: number | null = null;
 	private pomodoroUpdateTimeout: number | null = null;
 	private elapsedUpdateInterval: number | null = null;
@@ -46,7 +47,6 @@ export class StatusBarService {
 
 	constructor(plugin: import("../main").default) {
 		this.plugin = plugin;
-		this.requestDeduplicator = new RequestDeduplicator();
 	}
 
 	/**
@@ -105,9 +105,7 @@ export class StatusBarService {
 			return;
 		}
 
-		const workspace = this.plugin.app?.workspace as
-			| { containerEl?: HTMLElement }
-			| undefined;
+		const workspace = this.plugin.app?.workspace as { containerEl?: HTMLElement } | undefined;
 		const doc = workspace?.containerEl?.ownerDocument ?? activeDocument;
 		const parent = doc.body;
 		const element = doc.createElement("section");
@@ -151,9 +149,15 @@ export class StatusBarService {
 			dragging: false,
 		};
 		this.activeTaskDragDocument = this.activeTaskControlElement.ownerDocument;
-		this.activeTaskDragDocument.addEventListener("pointermove", this.handleActiveTaskPointerMove);
+		this.activeTaskDragDocument.addEventListener(
+			"pointermove",
+			this.handleActiveTaskPointerMove
+		);
 		this.activeTaskDragDocument.addEventListener("pointerup", this.handleActiveTaskPointerUp);
-		this.activeTaskDragDocument.addEventListener("pointercancel", this.handleActiveTaskPointerUp);
+		this.activeTaskDragDocument.addEventListener(
+			"pointercancel",
+			this.handleActiveTaskPointerUp
+		);
 	};
 
 	private readonly handleActiveTaskPointerMove = (event: PointerEvent): void => {
@@ -274,7 +278,10 @@ export class StatusBarService {
 			"pointermove",
 			this.handleActiveTaskPointerMove
 		);
-		this.activeTaskDragDocument?.removeEventListener("pointerup", this.handleActiveTaskPointerUp);
+		this.activeTaskDragDocument?.removeEventListener(
+			"pointerup",
+			this.handleActiveTaskPointerUp
+		);
 		this.activeTaskDragDocument?.removeEventListener(
 			"pointercancel",
 			this.handleActiveTaskPointerUp
@@ -305,19 +312,34 @@ export class StatusBarService {
 	 * Update the status bar display
 	 */
 	private async updateStatusBar(): Promise<void> {
+		if (this.destroyed) return;
+		if (this.trackedTaskUpdate) return this.trackedTaskUpdate;
+
+		this.trackedTaskUpdate = this.refreshTrackedTasks();
+		try {
+			await this.trackedTaskUpdate;
+		} finally {
+			this.trackedTaskUpdate = null;
+		}
+	}
+
+	private async refreshTrackedTasks(): Promise<void> {
 		this.ensureActiveTaskControlElement();
 		if (!this.plugin.settings.showTrackedTasksInStatusBar) {
 			this.hide();
 		}
 
 		try {
-			// Use request deduplicator to prevent excessive updates
-			const trackedTasks = await this.requestDeduplicator.execute("update-status-bar", () =>
-				this.getTrackedTasks(),
-				0
-			);
-
-			this.renderTrackedTaskSurfaces(trackedTasks);
+			do {
+				this.trackedTaskUpdateRequested = false;
+				const trackedTasks = await this.getTrackedTasks();
+				if (this.destroyed) return;
+				// A scan may have read a task before its timer started or stopped.
+				// Repeat it when an update arrived in flight instead of rendering stale data.
+				if (!this.trackedTaskUpdateRequested) {
+					this.renderTrackedTaskSurfaces(trackedTasks);
+				}
+			} while (this.trackedTaskUpdateRequested);
 		} catch (error) {
 			tasknotesLogger.error("Error updating status bar:", {
 				category: "internal",
@@ -509,9 +531,7 @@ export class StatusBarService {
 				);
 				if (task && title && elapsed) {
 					title.textContent = task.title;
-					elapsed.textContent = this.formatElapsedDuration(
-						this.getActiveElapsedMs(task)
-					);
+					elapsed.textContent = this.formatElapsedDuration(this.getActiveElapsedMs(task));
 					openButton?.setAttribute(
 						"aria-label",
 						this.translate(
@@ -530,11 +550,9 @@ export class StatusBarService {
 					);
 					completeButton?.setAttribute(
 						"aria-label",
-						this.translate(
-							"ui.activeTaskControl.endTask",
-							`End task: ${task.title}`,
-							{ title: task.title }
-						)
+						this.translate("ui.activeTaskControl.endTask", `End task: ${task.title}`, {
+							title: task.title,
+						})
 					);
 				}
 			});
@@ -575,11 +593,9 @@ export class StatusBarService {
 		openButton.className = "tasknotes-active-task-control__open";
 		openButton.setAttribute(
 			"aria-label",
-			this.translate(
-				"ui.activeTaskControl.openTask",
-				`Open task: ${task.title}`,
-				{ title: task.title }
-			)
+			this.translate("ui.activeTaskControl.openTask", `Open task: ${task.title}`, {
+				title: task.title,
+			})
 		);
 		openButton.addEventListener("click", () => {
 			void this.openTrackedTask(task);
@@ -603,11 +619,9 @@ export class StatusBarService {
 		stopButton.textContent = this.translate("ui.activeTaskControl.stopAction", "Stop");
 		stopButton.setAttribute(
 			"aria-label",
-			this.translate(
-				"ui.activeTaskControl.stopTask",
-				`Stop task: ${task.title}`,
-				{ title: task.title }
-			)
+			this.translate("ui.activeTaskControl.stopTask", `Stop task: ${task.title}`, {
+				title: task.title,
+			})
 		);
 		stopButton.addEventListener("click", () => {
 			void this.stopTrackedTask(task, stopButton);
@@ -621,11 +635,9 @@ export class StatusBarService {
 		completeButton.textContent = this.translate("ui.activeTaskControl.endAction", "Complete");
 		completeButton.setAttribute(
 			"aria-label",
-			this.translate(
-				"ui.activeTaskControl.endTask",
-				`End task: ${task.title}`,
-				{ title: task.title }
-			)
+			this.translate("ui.activeTaskControl.endTask", `End task: ${task.title}`, {
+				title: task.title,
+			})
 		);
 		completeButton.addEventListener("click", () => {
 			void this.endTrackedTask(task, completeButton);
@@ -658,9 +670,9 @@ export class StatusBarService {
 	): Promise<void> {
 		const row = button.closest<HTMLElement>(".tasknotes-active-task-control__task");
 		row?.setAttribute("aria-busy", "true");
-		row
-			?.querySelectorAll<HTMLButtonElement>(".tasknotes-active-task-control__action")
-			.forEach((actionButton) => (actionButton.disabled = true));
+		row?.querySelectorAll<HTMLButtonElement>(".tasknotes-active-task-control__action").forEach(
+			(actionButton) => (actionButton.disabled = true)
+		);
 
 		try {
 			await run();
@@ -678,9 +690,9 @@ export class StatusBarService {
 			});
 			if (row?.isConnected) {
 				row.removeAttribute("aria-busy");
-				row
-					.querySelectorAll<HTMLButtonElement>(".tasknotes-active-task-control__action")
-					.forEach((actionButton) => (actionButton.disabled = false));
+				row.querySelectorAll<HTMLButtonElement>(
+					".tasknotes-active-task-control__action"
+				).forEach((actionButton) => (actionButton.disabled = false));
 			}
 		}
 	}
@@ -850,6 +862,8 @@ export class StatusBarService {
 	 * Request an update to the status bar (debounced)
 	 */
 	requestUpdate(): void {
+		if (this.destroyed) return;
+		this.trackedTaskUpdateRequested = true;
 		// Clear existing timeout
 		if (this.updateTimeout) {
 			window.clearTimeout(this.updateTimeout);
@@ -930,6 +944,7 @@ export class StatusBarService {
 	 * Cleanup when service is destroyed
 	 */
 	destroy(): void {
+		this.destroyed = true;
 		if (this.updateTimeout) {
 			window.clearTimeout(this.updateTimeout);
 			this.updateTimeout = null;
@@ -946,10 +961,6 @@ export class StatusBarService {
 			this.pomodoroEventRefs.forEach((ref) => this.plugin.emitter.offref(ref));
 		}
 		this.pomodoroEventRefs = [];
-
-		if (this.requestDeduplicator) {
-			this.requestDeduplicator.cancelAll();
-		}
 
 		// Status bar element is automatically cleaned up by Obsidian when plugin unloads
 		this.activeTaskControlElement?.remove();

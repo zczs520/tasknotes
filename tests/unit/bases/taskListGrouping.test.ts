@@ -1,4 +1,5 @@
 import type { TaskInfo } from "../../../src/types";
+import { StatusManager } from "../../../src/services/StatusManager";
 import type { BasesDataItem } from "../../../src/bases/helpers";
 import {
 	buildTaskListGroupedRenderItems,
@@ -8,6 +9,7 @@ import {
 	buildTaskListSubPropertyScopePaths,
 	getTaskListPropertyValue,
 	groupTasksByTaskListSubProperty,
+	normalizeTaskListStatusGroups,
 	stringifyTaskListGroupValue,
 	type TaskListGroup,
 } from "../../../src/bases/taskListGrouping";
@@ -22,6 +24,62 @@ function task(path: string, title = path): TaskInfo {
 }
 
 describe("taskListGrouping", () => {
+	it("merges legacy status aliases, retains an empty middle column and preserves unknown statuses", () => {
+		const manager = new StatusManager([
+			{
+				id: "open",
+				value: "Open",
+				label: "待完成",
+				color: "#808080",
+				order: 0,
+				isCompleted: false,
+			},
+			{
+				id: "in-progress",
+				value: "in-progress",
+				label: "进行中",
+				color: "#0066cc",
+				order: 1,
+				isCompleted: false,
+			},
+			{
+				id: "done",
+				value: "done",
+				label: "已完成",
+				color: "#00aa00",
+				order: 2,
+				isCompleted: true,
+			},
+		]);
+		const groups = normalizeTaskListStatusGroups(
+			["Open", "open", "done", "completed", "custom"].map((key, index) => ({
+				key,
+				entries: [{ file: { path: `${index}.md` } }],
+			})),
+			manager.getStatusesByOrder(),
+			(value) => manager.normalizeStatusValue(value),
+			String
+		);
+		expect(groups.map((group) => group.entries.length)).toEqual([2, 0, 2, 1]);
+		const items = buildTaskListGroupedRenderItems({
+			groups,
+			taskNotes: [0, 1, 2, 3, 4].map((index) => task(`${index}.md`)),
+			subGroupPropertyId: null,
+			pathToProps: new Map(),
+			collapsedGroups: new Set([String(groups[2].key)]),
+			collapsedSubGroups: new Set(),
+			convertGroupKeyToString: String,
+		});
+		expect(
+			items.filter((item) => item.type === "primary-header").map((item) => item.taskCount)
+		).toEqual([2, 0, 2, 1]);
+		expect(items.filter((item) => item.type === "task").map((item) => item.task.path)).toEqual([
+			"0.md",
+			"1.md",
+			"4.md",
+		]);
+	});
+
 	it("builds path properties with cached formula outputs", () => {
 		const dataItems: BasesDataItem[] = [
 			{
@@ -191,7 +249,10 @@ describe("taskListGrouping", () => {
 	it("builds grouped and sub-property scope paths", () => {
 		const first = task("one.md");
 		const groups: TaskListGroup[] = [
-			{ key: "todo", entries: [{ file: { path: "one.md" } }, { file: { path: "missing.md" } }] },
+			{
+				key: "todo",
+				entries: [{ file: { path: "one.md" } }, { file: { path: "missing.md" } }],
+			},
 		];
 
 		expect(buildTaskListGroupedScopePaths(groups, [first], String)).toEqual(

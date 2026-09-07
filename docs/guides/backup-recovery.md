@@ -12,7 +12,7 @@ TaskNotes keeps task content in your vault and configuration in the plugin data 
 | --- | --- | --- |
 | Task notes | Your configured task folders | Titles, properties, details, recurrence, and time entries |
 | Base views | `TaskNotes/Views/` or custom paths | Filters, formulas, layout, and custom views |
-| Plugin settings | `.obsidian/plugins/tasknotes/data.json` | Field mapping, statuses, defaults, integrations, and view command paths |
+| Plugin settings | `.obsidian/plugins/taskquence/data.json` | Field mapping, statuses, defaults, integrations, and view command paths |
 | Daily notes | Your daily-note folder | Pomodoro history when daily-note storage is enabled |
 | mdbase configuration | `tasknotes.yaml`, `mdbase.yaml`, or `.mdbase/` when configured | Shared collection and schema configuration |
 
@@ -22,7 +22,7 @@ Treat `data.json` as sensitive because integration configuration can include cre
 
 1. Close Obsidian or disable TaskNotes so settings are not being written.
 2. Copy the entire vault, including hidden files.
-3. Verify the backup contains `.obsidian/plugins/tasknotes/data.json`.
+3. Verify the backup contains `.obsidian/plugins/taskquence/data.json`.
 4. Keep at least one version from before a migration or bulk edit.
 
 File-history sync is useful, but it is not a substitute for a separate tested backup.
@@ -31,7 +31,7 @@ File-history sync is useful, but it is not a substitute for a separate tested ba
 
 1. Close Obsidian.
 2. Restore task notes and Base files first.
-3. Restore `.obsidian/plugins/tasknotes/data.json` if you also need the previous settings.
+3. Restore `.obsidian/plugins/taskquence/data.json` if you also need the previous settings.
 4. Reopen Obsidian and confirm Bases is enabled.
 5. Run **TaskNotes: Refresh cache** and open one default Base.
 
@@ -52,7 +52,7 @@ A reset affects settings, configured statuses and priorities, integration state,
 
 Disabling or uninstalling TaskNotes leaves task notes and `.base` files in the vault. After uninstalling, remove generated folders only if you have inspected them and confirmed they contain no content you want to keep.
 
-To remove plugin settings as well, close Obsidian and remove `.obsidian/plugins/tasknotes/` after making a backup. Task metadata remains readable YAML, but TaskNotes-specific Base view types and interactive widgets will no longer render.
+To remove plugin settings as well, close Obsidian and remove `.obsidian/plugins/taskquence/` after making a backup. Task metadata remains readable YAML, but TaskNotes-specific Base view types and interactive widgets will no longer render.
 
 ## Recovery checklist
 

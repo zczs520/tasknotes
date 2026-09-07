@@ -14,7 +14,7 @@
  * 3. Keep Tasks plugin installed just for its API
  *
  * Expected solution: Expose a public API on the plugin instance that scripts
- * can access via app.plugins.plugins['tasknotes'].api
+ * can access via app.plugins.plugins['taskquence'].api
  */
 
 import { NaturalLanguageParser } from '../../../src/services/NaturalLanguageParser';
@@ -77,7 +77,7 @@ describe('NaturalLanguageParser API Exposure - Issue #1052', () => {
 	describe('Public API for External Scripts', () => {
 		/**
 		 * Test that the plugin exposes a public API object accessible via:
-		 * app.plugins.plugins['tasknotes'].api
+		 * app.plugins.plugins['taskquence'].api
 		 *
 		 * This API should allow external scripts (Templater, QuickAdd, MetaBind)
 		 * to access the NLP parser without making HTTP requests.
@@ -85,7 +85,7 @@ describe('NaturalLanguageParser API Exposure - Issue #1052', () => {
 		it.skip('should expose a public API object on the plugin instance (reproduces issue #1052)', () => {
 			// This test verifies the plugin exposes an API object
 			// Expected usage in Templater/QuickAdd:
-			// const api = app.plugins.plugins['tasknotes'].api;
+			// const api = app.plugins.plugins['taskquence'].api;
 			// const parsed = api.parseNaturalLanguage('Buy milk tomorrow #groceries');
 
 			// Mock plugin instance structure (would be from main.ts)
@@ -187,7 +187,7 @@ describe('NaturalLanguageParser API Exposure - Issue #1052', () => {
 			// Simulates how a user would use this in Templater:
 			// ```
 			// <%*
-			// const api = app.plugins.plugins['tasknotes'].api;
+			// const api = app.plugins.plugins['taskquence'].api;
 			// const userInput = await tp.system.prompt("Enter task:");
 			// const parsed = api.parseNaturalLanguage(userInput);
 			//

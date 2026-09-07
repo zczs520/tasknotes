@@ -1,6 +1,6 @@
-# TaskNotes - Agent Development Guide
+# TASKquence - Agent Development Guide
 
-This is an Obsidian plugin. The plugin ID is `tasknotes`.
+This is an Obsidian plugin. The plugin ID is `taskquence`.
 
 ## Build & Test
 
@@ -9,7 +9,7 @@ This is an Obsidian plugin. The plugin ID is `tasknotes`.
 npm run build:test
 
 # After building, reload the plugin in the running Obsidian instance
-obsidian vault=test plugin:reload id=tasknotes
+obsidian vault=test plugin:reload id=taskquence
 ```
 
 Always run both commands after making changes. Obsidian must be running for the CLI to work.

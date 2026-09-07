@@ -32,7 +32,7 @@ import { launchObsidian, closeObsidian, ObsidianApp, runCommand } from '../obsid
 
 const PROJECT_ROOT = path.resolve(__dirname, '../..');
 const E2E_VAULT_DIR = path.join(PROJECT_ROOT, 'tasknotes-e2e-vault');
-const PLUGIN_DATA_PATH = path.join(E2E_VAULT_DIR, '.obsidian/plugins/tasknotes/data.json');
+const PLUGIN_DATA_PATH = path.join(E2E_VAULT_DIR, '.obsidian/plugins/taskquence/data.json');
 
 let app: ObsidianApp;
 

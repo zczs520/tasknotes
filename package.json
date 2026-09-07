@@ -1,7 +1,7 @@
 {
-	"name": "dayquence",
-	"version": "4.11.1",
-	"description": "An independent TaskNotes fork with task planning, calendars, Pomodoro, time tracking, and Dayquence iOS life-event sync.",
+	"name": "taskquence",
+	"version": "5.0.0",
+	"description": "Plan tasks with calendars, Kanban, Pomodoro, time tracking, and TASKquence iOS life-event sync.",
 	"main": "main.js",
 	"scripts": {
 		"build": "npm run build-css && node generate-release-notes-import.mjs && tsc -noEmit --skipLibCheck && node esbuild.config.mjs production",

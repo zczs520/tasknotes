@@ -33,8 +33,8 @@ function createPluginForDataSave(): TaskNotesPlugin {
 	} as any;
 	const plugin = new TaskNotesPlugin(app);
 	(plugin as any).manifest = {
-		id: "tasknotes",
-		dir: ".obsidian/plugins/tasknotes",
+		id: "taskquence",
+		dir: ".obsidian/plugins/taskquence",
 		version: "4.3.2",
 	};
 	plugin.settings = cloneSettings();
@@ -54,11 +54,16 @@ function createLifecyclePlugin(saveSettingsDataOnly: jest.Mock): any {
 		statusManager: {
 			updateStatuses: jest.fn(),
 			isCompletedStatus: jest.fn(),
+			getAllStatuses: jest.fn().mockReturnValue([]),
+			normalizeStatusValue: jest.fn((status: string) => status),
 		},
 		priorityManager: {
 			updatePriorities: jest.fn(),
 		},
-		cacheManager: { updateConfig: jest.fn() },
+		cacheManager: {
+			updateConfig: jest.fn(),
+			getAllTasks: jest.fn().mockResolvedValue([]),
+		},
 		dependencyCache: { updateConfig: jest.fn() },
 		injectCustomStyles: jest.fn(),
 		statusBarService: { updateVisibility: jest.fn() },

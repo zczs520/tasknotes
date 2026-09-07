@@ -23,7 +23,7 @@ test.beforeAll(async () => {
 	const pluginState = await app.page.evaluate(async () => {
 		const obsidianApp = (window as any).app;
 		const manager = obsidianApp?.plugins;
-		for (const id of ["ccctasknote", "tasknotes"]) {
+		for (const id of ["taskquence"]) {
 			if (manager?.manifests?.[id] && !manager?.plugins?.[id]) {
 				if (typeof manager.enablePluginAndSave === "function") {
 					await manager.enablePluginAndSave(id);
@@ -37,8 +37,8 @@ test.beforeAll(async () => {
 			manifests: Object.keys(manager?.manifests ?? {}),
 		};
 	});
-	if (!pluginState.loaded.some((id) => id === "ccctasknote" || id === "tasknotes")) {
-		throw new Error(`TaskNotes did not load. Plugin state: ${JSON.stringify(pluginState)}`);
+	if (!pluginState.loaded.includes("taskquence")) {
+		throw new Error(`TASKquence did not load. Plugin state: ${JSON.stringify(pluginState)}`);
 	}
 	await app.page.addStyleTag({
 		content: ".tasknotes-active-task-control { display: none !important; }",

@@ -1048,7 +1048,7 @@ body .tn-time-statistics .tn-time-statistics__ranking button.tn-time-statistics_
 	}
 }
 
-/* Dayquence time ledger: one calm, flat surface with a dominant elapsed total,
+/* TASKquence time ledger: one calm, flat surface with a dominant elapsed total,
    a full-width timeline, and the breakdown aligned beside recent records. */
 body.theme-dark .tn-time-statistics {
 	--tn-stats-card: #262120;

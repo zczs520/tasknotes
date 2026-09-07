@@ -15,7 +15,7 @@
  * 5. When Obsidian tries to restore workspace with Bases views, they aren't registered
  * 6. User sees "Unknown view types" error and has no UI to fix it
  *
- * Workaround: Manually edit `.obsidian/plugins/tasknotes/data.json` and set
+ * Workaround: Manually edit `.obsidian/plugins/taskquence/data.json` and set
  * `"enableBases": true`, then reload
  *
  * Suggested fix: Either:
@@ -34,7 +34,7 @@ import { launchObsidian, closeObsidian, ObsidianApp, runCommand } from '../obsid
 
 const PROJECT_ROOT = path.resolve(__dirname, '../..');
 const E2E_VAULT_DIR = path.join(PROJECT_ROOT, 'tasknotes-e2e-vault');
-const PLUGIN_DATA_PATH = path.join(E2E_VAULT_DIR, '.obsidian/plugins/tasknotes/data.json');
+const PLUGIN_DATA_PATH = path.join(E2E_VAULT_DIR, '.obsidian/plugins/taskquence/data.json');
 
 let app: ObsidianApp;
 

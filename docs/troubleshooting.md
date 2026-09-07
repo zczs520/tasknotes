@@ -150,7 +150,7 @@ Report bugs on [GitHub Issues](https://github.com/callumalpass/tasknotes/issues)
 Use a reversible reset only after the checks above:
 
 1. Close Obsidian
-2. Navigate to `.obsidian/plugins/tasknotes/`
+2. Navigate to `.obsidian/plugins/taskquence/`
 3. Copy `data.json` to a backup outside the plugin directory
 4. Rename the original to `data.json.backup-YYYY-MM-DD`
 5. Restart Obsidian

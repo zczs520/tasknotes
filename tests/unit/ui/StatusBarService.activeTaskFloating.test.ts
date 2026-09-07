@@ -27,8 +27,8 @@ function createHarness(initialTasks: TaskInfo[]) {
 		cacheManager: {
 			getAllTasks: jest.fn(async () => tasks),
 		},
-		getActiveTimeSession: jest.fn((task: TaskInfo) =>
-			(task.timeEntries ?? []).find((entry) => !entry.endTime) ?? null
+		getActiveTimeSession: jest.fn(
+			(task: TaskInfo) => (task.timeEntries ?? []).find((entry) => !entry.endTime) ?? null
 		),
 		stopTimeTracking: jest.fn(async (task: TaskInfo) => ({
 			...task,
@@ -120,6 +120,51 @@ describe("active task floating control", () => {
 		jest.useRealTimers();
 	});
 
+	it("refreshes tasks when tracking starts during an in-flight task scan", async () => {
+		const firstTask = createTask();
+		const newTask = createTask({ path: "Tasks/new-task.md", title: "New task" });
+		const { plugin, setTasks } = createHarness([firstTask]);
+		let resolveScan!: (tasks: TaskInfo[]) => void;
+		plugin.cacheManager.getAllTasks.mockImplementationOnce(
+			() =>
+				new Promise<TaskInfo[]>((resolve) => {
+					resolveScan = resolve;
+				})
+		);
+		const service = new StatusBarService(plugin as never);
+		service.initialize();
+		setTasks([firstTask, newTask]);
+		service.requestUpdate();
+		await jest.advanceTimersByTimeAsync(100);
+		resolveScan([firstTask]);
+		await jest.advanceTimersByTimeAsync(1);
+
+		expect(
+			Array.from(document.querySelectorAll(".tasknotes-active-task-control__title")).map(
+				(title) => title.textContent
+			)
+		).toEqual(["Active task", "New task"]);
+		service.destroy();
+	});
+
+	it("does not recreate the floating control when a scan finishes after unload", async () => {
+		const { plugin } = createHarness([]);
+		let resolveScan!: (tasks: TaskInfo[]) => void;
+		plugin.cacheManager.getAllTasks.mockImplementationOnce(
+			() =>
+				new Promise<TaskInfo[]>((resolve) => {
+					resolveScan = resolve;
+				})
+		);
+		const service = new StatusBarService(plugin as never);
+		service.initialize();
+		service.destroy();
+		resolveScan([createTask()]);
+		await jest.advanceTimersByTimeAsync(1);
+
+		expect(document.querySelector(".tasknotes-active-task-control")).toBeNull();
+	});
+
 	it("shows the active task and updates elapsed time without the bottom status bar", async () => {
 		const task = createTask();
 		const { plugin } = createHarness([task]);
@@ -127,9 +172,7 @@ describe("active task floating control", () => {
 		service.initialize();
 		await (service as unknown as { updateStatusBar: () => Promise<void> }).updateStatusBar();
 
-		const control = document.body.querySelector<HTMLElement>(
-			".tasknotes-active-task-control"
-		);
+		const control = document.body.querySelector<HTMLElement>(".tasknotes-active-task-control");
 		expect(control?.hidden).toBe(false);
 		expect(control?.querySelector(".tasknotes-active-task-control__title")?.textContent).toBe(
 			"Active task"
@@ -142,9 +185,7 @@ describe("active task floating control", () => {
 		);
 		expect(
 			control?.querySelector(".tasknotes-active-task-control__complete")?.textContent
-		).toBe(
-			"完成"
-		);
+		).toBe("完成");
 		expect(plugin.addStatusBarItem).not.toHaveBeenCalled();
 
 		jest.advanceTimersByTime(1000);
@@ -167,9 +208,7 @@ describe("active task floating control", () => {
 		service.initialize();
 		await (service as unknown as { updateStatusBar: () => Promise<void> }).updateStatusBar();
 
-		const control = document.body.querySelector<HTMLElement>(
-			".tasknotes-active-task-control"
-		);
+		const control = document.body.querySelector<HTMLElement>(".tasknotes-active-task-control");
 		expect(control?.parentElement).toBe(document.body);
 		expect(workspaceContainer.contains(control)).toBe(false);
 		expect(control?.hidden).toBe(false);
@@ -233,14 +272,12 @@ describe("active task floating control", () => {
 		const service = new StatusBarService(plugin as never);
 		service.initialize();
 		await (service as unknown as { updateStatusBar: () => Promise<void> }).updateStatusBar();
-		const control = document.body.querySelector<HTMLElement>(
-			".tasknotes-active-task-control"
-		)!;
+		const control = document.body.querySelector<HTMLElement>(".tasknotes-active-task-control")!;
 		const openButton = control.querySelector<HTMLElement>(
 			".tasknotes-active-task-control__open"
 		)!;
 		document.body.getBoundingClientRect = () =>
-			({ left: 0, top: 0, width: 1000, height: 700 } as DOMRect);
+			({ left: 0, top: 0, width: 1000, height: 700 }) as DOMRect;
 		Object.defineProperty(control, "offsetWidth", { value: 300 });
 		Object.defineProperty(control, "offsetHeight", { value: 50 });
 		control.getBoundingClientRect = () => {
@@ -287,9 +324,7 @@ describe("active task floating control", () => {
 		setTasks([task]);
 		await (service as unknown as { updateStatusBar: () => Promise<void> }).updateStatusBar();
 
-		const control = document.body.querySelector<HTMLElement>(
-			".tasknotes-active-task-control"
-		);
+		const control = document.body.querySelector<HTMLElement>(".tasknotes-active-task-control");
 		expect(control?.hidden).toBe(false);
 		expect(control?.querySelector(".tasknotes-active-task-control__title")?.textContent).toBe(
 			task.title

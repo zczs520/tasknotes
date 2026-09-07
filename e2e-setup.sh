@@ -9,7 +9,7 @@ OBSIDIAN_APPIMAGE="${1:-$HOME/Applications/Obsidian-1.8.10.AppImage}"
 OBSIDIAN_DATA_DIR="$HOME/.config/obsidian"
 UNPACKED_DIR="$SCRIPT_DIR/.obsidian-unpacked"
 E2E_VAULT_DIR="$SCRIPT_DIR/tasknotes-e2e-vault"
-PLUGIN_DIR="$E2E_VAULT_DIR/.obsidian/plugins/tasknotes"
+PLUGIN_DIR="$E2E_VAULT_DIR/.obsidian/plugins/taskquence"
 
 # Colors for output
 RED='\033[0;31m'

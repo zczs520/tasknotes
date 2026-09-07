@@ -8,7 +8,7 @@ describe("transformReleaseNoteIssueLinks", () => {
 		const output = transformReleaseNoteIssueLinks(input);
 
 		expect(output).toBe(
-			"- ([#1720](https://github.com/callumalpass/tasknotes/issues/1720)) Fixed something"
+			"- ([#1720](https://github.com/zczs520/tasknotes/issues/1720)) Fixed something"
 		);
 	});
 
@@ -17,7 +17,7 @@ describe("transformReleaseNoteIssueLinks", () => {
 		const output = transformReleaseNoteIssueLinks(input);
 
 		expect(output).toBe(
-			"- ([#1619](https://github.com/callumalpass/tasknotes/issues/1619), [#386](https://github.com/callumalpass/tasknotes/issues/386), [#621](https://github.com/callumalpass/tasknotes/issues/621)) Added drag-to-reorder"
+			"- ([#1619](https://github.com/zczs520/tasknotes/issues/1619), [#386](https://github.com/zczs520/tasknotes/issues/386), [#621](https://github.com/zczs520/tasknotes/issues/621)) Added drag-to-reorder"
 		);
 	});
 

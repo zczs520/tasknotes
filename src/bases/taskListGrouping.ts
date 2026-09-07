@@ -1,4 +1,4 @@
-import type { TaskInfo } from "../types";
+import type { StatusConfig, TaskInfo } from "../types";
 import { stringifyUnknown } from "../utils/stringUtils";
 import { buildBasesPathProperties } from "./basesViewAdapters";
 import type { BasesDataItem } from "./helpers";
@@ -10,7 +10,39 @@ export type TaskListGroupEntry = {
 export type TaskListGroup = {
 	key: unknown;
 	entries: TaskListGroupEntry[];
+	showWhenEmpty?: boolean;
 };
+
+/** Merge legacy status aliases without changing the underlying notes. */
+export function normalizeTaskListStatusGroups(
+	groups: readonly TaskListGroup[],
+	statuses: readonly StatusConfig[],
+	normalize: (value: string) => string,
+	stringify: (value: unknown) => string
+): TaskListGroup[] {
+	const result = new Map<string, TaskListGroup>();
+	const completed = statuses.filter((status) => status.isCompleted);
+	for (const status of statuses) {
+		const key = normalize(status.value);
+		if (!result.has(key)) result.set(key, { key, entries: [], showWhenEmpty: true });
+	}
+	for (const group of groups) {
+		let key = normalize(stringify(group.key));
+		if (!result.has(key) && key.toLowerCase() === "completed" && completed.length === 1) {
+			key = normalize(completed[0].value);
+		}
+		const target = result.get(key) ?? { key, entries: [] };
+		const paths = new Set(target.entries.map((entry) => entry.file?.path));
+		for (const entry of group.entries) {
+			if (entry.file?.path && !paths.has(entry.file.path)) {
+				target.entries.push(entry);
+				paths.add(entry.file.path);
+			}
+		}
+		result.set(key, target);
+	}
+	return [...result.values()];
+}
 
 export type TaskListPrimaryHeaderItem = {
 	type: "primary-header";
@@ -183,7 +215,7 @@ export function buildTaskListGroupedRenderItems(options: {
 		const groupPaths = new Set(group.entries.map((entry) => entry.file?.path));
 		const groupTasks = options.taskNotes.filter((task) => groupPaths.has(task.path));
 
-		if (groupTasks.length === 0) continue;
+		if (groupTasks.length === 0 && !group.showWhenEmpty) continue;
 
 		const isPrimaryCollapsed = options.collapsedGroups.has(primaryKey);
 		items.push({

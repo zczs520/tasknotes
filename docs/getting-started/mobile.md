@@ -4,7 +4,7 @@ description: What is shared between TaskNotes desktop and mobile, and which inte
 
 # Mobile guide
 
-TaskNotes task files, Base files, settings, and most commands work on Obsidian mobile. Sync the complete vault, including `.base` files and `.obsidian/plugins/tasknotes/data.json`, when you want the same configuration on every device.
+TaskNotes task files, Base files, settings, and most commands work on Obsidian mobile. Sync the complete vault, including `.base` files and `.obsidian/plugins/taskquence/data.json`, when you want the same configuration on every device.
 
 ## Before opening TaskNotes
 

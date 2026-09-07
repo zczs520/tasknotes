@@ -42,12 +42,12 @@ function setFrontmatter(plugin: TaskNotesPlugin, path: string, frontmatter: unkn
 	metadataCache.setCache(path, { frontmatter });
 }
 
-describe("issue #1761 - native file menu TaskNotes actions", () => {
+describe("issue #1761 - native file menu TASKquence actions", () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
 
-	it("adds edit and TaskNotes submenu entries for recognized task files", async () => {
+	it("adds edit and TASKquence submenu entries for recognized task files", async () => {
 		const task = createTask("Tasks/review-native-menu.md");
 		const plugin = createPlugin(task);
 		const menu = new Menu() as never;
@@ -64,7 +64,7 @@ describe("issue #1761 - native file menu TaskNotes actions", () => {
 		expect(editItem.setTitle).toHaveBeenCalledWith("Edit task");
 		expect(editItem.setIcon).toHaveBeenCalledWith("pencil");
 		expect(editItem.setSection).toHaveBeenCalledWith("tasknotes");
-		expect(taskNotesItem.setTitle).toHaveBeenCalledWith("TaskNotes");
+		expect(taskNotesItem.setTitle).toHaveBeenCalledWith("Dayquence");
 		expect(taskNotesItem.setIcon).toHaveBeenCalledWith("list-checks");
 		expect(taskNotesItem.setSection).toHaveBeenCalledWith("tasknotes");
 		expect(taskNotesItem.setSubmenu).toHaveBeenCalledTimes(1);

@@ -74,8 +74,8 @@ test.describe('Issue #974: Timeblock external calendar sync', () => {
         // Navigate to TaskNotes plugin settings
         const pluginTab = settingsModal.locator(
           'text=TaskNotes, ' +
-            '.vertical-tab-nav-item:has-text("TaskNotes"), ' +
-            '[data-tab="tasknotes"]'
+            '.vertical-tab-nav-item:has-text("TASKquence"), ' +
+            '[data-tab="taskquence"]'
         );
 
         if (await pluginTab.isVisible({ timeout: 2000 }).catch(() => false)) {

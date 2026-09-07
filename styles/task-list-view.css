@@ -751,3 +751,125 @@ body.theme-dark .tasknotes-plugin.tn-tasknotesTaskList {
         animation: none;
     }
 }
+
+/* Status lists share the board's ordered columns while keeping compact task rows. */
+.tasknotes-plugin.tn-tasknotesTaskList .tn-bases-items-container.task-list-view__status-columns {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(260px, 1fr));
+    align-items: start;
+    align-content: start;
+    gap: 14px;
+    padding: 16px;
+    overflow: auto;
+}
+
+.tasknotes-plugin.tn-tasknotesTaskList .task-list-view__status-column {
+    min-width: 0;
+    min-height: 140px;
+    overflow: hidden;
+    border: 1px solid var(--tn-list-line);
+    border-radius: 12px;
+    background: var(--tn-list-surface);
+}
+
+.tasknotes-plugin.tn-tasknotesTaskList .task-list-view__status-column > .task-group[data-level="primary"] .task-group-header {
+    min-height: 46px;
+    margin: 0;
+    padding: 8px 10px;
+    gap: 6px;
+    color: var(--tn-status-color, var(--tn-list-muted));
+    background: color-mix(in srgb, var(--tn-status-color, var(--tn-list-muted)) 10%, var(--tn-list-soft));
+    border-top: 0;
+    border-bottom: 1px solid var(--tn-list-line);
+}
+
+.tasknotes-plugin.tn-tasknotesTaskList .task-list-view__status-column .task-group-title {
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
+    gap: 7px;
+}
+
+.tasknotes-plugin.tn-tasknotesTaskList .task-list-view__status-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+}
+
+.tasknotes-plugin.tn-tasknotesTaskList .task-list-view__status-icon svg {
+    width: 15px;
+    height: 15px;
+}
+
+.tasknotes-plugin.tn-tasknotesTaskList .task-list-view__status-column .agenda-view__item-count {
+    margin-inline: 0;
+    padding: 0;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    color: currentColor;
+    opacity: 0.7;
+    font-family: var(--font-interface);
+    font-size: 12px;
+}
+
+.tasknotes-plugin.tn-tasknotesTaskList .task-list-view__status-column .task-card {
+    padding: 9px 10px;
+    min-height: 52px;
+}
+
+.tasknotes-plugin.tn-tasknotesTaskList .task-list-view__status-column .task-card:hover {
+    transform: none;
+}
+
+.tasknotes-plugin.tn-tasknotesTaskList .task-list-view__status-column .task-card__main-row {
+    grid-template-columns: 3px 22px minmax(0, 1fr) auto auto;
+    gap: 6px;
+    align-items: start;
+}
+
+.tasknotes-plugin.tn-tasknotesTaskList .task-list-view__status-column .task-card__content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 5px;
+}
+
+.tasknotes-plugin.tn-tasknotesTaskList .task-list-view__status-column :is(.task-card__title, .task-card__title-text) {
+    font-size: 14px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.tasknotes-plugin.tn-tasknotesTaskList .task-list-view__status-column .task-card__metadata {
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 8px;
+    font-size: 11px;
+    line-height: 1.35;
+}
+
+.tasknotes-plugin.tn-tasknotesTaskList .task-list-view__status-column :is(
+    .task-card__metadata-property--scheduled,
+    .task-card__metadata-property--due,
+    .task-card__metadata-property--date
+) {
+    order: -2;
+    flex: 1 0 100%;
+    justify-content: flex-end;
+    margin-inline-start: 0;
+}
+
+.tasknotes-plugin.tn-tasknotesTaskList .task-list-view__status-column .task-card__metadata-property--tags {
+    order: -1;
+    flex: 1 1 100%;
+}
+
+.tasknotes-plugin.tn-tasknotesTaskList .task-list-view__status-column .task-group[data-level="sub"] .task-group-header {
+    margin: 0;
+    padding: 7px 10px;
+    min-height: 34px;
+    font-size: 12px;
+}
+
+.tasknotes-plugin.tn-tasknotesTaskList .task-list-view__status-columns > :is(.tn-bases-empty, .tn-search-no-results) {
+    grid-column: 1 / -1;
+}

@@ -6,7 +6,7 @@ on:
       - '*'
 
 env:
-  PLUGIN_NAME: tasknotes
+  PLUGIN_NAME: taskquence
 
 permissions:
   contents: write
@@ -85,4 +85,4 @@ jobs:
             main.js
             manifest.json
             styles.css
-          draft: true
+          draft: false

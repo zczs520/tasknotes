@@ -49,6 +49,10 @@ function getPropertiesToShow(
 	);
 }
 
+function isCardTitleProperty(propertyId: string): boolean {
+	return ["title", "file.name", "file.basename", "name", "basename"].includes(propertyId);
+}
+
 function createBlockedMetadataPill(config: RenderTaskCardMetadataConfig): HTMLElement | null {
 	const { metadataLine, card, task, plugin, onBlockedByToggle } = config;
 	if (!task.isBlocked) {
@@ -188,6 +192,13 @@ export function renderTaskCardMetadata(config: RenderTaskCardMetadataConfig): HT
 	}
 
 	for (const propertyId of propertiesToShow) {
+		// The card header already renders the task title. Bases commonly includes
+		// file.name as a visible property, which maps to `title` and would otherwise
+		// repeat the same name in the metadata line.
+		if (isCardTitleProperty(propertyId)) {
+			continue;
+		}
+
 		if (
 			isPropertyForField(propertyId, "status", plugin) ||
 			isPropertyForField(propertyId, "priority", plugin)

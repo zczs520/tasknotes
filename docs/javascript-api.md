@@ -3,7 +3,7 @@
 TaskNotes exposes an in-process runtime API on the loaded Obsidian plugin instance:
 
 ```javascript
-const tasknotes = app.plugins.plugins.tasknotes;
+const tasknotes = app.plugins.plugins.taskquence;
 const api = tasknotes?.api;
 ```
 
@@ -20,7 +20,7 @@ The TypeScript contract lives in `src/api/runtime-api.ts`. It is intentionally s
 Check the API version and capabilities before using methods that may not exist in older TaskNotes versions:
 
 ```javascript
-const tasknotes = app.plugins.plugins.tasknotes;
+const tasknotes = app.plugins.plugins.taskquence;
 const api = tasknotes?.api;
 
 if (!api || api.apiVersion !== 1 || !api.hasCapability("tasks.write")) {
@@ -82,7 +82,7 @@ The older flat methods, such as `api.getTask(path)` and `api.parseNaturalLanguag
 Companion plugins can publish their own runtime API namespace through `api.extensions`. This is the preferred way to extend TaskNotes without adding arbitrary properties to the core API object.
 
 ```javascript
-const tasknotes = this.app.plugins.getPlugin("tasknotes");
+const tasknotes = this.app.plugins.getPlugin("taskquence");
 const api = tasknotes?.api;
 
 if (!api?.hasCapability("extensions.register")) {
@@ -122,7 +122,7 @@ Extension namespaces are normalized to lowercase and may use letters, numbers, d
 Companion plugins can read the TaskNotes plugin instance from Obsidian's plugin registry:
 
 ```javascript
-const tasknotes = this.app.plugins.getPlugin("tasknotes");
+const tasknotes = this.app.plugins.getPlugin("taskquence");
 const api = tasknotes?.api;
 
 if (!api?.hasCapability("tasks.events")) {
@@ -149,7 +149,7 @@ type TaskNotesPluginInstance = {
 	api?: TaskNotesRuntimeApiV1;
 };
 
-const tasknotes = app.plugins.getPlugin("tasknotes") as TaskNotesPluginInstance | null;
+const tasknotes = app.plugins.getPlugin("taskquence") as TaskNotesPluginInstance | null;
 const api = tasknotes?.api;
 
 if (api?.apiVersion === 1 && api.hasCapability("tasks.write")) {

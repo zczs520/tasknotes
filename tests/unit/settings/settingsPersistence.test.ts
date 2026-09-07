@@ -41,26 +41,26 @@ describe("settings persistence helpers", () => {
 
 	it("builds the plugin data path from manifest dir first", () => {
 		const host = createHost({
-			dir: ".obsidian/plugins/tasknotes",
+			dir: ".obsidian/plugins/taskquence",
 			configDir: ".config",
 			id: "ignored",
 		});
 
-		expect(getPluginDataPath(host)).toBe(".obsidian/plugins/tasknotes/data.json");
+		expect(getPluginDataPath(host)).toBe(".obsidian/plugins/taskquence/data.json");
 	});
 
 	it("falls back to vault configDir and manifest id for the plugin data path", () => {
 		const host = createHost({
 			configDir: ".obsidian",
-			id: "tasknotes",
+			id: "taskquence",
 		});
 
-		expect(getPluginDataPath(host)).toBe(".obsidian/plugins/tasknotes/data.json");
+		expect(getPluginDataPath(host)).toBe(".obsidian/plugins/taskquence/data.json");
 	});
 
 	it("treats settings reads as compromised after retrying an existing data file", async () => {
 		const host = createHost({
-			dir: ".obsidian/plugins/tasknotes",
+			dir: ".obsidian/plugins/taskquence",
 			dataFileExists: true,
 			loadResults: [null, null, null, null],
 		});
@@ -74,7 +74,7 @@ describe("settings persistence helpers", () => {
 
 	it("does not mark a new install as compromised when data.json is absent", async () => {
 		const host = createHost({
-			dir: ".obsidian/plugins/tasknotes",
+			dir: ".obsidian/plugins/taskquence",
 			dataFileExists: false,
 			loadResults: [null],
 		});
@@ -88,7 +88,7 @@ describe("settings persistence helpers", () => {
 
 	it("returns false when checking data file existence fails", async () => {
 		const host = createHost({
-			dir: ".obsidian/plugins/tasknotes",
+			dir: ".obsidian/plugins/taskquence",
 			dataFileExists: true,
 		});
 		host.app.vault.adapter.exists.mockRejectedValueOnce(new Error("adapter failed"));

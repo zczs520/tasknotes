@@ -1,5 +1,5 @@
 name: Bug Report
-description: Report a bug or issue with TaskNotes
+description: Report a bug or issue with TASKquence
 title: "[Bug]: "
 labels: ["bug"]
 body:
@@ -35,8 +35,8 @@ body:
     - type: textarea
       id: debug-info
       attributes:
-          label: TaskNotes Debug Info
-          description: Run Obsidian's "Show debug info" command from the command palette and paste the TaskNotes/Obsidian/system output here.
+          label: TASKquence Debug Info
+          description: Run Obsidian's "Show debug info" command from the command palette and paste the TASKquence/Obsidian/system output here.
           render: text
           placeholder: |
               Paste the output of "Show debug info" here.
@@ -75,7 +75,7 @@ body:
       id: settings-context
       attributes:
           label: Relevant Settings or Customizations
-          description: Include any related TaskNotes settings, or relevant excerpts from `.obsidian/plugins/tasknotes/data.json`. Remove calendar credentials, account details, tokens, and unrelated private values before posting.
+          description: Include any related TaskNotes settings, or relevant excerpts from `.obsidian/plugins/taskquence/data.json`. Remove calendar credentials, account details, tokens, and unrelated private values before posting.
           placeholder: |
               data.json excerpt:
               {

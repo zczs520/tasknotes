@@ -8,7 +8,7 @@ TaskNotes can use your current folders and property names. Configure identificat
 
 ## 1. Back up the vault
 
-Make a complete vault backup, including the hidden `.obsidian` directory. The task notes themselves are Markdown, while TaskNotes settings live in `.obsidian/plugins/tasknotes/data.json`.
+Make a complete vault backup, including the hidden `.obsidian` directory. The task notes themselves are Markdown, while TaskNotes settings live in `.obsidian/plugins/taskquence/data.json`.
 
 ## 2. Inspect a representative note
 

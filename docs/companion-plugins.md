@@ -20,7 +20,7 @@ TaskNotes remains the source of truth for task behavior. Companion plugins shoul
 Companion plugins can also publish their own runtime surface through `api.extensions`. Other plugins and scripts can discover those extension APIs from TaskNotes:
 
 ```js
-const tasknotes = app.plugins.getPlugin("tasknotes");
+const tasknotes = app.plugins.getPlugin("taskquence");
 const workflows = tasknotes?.api?.extensions.get("tasknotes-workflows");
 ```
 

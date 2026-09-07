@@ -236,7 +236,7 @@
     }
 }
 
-/* Dayquence floating timer: one compact paper surface shared across notes and views. */
+/* TASKquence floating timer: one compact paper surface shared across notes and views. */
 .tasknotes-plugin.tasknotes-active-task-control {
     --tn-active-surface: #fffdf9;
     --tn-active-soft: #fbf3e9;

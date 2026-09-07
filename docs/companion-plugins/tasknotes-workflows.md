@@ -428,7 +428,7 @@ Time and utility steps:
 Companion plugins and scripts can inspect the same catalog through the TaskNotes runtime extension:
 
 ```js
-const tasknotes = app.plugins.getPlugin("tasknotes")?.api;
+const tasknotes = app.plugins.getPlugin("taskquence")?.api;
 const workflows = tasknotes?.extensions.get("tasknotes-workflows");
 const steps = workflows?.listStepDefinitions();
 ```

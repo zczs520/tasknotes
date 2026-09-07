@@ -92,7 +92,7 @@ test.describe('TaskNotes Plugin', () => {
     await openCommandPalette(page);
 
     // Search for TaskNotes commands
-    await page.keyboard.type('tasknotes', { delay: 30 });
+    await page.keyboard.type('taskquence', { delay: 30 });
     await page.waitForTimeout(500);
 
     // Verify that TaskNotes commands appear
@@ -608,7 +608,7 @@ test.describe('Documented UI Issues', () => {
     // PREVIOUSLY: test.fixme - now passing after test vault configuration fix
     // Fix: Updated test vault to use property-based task identification
     //
-    // See: tasknotes-e2e-vault/.obsidian/plugins/tasknotes/data.json
+    // See: tasknotes-e2e-vault/.obsidian/plugins/taskquence/data.json
     // See: tasknotes-e2e-vault/TaskNotes/Views/*.base
     const page = getPage();
 
@@ -2878,7 +2878,7 @@ test.describe('Mobile Mode', () => {
     const page = getPage();
 
     await openCommandPalette(page);
-    await page.keyboard.type('tasknotes', { delay: 30 });
+    await page.keyboard.type('taskquence', { delay: 30 });
     await page.waitForTimeout(500);
 
     const suggestions = page.locator('.suggestion-item');
@@ -3256,7 +3256,7 @@ test.describe('Issue #1337 - Convert note to task default values', () => {
     return await page.evaluate(() => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       return plugin?.settings;
     });
   }
@@ -3870,7 +3870,7 @@ test.describe('Issue #1352 - Preserve time when updating dates', () => {
         const updatedScheduled = await page.evaluate(async () => {
           // @ts-ignore - Obsidian global
           const app = (window as any).app;
-          const plugin = app?.plugins?.plugins?.['tasknotes'];
+          const plugin = app?.plugins?.plugins?.['taskquence'];
           if (!plugin) return null;
 
           // Find the task by title
@@ -3940,7 +3940,7 @@ test.describe('Issue #1352 - Preserve time when updating dates', () => {
           const updatedScheduled = await page.evaluate(async () => {
             // @ts-ignore - Obsidian global
             const app = (window as any).app;
-            const plugin = app?.plugins?.plugins?.['tasknotes'];
+            const plugin = app?.plugins?.plugins?.['taskquence'];
             if (!plugin) return null;
 
             const allTasks = plugin.taskService?.getAllTasks?.() || [];
@@ -3994,7 +3994,7 @@ test.describe('Issue #1352 - Preserve time when updating dates', () => {
           const updatedScheduled = await page.evaluate(async () => {
             // @ts-ignore - Obsidian global
             const app = (window as any).app;
-            const plugin = app?.plugins?.plugins?.['tasknotes'];
+            const plugin = app?.plugins?.plugins?.['taskquence'];
             if (!plugin) return null;
 
             const allTasks = plugin.taskService?.getAllTasks?.() || [];
@@ -4048,7 +4048,7 @@ test.describe('Same Date Start/Due Task Consolidation (Issue #1351)', () => {
     await page.evaluate(async (date) => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin?.taskService) return;
 
       // Create a test task with same scheduled and due date
@@ -4108,7 +4108,7 @@ test.describe('Same Date Start/Due Task Consolidation (Issue #1351)', () => {
     await page.evaluate(async () => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin?.taskService) return;
 
       const allTasks = plugin.taskService.getAllTasks() || [];
@@ -4131,7 +4131,7 @@ test.describe('Same Date Start/Due Task Consolidation (Issue #1351)', () => {
     await page.evaluate(async (date) => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin?.taskService) return;
 
       await plugin.taskService.createTask({
@@ -4175,7 +4175,7 @@ test.describe('Same Date Start/Due Task Consolidation (Issue #1351)', () => {
     await page.evaluate(async () => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin?.taskService) return;
 
       const allTasks = plugin.taskService.getAllTasks() || [];
@@ -4196,7 +4196,7 @@ test.describe('Same Date Start/Due Task Consolidation (Issue #1351)', () => {
     await page.evaluate(async ({ scheduled, due }) => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin?.taskService) return;
 
       await plugin.taskService.createTask({
@@ -4250,7 +4250,7 @@ test.describe('Same Date Start/Due Task Consolidation (Issue #1351)', () => {
     await page.evaluate(async () => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin?.taskService) return;
 
       const allTasks = plugin.taskService.getAllTasks() || [];
@@ -4275,7 +4275,7 @@ test.describe('Same Date Start/Due Task Consolidation (Issue #1351)', () => {
     await page.evaluate(async ({ scheduled, due }) => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin?.taskService) return;
 
       await plugin.taskService.createTask({
@@ -4329,7 +4329,7 @@ test.describe('Same Date Start/Due Task Consolidation (Issue #1351)', () => {
     await page.evaluate(async () => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin?.taskService) return;
 
       const allTasks = plugin.taskService.getAllTasks() || [];
@@ -4451,7 +4451,7 @@ test.describe('Inline Task Reading View Refresh (Issue #1350)', () => {
     const fileWasUpdated = await page.evaluate(async () => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin) return null;
 
       const allTasks = plugin.taskService?.getAllTasks?.() || [];
@@ -4522,7 +4522,7 @@ test.describe('Inline Task Reading View Refresh (Issue #1350)', () => {
     const taskStatus = await page.evaluate(async () => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin) return null;
 
       const allTasks = plugin.taskService?.getAllTasks?.() || [];
@@ -7882,7 +7882,7 @@ test.describe('Issue #1423 - Project cards refresh when subtasks are removed', (
     await page.evaluate(async ({ parentTitle, subtaskTitle }) => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin?.taskService) return;
 
       // Create parent task first
@@ -7945,7 +7945,7 @@ test.describe('Issue #1423 - Project cards refresh when subtasks are removed', (
     await page.evaluate(async (subtaskTitle) => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin?.taskService) return;
 
       const allTasks = plugin.taskService.getAllTasks() || [];
@@ -7968,7 +7968,7 @@ test.describe('Issue #1423 - Project cards refresh when subtasks are removed', (
     await page.evaluate(async (parentTitle) => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin?.taskService) return;
 
       const allTasks = plugin.taskService.getAllTasks() || [];
@@ -7998,7 +7998,7 @@ test.describe('Issue #1423 - Project cards refresh when subtasks are removed', (
     await page.evaluate(async ({ parentTitle, subtaskTitle }) => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin?.taskService) return;
 
       // Create parent task
@@ -8050,7 +8050,7 @@ test.describe('Issue #1423 - Project cards refresh when subtasks are removed', (
     await page.evaluate(async (subtaskTitle) => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin?.taskService) return;
 
       const allTasks = plugin.taskService.getAllTasks() || [];
@@ -8078,7 +8078,7 @@ test.describe('Issue #1423 - Project cards refresh when subtasks are removed', (
     await page.evaluate(async (parentTitle) => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin?.taskService) return;
 
       const allTasks = plugin.taskService.getAllTasks() || [];
@@ -8109,7 +8109,7 @@ test.describe('Issue #1423 - Project cards refresh when subtasks are removed', (
     await page.evaluate(async ({ parentTitle, subtaskTitle }) => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin?.taskService) return;
 
       await plugin.taskService.createTask({
@@ -8139,7 +8139,7 @@ test.describe('Issue #1423 - Project cards refresh when subtasks are removed', (
     const isProjectBefore = await page.evaluate(async (parentTitle) => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin?.projectSubtasksService) return false;
 
       const allTasks = plugin.taskService.getAllTasks() || [];
@@ -8155,7 +8155,7 @@ test.describe('Issue #1423 - Project cards refresh when subtasks are removed', (
     await page.evaluate(async (subtaskTitle) => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin?.taskService) return;
 
       const allTasks = plugin.taskService.getAllTasks() || [];
@@ -8176,7 +8176,7 @@ test.describe('Issue #1423 - Project cards refresh when subtasks are removed', (
     const isProjectAfter = await page.evaluate(async (parentTitle) => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin?.projectSubtasksService) return true;
 
       const allTasks = plugin.taskService.getAllTasks() || [];
@@ -8193,7 +8193,7 @@ test.describe('Issue #1423 - Project cards refresh when subtasks are removed', (
     await page.evaluate(async ({ parentTitle, subtaskTitle }) => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin?.taskService) return;
 
       const allTasks = plugin.taskService.getAllTasks() || [];
@@ -8217,7 +8217,7 @@ test.describe('Issue #1423 - Project cards refresh when subtasks are removed', (
     await page.evaluate(async ({ parentTitle, subtaskTitle }) => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin?.taskService) return;
 
       await plugin.taskService.createTask({
@@ -8269,7 +8269,7 @@ test.describe('Issue #1423 - Project cards refresh when subtasks are removed', (
       await page.evaluate(async (subtaskTitle) => {
         // @ts-ignore - Obsidian global
         const app = (window as any).app;
-        const plugin = app?.plugins?.plugins?.['tasknotes'];
+        const plugin = app?.plugins?.plugins?.['taskquence'];
         if (!plugin?.taskService) return;
 
         const allTasks = plugin.taskService.getAllTasks() || [];
@@ -8291,7 +8291,7 @@ test.describe('Issue #1423 - Project cards refresh when subtasks are removed', (
     await page.evaluate(async (parentTitle) => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin?.taskService) return;
 
       const allTasks = plugin.taskService.getAllTasks() || [];
@@ -8376,7 +8376,7 @@ test.describe('Issue #1425 - Calendar auto-refresh on time entry and pomodoro up
     await page.evaluate(async (taskTitle) => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin?.taskService) return;
 
       await plugin.taskService.createTask({
@@ -8402,7 +8402,7 @@ test.describe('Issue #1425 - Calendar auto-refresh on time entry and pomodoro up
     await page.evaluate(async ({ taskTitle, now }) => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin?.taskService) return;
 
       const allTasks = plugin.taskService.getAllTasks() || [];
@@ -8446,7 +8446,7 @@ test.describe('Issue #1425 - Calendar auto-refresh on time entry and pomodoro up
     await page.evaluate(async (taskTitle) => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin?.taskService) return;
 
       const allTasks = plugin.taskService.getAllTasks() || [];
@@ -8475,7 +8475,7 @@ test.describe('Issue #1425 - Calendar auto-refresh on time entry and pomodoro up
     await page.evaluate(async (taskTitle) => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin?.taskService) return;
 
       await plugin.taskService.createTask({
@@ -8500,7 +8500,7 @@ test.describe('Issue #1425 - Calendar auto-refresh on time entry and pomodoro up
     await page.evaluate(async (taskTitle) => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin?.taskService || !plugin?.pomodoroService) return;
 
       const allTasks = plugin.taskService.getAllTasks() || [];
@@ -8556,7 +8556,7 @@ test.describe('Issue #1425 - Calendar auto-refresh on time entry and pomodoro up
     await page.evaluate(async (taskTitle) => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin?.taskService) return;
 
       const allTasks = plugin.taskService.getAllTasks() || [];
@@ -8580,7 +8580,7 @@ test.describe('Issue #1425 - Calendar auto-refresh on time entry and pomodoro up
     await page.evaluate(async ({ taskTitle, now }) => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin?.taskService) return;
 
       const startTime = new Date(now);
@@ -8624,7 +8624,7 @@ test.describe('Issue #1425 - Calendar auto-refresh on time entry and pomodoro up
     await page.evaluate(async (taskTitle) => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin?.taskService) return;
 
       const allTasks = plugin.taskService.getAllTasks() || [];
@@ -8752,7 +8752,7 @@ test.describe('Issue #1430: Modal Fields Property ID Display', () => {
     await page.evaluate(async (fieldName) => {
       // @ts-ignore - Obsidian global
       const app = (window as any).app;
-      const plugin = app?.plugins?.plugins?.['tasknotes'];
+      const plugin = app?.plugins?.plugins?.['taskquence'];
       if (!plugin?.settings?.userFields) return;
 
       const fieldIndex = plugin.settings.userFields.findIndex(

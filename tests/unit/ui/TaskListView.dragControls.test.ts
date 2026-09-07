@@ -32,6 +32,45 @@ describe("TaskListView drag controls", () => {
 		document.body.innerHTML = "";
 	});
 
+	it("resolves parallel cards in the hovered status column and accepts empty columns", () => {
+		const view = createView() as any;
+		jest.spyOn(view, "isStatusColumns").mockReturnValue(true);
+		view.itemsContainer = document.createElement("div");
+		const columns = ["open", "in-progress", "done"].map((key) => {
+			const column = document.createElement("div");
+			column.className = "task-list-view__status-column";
+			column.dataset.statusGroup = key;
+			view.itemsContainer.appendChild(column);
+			return column;
+		});
+		for (const column of [columns[0], columns[2]]) {
+			const card = document.createElement("div");
+			card.className = "task-card";
+			card.dataset.taskPath = `${column.dataset.statusGroup}.md`;
+			card.getBoundingClientRect = () => ({ top: 50, bottom: 100, height: 50 }) as DOMRect;
+			column.appendChild(card);
+			view.taskGroupKeys.set(card.dataset.taskPath, column.dataset.statusGroup);
+		}
+		view.trackDragStatusColumn({ target: columns[2].firstChild });
+		expect(view.resolveClosestInsertionSlot(60)).toMatchObject({
+			groupKey: "done",
+			segmentIndex: 1,
+			insertionIndex: 0,
+		});
+		expect(view.resolveClosestInsertionSlot(110)).toMatchObject({
+			groupKey: "done",
+			insertionIndex: 1,
+		});
+		view.trackDragStatusColumn({ target: columns[1] });
+		expect(view.resolveClosestInsertionSlot(60)).toMatchObject({
+			groupKey: "in-progress",
+			segmentIndex: -1,
+			insertionIndex: 0,
+		});
+		view.trackDragStatusColumn({ target: view.itemsContainer });
+		expect(view.resolveClosestInsertionSlot(60)).toBeNull();
+	});
+
 	it("does not start a drag from no-drag task card controls", () => {
 		const view = createView();
 		const task = TaskFactory.createTask({ path: "tasks/drag-guard.md" });

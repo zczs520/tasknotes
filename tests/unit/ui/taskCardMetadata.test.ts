@@ -234,6 +234,26 @@ describe("taskCardMetadata", () => {
 		expect(metadataLine.style.display).toBe("none");
 	});
 
+	it("omits file-name properties that duplicate the card title", () => {
+		const plugin = createPlugin();
+		const { card, metadataLine } = createMetadataHost();
+
+		const elements = renderTaskCardMetadata({
+			metadataLine,
+			card,
+			task: createTask(),
+			plugin,
+			visibleProperties: ["title", "file.name"],
+			onBlockedByToggle: jest.fn(),
+		});
+
+		expect(elements).toEqual([]);
+		expect(metadataLine.querySelector(".task-card__metadata-property--title")).toBeNull();
+		expect(metadataLine.querySelector(".task-card__metadata-property--file\\.name")).toBeNull();
+		expect(metadataLine.textContent).not.toContain("Task");
+		expect(metadataLine.style.display).toBe("none");
+	});
+
 	it("wires blocked metadata toggles through the shared metadata-line adapter", () => {
 		const plugin = createPlugin();
 		const { card, metadataLine } = createMetadataHost();

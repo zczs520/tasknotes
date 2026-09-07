@@ -47,11 +47,13 @@ import {
 	buildTaskListSubPropertyRenderItems,
 	buildTaskListSubPropertyScopePaths,
 	groupTasksByTaskListSubProperty,
+	normalizeTaskListStatusGroups,
 	type TaskListGroup,
 	type TaskListHeaderItem,
 	type TaskListRenderItem,
 	type TaskListVirtualItem,
 } from "./taskListGrouping";
+import { isKanbanStatusGroupingProperty } from "./kanbanGrouping";
 import {
 	applyTaskListDropFrontmatterMutation,
 	buildTaskListDropSideEffectTask,
@@ -246,9 +248,7 @@ export class TaskListView extends BasesViewBase {
 		const subGroupKeys = this.currentSubGroupKeysByParent.get(groupKey);
 		if (!subGroupKeys || subGroupKeys.length === 0) return;
 
-		const allSubGroupsCollapsed = subGroupKeys.every((key) =>
-			this.collapsedSubGroups.has(key)
-		);
+		const allSubGroupsCollapsed = subGroupKeys.every((key) => this.collapsedSubGroups.has(key));
 		const menu = new Menu();
 
 		menu.addItem((item) => {
@@ -400,7 +400,7 @@ export class TaskListView extends BasesViewBase {
 			const groupPaths = new Set(group.entries.map((entry) => entry.file?.path));
 			const groupTasks = taskNotes.filter((task) => groupPaths.has(task.path));
 
-			if (groupTasks.length === 0) {
+			if (groupTasks.length === 0 && !group.showWhenEmpty) {
 				continue;
 			}
 
@@ -545,6 +545,10 @@ export class TaskListView extends BasesViewBase {
 			}
 
 			const isGrouped = this.dataAdapter.isGrouped();
+			this.itemsContainer?.classList.toggle(
+				"task-list-view__status-columns",
+				isGrouped && this.isStatusColumns()
+			);
 
 			// Special case: if sub-grouping is configured but primary grouping is not,
 			// treat sub-group property as primary grouping
@@ -599,6 +603,24 @@ export class TaskListView extends BasesViewBase {
 			}
 		}
 		return null;
+	}
+
+	private isStatusColumns(): boolean {
+		return isKanbanStatusGroupingProperty(
+			this.getGroupByPropertyId(),
+			this.plugin.fieldMapper.toUserField("status")
+		);
+	}
+
+	private getTaskListGroups(): TaskListGroup[] {
+		const groups = this.dataAdapter.getGroupedData() as TaskListGroup[];
+		if (!this.isStatusColumns()) return groups;
+		return normalizeTaskListStatusGroups(
+			groups,
+			this.plugin.statusManager.getStatusesByOrder(),
+			(value) => this.plugin.statusManager.normalizeStatusValue(value),
+			(key) => this.dataAdapter.convertGroupKeyToString(key)
+		);
 	}
 
 	private getSortScopeKey(groupKey: string | null): string {
@@ -1076,6 +1098,16 @@ export class TaskListView extends BasesViewBase {
 		return getTaskListDropSegments(this.getDropBaselineCards());
 	}
 
+	private dragStatusColumn: HTMLElement | null = null;
+
+	private trackDragStatusColumn(event: DragEvent): void {
+		this.dragStatusColumn = this.isStatusColumns()
+			? ((event.target as HTMLElement | null)?.closest<HTMLElement>(
+					".task-list-view__status-column"
+				) ?? null)
+			: null;
+	}
+
 	private reconstructDropTargetFromInsertionSlot(
 		segmentIndex: number,
 		insertionIndex: number
@@ -1220,6 +1252,23 @@ export class TaskListView extends BasesViewBase {
 	private resolveClosestInsertionSlot(clientY: number): TaskListInsertionSlot | null {
 		const segments = this.getDropSegments();
 		const localY = this.getContainerLocalY(clientY);
+		if (this.isStatusColumns()) {
+			const column = this.dragStatusColumn;
+			if (!column) return null;
+			const groupKey = column.dataset.statusGroup!;
+			const index = segments.findIndex((segment) => segment.groupKey === groupKey);
+			if (index < 0) {
+				return {
+					groupKey,
+					segmentIndex: -1,
+					insertionIndex: 0,
+					element: column,
+					position: "after",
+				};
+			}
+			const slot = resolveTaskListInsertionSlot([segments[index]], localY);
+			return slot ? { ...slot, segmentIndex: index } : null;
+		}
 		return resolveTaskListInsertionSlot(segments, localY);
 	}
 
@@ -1247,6 +1296,7 @@ export class TaskListView extends BasesViewBase {
 
 		this.itemsContainer.addEventListener("dragover", (e: DragEvent) => {
 			if (!this.draggedTaskPath) return;
+			this.trackDragStatusColumn(e);
 
 			// Always accept – must be unconditional so the browser keeps
 			// the drop zone active even when the cursor is between cards.
@@ -1280,6 +1330,8 @@ export class TaskListView extends BasesViewBase {
 			void (async () => {
 				e.preventDefault();
 				if (!this.draggedTaskPath) return;
+				this.trackDragStatusColumn(e);
+				if (this.isStatusColumns() && !this.dragStatusColumn) return;
 
 				if (!this.flushPendingInsertionSlot(e.clientY) && this.currentInsertionIndex < 0)
 					return;
@@ -1296,7 +1348,9 @@ export class TaskListView extends BasesViewBase {
 								insertionSegmentIndex,
 								insertionIndex
 							)
-						: null;
+						: this.dragStatusColumn
+							? { taskPath: draggedPath, above: false }
+							: null;
 				if (!draggedPath || !dropTarget) return;
 
 				this.clearDropIndicators();
@@ -1737,7 +1791,7 @@ export class TaskListView extends BasesViewBase {
 
 	private async renderGrouped(taskNotes: TaskInfo[]): Promise<void> {
 		const visibleProperties = this.getVisibleProperties();
-		const groups = this.dataAdapter.getGroupedData() as TaskListGroup[];
+		const groups = this.getTaskListGroups();
 
 		// Apply search filter
 		const filteredTasks = this.applySearchFilter(taskNotes);
@@ -1781,8 +1835,9 @@ export class TaskListView extends BasesViewBase {
 			)
 		);
 
-		// Use virtual scrolling if we have many items
-		const shouldUseVirtualScrolling = items.length >= this.VIRTUAL_SCROLL_THRESHOLD;
+		// The single-axis virtual scroller cannot lay out parallel status columns.
+		const shouldUseVirtualScrolling =
+			!this.isStatusColumns() && items.length >= this.VIRTUAL_SCROLL_THRESHOLD;
 
 		// If already using virtual scrolling and still need it, just update items
 		if (this.useVirtualScrolling && shouldUseVirtualScrolling && this.virtualScroller) {
@@ -1894,11 +1949,16 @@ export class TaskListView extends BasesViewBase {
 		this.lastVirtualItems = [];
 		// Populate group key lookup for cross-group drag detection
 		this.syncGroupedDragMetadata(items);
+		let column = this.itemsContainer!;
 
 		for (const item of items) {
+			if (this.isStatusColumns() && item.type === "primary-header") {
+				column = this.itemsContainer!.createDiv({ cls: "task-list-view__status-column" });
+				column.dataset.statusGroup = item.groupKey;
+			}
 			if (item.type === "primary-header" || item.type === "sub-header") {
 				const headerEl = this.createGroupHeader(item);
-				this.itemsContainer!.appendChild(headerEl);
+				column.appendChild(headerEl);
 			} else {
 				const cardEl = createTaskCard(
 					item.task,
@@ -1907,7 +1967,7 @@ export class TaskListView extends BasesViewBase {
 					cardOptions
 				);
 				this.configureCardForManualReordering(cardEl, item.task, item.groupKey);
-				this.itemsContainer!.appendChild(cardEl);
+				column.appendChild(cardEl);
 				this.currentTaskElements.set(item.task.path, cardEl);
 				this.taskInfoCache.set(item.task.path, item.task);
 				this.lastTaskSignatures.set(item.task.path, this.buildTaskSignature(item.task));
@@ -1971,7 +2031,18 @@ export class TaskListView extends BasesViewBase {
 		// Add group title
 		const titleContainer = headerElement.createSpan({ cls: "task-group-title" });
 		const displayTitle = isSubHeader ? headerItem.subGroupTitle : headerItem.groupTitle;
-		this.renderGroupTitle(titleContainer, displayTitle);
+		const status =
+			!isSubHeader && this.isStatusColumns()
+				? this.plugin.statusManager.getStatusConfig(displayTitle)
+				: undefined;
+		if (status) {
+			headerElement.style.setProperty("--tn-status-color", status.color);
+			const icon = titleContainer.createSpan({ cls: "task-list-view__status-icon" });
+			setIcon(icon, status.icon || "circle");
+			titleContainer.createSpan({ text: status.label });
+		} else {
+			this.renderGroupTitle(titleContainer, displayTitle);
+		}
 
 		// Add count
 		headerElement.createSpan({
@@ -1989,7 +2060,7 @@ export class TaskListView extends BasesViewBase {
 
 		// For virtual scrolling, just do a full refresh
 		// Simple and reliable, performance is still good with virtual scrolling
-		if (this.useVirtualScrolling) {
+		if (this.useVirtualScrolling || this.isStatusColumns()) {
 			this.debouncedRefresh();
 		} else {
 			// Normal mode - update the specific card
@@ -2375,7 +2446,11 @@ export class TaskListView extends BasesViewBase {
 
 	private async handleGroupToggle(groupKey: string): Promise<void> {
 		if (this.isSubGroupKey(groupKey)) {
-			this.setSetEntry(this.collapsedSubGroups, groupKey, !this.collapsedSubGroups.has(groupKey));
+			this.setSetEntry(
+				this.collapsedSubGroups,
+				groupKey,
+				!this.collapsedSubGroups.has(groupKey)
+			);
 		} else {
 			this.setSetEntry(this.collapsedGroups, groupKey, !this.collapsedGroups.has(groupKey));
 		}
@@ -2411,7 +2486,7 @@ export class TaskListView extends BasesViewBase {
 			this.applyGroupingSnapshot(this.createSubPropertyHierarchySnapshot(groupedTasks));
 			items = buildTaskListSubPropertyRenderItems(groupedTasks, this.collapsedGroups);
 		} else {
-			const groups = this.dataAdapter.getGroupedData() as TaskListGroup[];
+			const groups = this.getTaskListGroups();
 			this.applyGroupingSnapshot(this.createGroupedHierarchySnapshot(groups, renderTasks));
 			items = buildTaskListGroupedRenderItems({
 				groups,
@@ -2420,8 +2495,7 @@ export class TaskListView extends BasesViewBase {
 				pathToProps,
 				collapsedGroups: this.collapsedGroups,
 				collapsedSubGroups: this.collapsedSubGroups,
-				convertGroupKeyToString: (key) =>
-					this.dataAdapter.convertGroupKeyToString(key),
+				convertGroupKeyToString: (key) => this.dataAdapter.convertGroupKeyToString(key),
 			});
 		}
 

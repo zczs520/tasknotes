@@ -192,7 +192,7 @@ async function reloadWithoutSaving(page: Page): Promise<void> {
 async function setPluginSettings(page: Page, patch: Record<string, unknown>): Promise<void> {
 	await page.evaluate(async (settingsPatch) => {
 		const obsidianApp = (window as any).app;
-		const plugin = obsidianApp?.plugins?.plugins?.["tasknotes"];
+		const plugin = obsidianApp?.plugins?.plugins?.["taskquence"];
 		if (!plugin?.settings) {
 			throw new Error("TaskNotes plugin not available");
 		}
@@ -416,7 +416,7 @@ test("bases-date-values", async () => {
 
 test("translated-task-card-labels", async () => {
 	const page = getPage();
-	const dataPath = ".obsidian/plugins/tasknotes/data.json";
+	const dataPath = ".obsidian/plugins/taskquence/data.json";
 	const backup = backupFiles([dataPath]);
 
 	try {
@@ -643,7 +643,7 @@ test("readable-line-length-inline-card", async () => {
 
 	await page.evaluate(async () => {
 		const obsidianApp = (window as any).app;
-		const plugin = obsidianApp?.plugins?.plugins?.["tasknotes"];
+		const plugin = obsidianApp?.plugins?.plugins?.["taskquence"];
 		if (obsidianApp?.customCss?.setTheme) {
 			try {
 				await obsidianApp.customCss.setTheme("Minimal");

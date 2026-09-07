@@ -13,8 +13,8 @@ function createPlugin(options: { dataFileExists: boolean; version?: string }) {
 
 	const plugin = new TaskNotesPlugin(app);
 	(plugin as any).manifest = {
-		id: "tasknotes",
-		dir: ".obsidian/plugins/tasknotes",
+		id: "taskquence",
+		dir: ".obsidian/plugins/taskquence",
 		version: options.version ?? "4.3.2",
 	};
 	(plugin as any).settingsLifecycleService = {

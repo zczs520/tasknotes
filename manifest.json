@@ -1,9 +1,9 @@
 {
-	"id": "tasknotes",
-	"name": "Dayquence",
-	"version": "4.11.1",
+	"id": "taskquence",
+	"name": "TASKquence",
+	"version": "5.0.0",
 	"minAppVersion": "1.12.2",
-	"description": "An independent TaskNotes fork with task planning, calendars, Pomodoro, time tracking, and Dayquence iOS life-event sync.",
+	"description": "Plan tasks with calendars, Kanban, Pomodoro, time tracking, and TASKquence iOS life-event sync.",
 	"author": "zhuxiaocong",
 	"authorUrl": "https://github.com/zczs520",
 	"isDesktopOnly": false
