@@ -436,7 +436,7 @@ export function refreshRelationshipsWidget(
 /**
  * Helper function to create and render the relationships widget content
  */
-async function createRelationshipsWidget(
+export async function createRelationshipsWidget(
 	plugin: TaskNotesPlugin,
 	notePath: string
 ): Promise<HTMLElementWithComponent> {
@@ -888,11 +888,12 @@ class RelationshipsDecorationsPlugin implements PluginValue {
 				return;
 			}
 
+			const existing = this.currentWidget;
 			const reusable =
-				this.currentWidget?.parentElement === targetContainer &&
-				refreshRelationshipsWidget(this.currentWidget, this.plugin, notePath);
+				existing?.parentElement === targetContainer &&
+				refreshRelationshipsWidget(existing, this.plugin, notePath);
 			const widget = reusable
-				? this.currentWidget!
+				? existing
 				: await createRelationshipsWidget(this.plugin, notePath);
 			if (runId !== this.injectionRunId) {
 				widget.component?.unload();
@@ -1170,7 +1171,6 @@ export function setupReadingModeHandlers(plugin: TaskNotesPlugin): () => void {
 		if (debounceTimer) window.clearTimeout(debounceTimer);
 		metadataDebounceTimers.forEach((timer) => window.clearTimeout(timer));
 		metadataDebounceTimers.clear();
-		scheduler.dispose();
 
 		// Clean up each type of event ref with the correct method
 		workspaceRefs.forEach((ref) => plugin.app.workspace.offref(ref));
