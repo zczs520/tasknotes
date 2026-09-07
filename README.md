@@ -8,7 +8,7 @@
 
 ## 中文介绍
 
-TASKquence 是一个由 **zhuxiaocong** 独立维护的 [TaskNotes](https://github.com/callumalpass/tasknotes) 分支。它把任务规划、日历、番茄钟、时间追踪、可视化复盘与 TASKquence iOS 生活事件同步整合进 Obsidian，同时继续把每个任务保存为你仓库里的普通 Markdown 笔记。
+TASKquence 是一个由 **zhuxiaocong** 独立维护的 TaskNotes 分支。它把任务规划、日历、番茄钟、时间追踪、可视化复盘与 TASKquence iOS 生活事件同步整合进 Obsidian，同时继续把每个任务保存为你仓库里的普通 Markdown 笔记。
 
 本分支使用独立的 `taskquence` 插件 ID 和 `.obsidian/plugins/taskquence/` 安装目录。为兼容已有任务仓库，仍保留 `TaskNotes/` 数据目录和原有任务字段。
 
@@ -69,7 +69,7 @@ tags: [task, 内容, 执行]
 
 ## English
 
-TASKquence is an independent [TaskNotes](https://github.com/callumalpass/tasknotes) fork maintained by **zhuxiaocong**. It brings task planning, calendars, Pomodoro, time tracking, visual reviews, and TASKquence iOS life-event sync into Obsidian while keeping every task as a normal Markdown note in your vault.
+TASKquence is an independent TaskNotes fork maintained by **zhuxiaocong**. It brings task planning, calendars, Pomodoro, time tracking, visual reviews, and TASKquence iOS life-event sync into Obsidian while keeping every task as a normal Markdown note in your vault.
 
 The fork uses the independent `taskquence` plugin ID and `.obsidian/plugins/taskquence/` install directory. It retains the `TaskNotes/` data folder and existing task fields for vault compatibility.
 
@@ -102,6 +102,6 @@ When upgrading from the previous Dayquence build, disable the old `tasknotes` pl
 
 ## Credits and license
 
-TASKquence is based on the open-source [TaskNotes](https://github.com/callumalpass/tasknotes) project by Callum Alpass and its contributors. Calendar components are provided by [FullCalendar](https://fullcalendar.io/).
+TASKquence is based on the open-source TaskNotes project by Callum Alpass and its contributors. Calendar components are provided by [FullCalendar](https://fullcalendar.io/).
 
 Licensed under the [MIT License](LICENSE).
