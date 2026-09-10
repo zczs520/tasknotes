@@ -325,13 +325,19 @@ export class PomodoroService {
 
 	async startPomodoro(task?: TaskInfo, durationMinutes?: number) {
 		if (this.state.isRunning) {
-			publishUserNotice(this.plugin.emitter, this.translate("services.pomodoro.notices.alreadyRunning"));
+			publishUserNotice(
+				this.plugin.emitter,
+				this.translate("services.pomodoro.notices.alreadyRunning")
+			);
 			return;
 		}
 
 		// Check if there's a paused session that should be resumed instead
 		if (this.state.currentSession && !this.state.isRunning) {
-			publishUserNotice(this.plugin.emitter, this.translate("services.pomodoro.notices.resumeCurrentSession"));
+			publishUserNotice(
+				this.plugin.emitter,
+				this.translate("services.pomodoro.notices.resumeCurrentSession")
+			);
 			return;
 		}
 
@@ -428,13 +434,19 @@ export class PomodoroService {
 
 	async startBreak(isLongBreak = false) {
 		if (this.state.isRunning) {
-			publishUserNotice(this.plugin.emitter, this.translate("services.pomodoro.notices.timerAlreadyRunning"));
+			publishUserNotice(
+				this.plugin.emitter,
+				this.translate("services.pomodoro.notices.timerAlreadyRunning")
+			);
 			return;
 		}
 
 		// Check if there's a paused session
 		if (this.state.currentSession && !this.state.isRunning) {
-			publishUserNotice(this.plugin.emitter, this.translate("services.pomodoro.notices.resumeSessionInstead"));
+			publishUserNotice(
+				this.plugin.emitter,
+				this.translate("services.pomodoro.notices.resumeSessionInstead")
+			);
 			return;
 		}
 
@@ -466,7 +478,8 @@ export class PomodoroService {
 		await this.saveState();
 		this.startTimer();
 
-		publishUserNotice(this.plugin.emitter,
+		publishUserNotice(
+			this.plugin.emitter,
 			this.translate(
 				isLongBreak
 					? "services.pomodoro.notices.longBreakStarted"
@@ -660,7 +673,10 @@ export class PomodoroService {
 		});
 
 		if (wasRunning) {
-			publishUserNotice(this.plugin.emitter, this.translate("services.pomodoro.notices.stoppedAndReset"));
+			publishUserNotice(
+				this.plugin.emitter,
+				this.translate("services.pomodoro.notices.stoppedAndReset")
+			);
 		}
 	}
 
@@ -1814,7 +1830,8 @@ export class PomodoroService {
 			data.pomodoroHistory = [];
 			await this.plugin.saveData(data);
 
-			publishUserNotice(this.plugin.emitter,
+			publishUserNotice(
+				this.plugin.emitter,
 				this.translate("services.pomodoro.notices.migrationSuccess", {
 					count: pluginHistory.length,
 				})
@@ -1825,8 +1842,13 @@ export class PomodoroService {
 				operation: "migrate-pomodoro-data-daily-notes",
 				error: error,
 			});
-			publishUserNotice(this.plugin.emitter, this.translate("services.pomodoro.notices.migrationFailure"));
+			publishUserNotice(
+				this.plugin.emitter,
+				this.translate("services.pomodoro.notices.migrationFailure")
+			);
 			throw error;
 		}
 	}
 }
+
+/* eslint-enable @typescript-eslint/no-non-null-assertion -- End Pomodoro state compatibility section. */

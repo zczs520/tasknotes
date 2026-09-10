@@ -32,7 +32,3 @@ When a change has user-facing documentation, include a canonical tasknotes.dev l
 ```
 
 -->
-
-## Fixed
-
-- Kept task-note time records and embedded relationships stable while editing or syncing notes. Time records update when sessions start, stop, or are edited, without continuously refreshing the footer or resetting the relationships view.

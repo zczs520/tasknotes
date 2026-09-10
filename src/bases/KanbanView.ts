@@ -835,13 +835,14 @@ export class KanbanView extends BasesViewBase {
 			this.sortScopeTaskPaths.clear();
 			this.sortScopeCandidateTaskPaths.clear();
 
-			if (renderTasks.length === 0) {
-				// Show "no results" if search returned empty but we had tasks
-				if (this.isSearchWithNoResults(filteredTasks, timeFilteredTasks.length)) {
-					this.renderSearchNoResults(this.boardEl);
-				} else {
-					this.renderEmptyState();
-				}
+			// A search with no matches has its own feedback. An empty date period still
+			// renders the configured columns and swimlanes so users can see the board
+			// structure and create a task directly in the intended cell.
+			if (
+				renderTasks.length === 0 &&
+				this.isSearchWithNoResults(filteredTasks, timeFilteredTasks.length)
+			) {
+				this.renderSearchNoResults(this.boardEl);
 				return;
 			}
 
@@ -4479,16 +4480,6 @@ export class KanbanView extends BasesViewBase {
 		this.pendingRender = false;
 	}
 
-	private renderEmptyState(): void {
-		if (!this.boardEl) return;
-		// Use containerEl.ownerDocument for pop-out window support
-		const doc = this.containerEl.ownerDocument;
-		const empty = doc.createElement("div");
-		empty.className = "tn-bases-empty";
-		empty.textContent = "No tasknotes tasks found for this base.";
-		this.boardEl.appendChild(empty);
-	}
-
 	private renderNoGroupByError(): void {
 		if (!this.boardEl) return;
 		// Use containerEl.ownerDocument for pop-out window support
@@ -4874,3 +4865,5 @@ export function buildKanbanViewFactory(plugin: TaskNotesPlugin): BasesViewFactor
 		return new KanbanView(controller, containerEl, plugin) as unknown as BasesView;
 	};
 }
+
+/* eslint-enable @typescript-eslint/no-non-null-assertion -- End legacy Bases view rendering compatibility section. */

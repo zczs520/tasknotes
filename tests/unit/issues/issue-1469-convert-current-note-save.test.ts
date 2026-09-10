@@ -110,4 +110,19 @@ describe("Issue #1469: convert current note to task save", () => {
 			})
 		);
 	});
+
+	it("moves inherited inline tags out of the note body when saving the conversion", async () => {
+		const modal = createInitializedModal();
+		(modal as any).details = "Existing note body";
+		(modal as any).originalDetails = "#学习/微观经济学\n\nExisting note body";
+
+		await modal.handleSave();
+
+		expect(plugin.taskService.updateTask).toHaveBeenCalledWith(
+			task,
+			expect.objectContaining({
+				details: "Existing note body",
+			})
+		);
+	});
 });

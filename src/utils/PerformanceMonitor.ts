@@ -391,3 +391,5 @@ export function measurePerformance(operation: string) {
  * Global performance monitoring instance
  */
 export const perfMonitor = PerformanceMonitor.getInstance();
+
+/* eslint-enable @typescript-eslint/no-non-null-assertion -- End performance API compatibility section. */

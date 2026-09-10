@@ -133,6 +133,7 @@ video {
 }
 
 .skip-link {
+	/* stylelint-disable-next-line tasknotes/no-fixed-position -- Accessibility skip link must remain anchored to the viewport. */
 	position: fixed;
 	z-index: 200;
 	top: 0.5rem;
@@ -151,6 +152,7 @@ video {
 /* Shared mdbase product header */
 
 .site-header {
+	/* stylelint-disable-next-line tasknotes/no-fixed-position -- Documentation navigation remains visible while the page scrolls. */
 	position: fixed;
 	z-index: 50;
 	inset: 0 0 auto;
@@ -949,6 +951,7 @@ video {
 	}
 
 	.sidebar {
+		/* stylelint-disable-next-line tasknotes/no-fixed-position -- Mobile navigation drawer must cover the viewport independently of page scroll. */
 		position: fixed;
 		z-index: 90;
 		top: 0;
@@ -985,6 +988,7 @@ video {
 	}
 
 	.sidebar-overlay {
+		/* stylelint-disable-next-line tasknotes/no-fixed-position -- Drawer backdrop must cover the viewport while navigation is open. */
 		position: fixed;
 		z-index: 80;
 		inset: 0;

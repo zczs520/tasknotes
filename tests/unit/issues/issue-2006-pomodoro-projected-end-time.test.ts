@@ -29,7 +29,9 @@ describe("Issue #2006: Pomodoro projected end time", () => {
 	it("refreshes session metadata after timer duration adjustments", () => {
 		const source = readRepoFile("src/views/PomodoroView.ts");
 		const adjustSessionTimeBody =
-			source.match(/private adjustSessionTime\(seconds: number\)[\s\S]*?\n\t}\n/)?.[0] ??
+			source.match(
+				/private adjustSessionTime\(seconds: number\)[\s\S]*?(?=\n\tprivate |\n}\s*$)/
+			)?.[0] ??
 			"";
 
 		expect(adjustSessionTimeBody).toContain("this.updateSessionMeta(updatedState);");

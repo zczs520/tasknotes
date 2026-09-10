@@ -17,6 +17,7 @@ import {
 	CardRow,
 } from "../../components/CardComponent";
 import { createIconInput } from "../../components/IconSuggest";
+import { showConfirmationModal } from "../../../modals/ConfirmationModal";
 import { createNLPTriggerRows, createPropertyDescription, TranslateFn } from "./helpers";
 
 /**
@@ -330,13 +331,20 @@ function renderStatusList(
 			}
 		};
 
-		const deleteStatus = () => {
-			// eslint-disable-next-line no-alert -- Native confirm matches existing destructive settings confirmation behavior.
-			const confirmDelete = confirm(
-				translate("settings.taskProperties.taskStatuses.deleteConfirm", {
+		const deleteStatus = async () => {
+			const confirmationMessage = translate(
+				"settings.taskProperties.taskStatuses.deleteConfirm",
+				{
 					label: status.label || status.value,
-				})
+				}
 			);
+			const confirmDelete = await showConfirmationModal(plugin.app, {
+				title: translate("common.confirm"),
+				message: confirmationMessage,
+				confirmText: translate("common.confirm"),
+				cancelText: translate("common.cancel"),
+				isDestructive: true,
+			});
 			if (confirmDelete) {
 				const statusIndex = plugin.settings.customStatuses.findIndex(
 					(s) => s.id === status.id
@@ -535,3 +543,5 @@ function renderStatusList(
 		});
 	});
 }
+
+/* eslint-enable @typescript-eslint/no-non-null-assertion -- End synchronous settings controls section. */

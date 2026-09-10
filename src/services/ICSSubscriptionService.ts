@@ -386,7 +386,8 @@ export class ICSSubscriptionService extends EventEmitter {
 			// Show user notification for errors with more helpful message
 			if (subscription.type === "remote") {
 				if (errorMessage.includes("404")) {
-					publishUserNotice(this.plugin.emitter,
+					publishUserNotice(
+						this.plugin.emitter,
 						this.translate("services.icsSubscription.notices.calendarNotFound", {
 							name: subscription.name,
 						})
@@ -395,13 +396,15 @@ export class ICSSubscriptionService extends EventEmitter {
 					errorMessage.includes("500") ||
 					errorMessage.includes("OwaBasicUnsupportedException")
 				) {
-					publishUserNotice(this.plugin.emitter,
+					publishUserNotice(
+						this.plugin.emitter,
 						this.translate("services.icsSubscription.notices.calendarAccessDenied", {
 							name: subscription.name,
 						})
 					);
 				} else {
-					publishUserNotice(this.plugin.emitter,
+					publishUserNotice(
+						this.plugin.emitter,
 						this.translate("services.icsSubscription.notices.fetchRemoteFailed", {
 							name: subscription.name,
 							error: errorMessage,
@@ -409,7 +412,8 @@ export class ICSSubscriptionService extends EventEmitter {
 					);
 				}
 			} else {
-				publishUserNotice(this.plugin.emitter,
+				publishUserNotice(
+					this.plugin.emitter,
 					this.translate("services.icsSubscription.notices.readLocalFailed", {
 						name: subscription.name,
 						error: errorMessage,
@@ -589,8 +593,9 @@ export class ICSSubscriptionService extends EventEmitter {
 								// Use the modified event instead
 								const modifiedStart = modifiedEvent.startDate;
 								const modifiedEnd = modifiedEvent.endDate;
-								const modifiedVevent: ICAL.Component | undefined =
-									(modifiedEvent as { component?: ICAL.Component }).component;
+								const modifiedVevent: ICAL.Component | undefined = (
+									modifiedEvent as { component?: ICAL.Component }
+								).component;
 								const modStartTzidRaw = modifiedVevent
 									? this.rawTzidOf(modifiedVevent, "dtstart")
 									: null;
@@ -636,8 +641,7 @@ export class ICSSubscriptionService extends EventEmitter {
 									// strings so the fallback path stays consistent
 									// across the start and end of an instance.
 									const durationMs =
-										new Date(endISO).getTime() -
-										new Date(startISO).getTime();
+										new Date(endISO).getTime() - new Date(startISO).getTime();
 									instanceEnd = new Date(
 										new Date(instanceStart).getTime() + durationMs
 									).toISOString();
@@ -986,3 +990,5 @@ export class ICSSubscriptionService extends EventEmitter {
 			.sort((a, b) => a.path.localeCompare(b.path));
 	}
 }
+
+/* eslint-enable @typescript-eslint/no-non-null-assertion -- End ICS parsing compatibility section. */

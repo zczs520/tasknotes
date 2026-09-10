@@ -490,3 +490,5 @@ export function renderArrayWithLinks(
 		});
 	});
 }
+
+/* eslint-enable @typescript-eslint/no-non-null-assertion -- End renderer compatibility section. */

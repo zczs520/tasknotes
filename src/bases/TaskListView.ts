@@ -2970,3 +2970,5 @@ export function buildTaskListViewFactory(plugin: TaskNotesPlugin): BasesViewFact
 		return new TaskListView(controller, containerEl, plugin) as unknown as BasesView;
 	};
 }
+
+/* eslint-enable @typescript-eslint/no-non-null-assertion -- End legacy Bases view rendering compatibility section. */

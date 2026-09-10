@@ -1,6 +1,6 @@
 import type { TaskInfo } from "../../types";
 import type { TaskNotesSettings } from "../../types/settings";
-import { getCurrentTimestamp } from "../../utils/dateUtils";
+import { getCurrentDateString, getCurrentTimestamp } from "../../utils/dateUtils";
 import { stringifyUnknownArray } from "../../utils/stringUtils";
 
 type CurrentNoteConversionSettings = Pick<
@@ -13,8 +13,16 @@ export interface CurrentNoteConversionInput {
 	basename: string;
 	content: string;
 	frontmatter?: Record<string, unknown>;
+	documentTags?: readonly string[];
+	inlineTagRanges?: readonly MarkdownSourceRange[];
 	settings: CurrentNoteConversionSettings;
 	now?: string;
+	today?: string;
+}
+
+export interface MarkdownSourceRange {
+	start: number;
+	end: number;
 }
 
 export function buildCurrentNoteConversionTaskInfo({
@@ -22,8 +30,11 @@ export function buildCurrentNoteConversionTaskInfo({
 	basename,
 	content,
 	frontmatter = {},
+	documentTags = [],
+	inlineTagRanges = [],
 	settings,
 	now = getCurrentTimestamp(),
+	today = getCurrentDateString(),
 }: CurrentNoteConversionInput): TaskInfo {
 	return {
 		path,
@@ -32,16 +43,48 @@ export function buildCurrentNoteConversionTaskInfo({
 		priority: frontmatterString(frontmatter.priority) ?? settings.defaultTaskPriority,
 		archived: false,
 		due: frontmatterString(frontmatter.due),
-		scheduled: frontmatterString(frontmatter.scheduled),
+		scheduled: frontmatterString(frontmatter.scheduled) || today,
 		contexts: frontmatterStringArray(frontmatter.contexts),
 		projects: frontmatterStringArray(frontmatter.projects),
-		tags: frontmatterStringArray(frontmatter.tags) ?? [],
+		tags: mergeUniqueStrings(frontmatterStringArray(frontmatter.tags), documentTags),
 		timeEstimate: frontmatterNumber(frontmatter.timeEstimate),
 		recurrence: frontmatterString(frontmatter.recurrence),
 		dateCreated: frontmatterString(frontmatter.dateCreated) || now,
 		dateModified: now,
-		details: extractMarkdownBodyAfterFrontmatter(content),
+		details: extractMarkdownBodyAfterFrontmatter(
+			removeMarkdownSourceRanges(content, inlineTagRanges)
+		),
 	};
+}
+
+function mergeUniqueStrings(
+	frontmatterValues: string[] | undefined,
+	documentValues: readonly string[]
+): string[] {
+	return [...new Set([...(frontmatterValues ?? []), ...documentValues].filter(Boolean))];
+}
+
+export function removeMarkdownSourceRanges(
+	content: string,
+	ranges: readonly MarkdownSourceRange[]
+): string {
+	let result = content;
+	const validRanges = ranges
+		.filter(
+			(range) =>
+				Number.isInteger(range.start) &&
+				Number.isInteger(range.end) &&
+				range.start >= 0 &&
+				range.end > range.start &&
+				range.end <= content.length
+		)
+		.sort((left, right) => right.start - left.start);
+
+	for (const range of validRanges) {
+		result = result.slice(0, range.start) + result.slice(range.end);
+	}
+
+	return result;
 }
 
 export function extractMarkdownBodyAfterFrontmatter(content: string): string {

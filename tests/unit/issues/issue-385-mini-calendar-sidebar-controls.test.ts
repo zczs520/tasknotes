@@ -81,8 +81,12 @@ describe("Issue #385: mini calendar sidebar controls", () => {
 			)
 		).toBe(true);
 		expect(css).toContain("@container (max-width: 220px)");
-		expect(css).toContain(
-			".tasknotes-plugin .mini-calendar-view__today-button {\n        margin-left: 0;"
-		);
+		expect(
+			hasCssDeclaration(
+				css,
+				".tasknotes-plugin .mini-calendar-view__today-button",
+				"margin-left: 0;"
+			)
+		).toBe(true);
 	});
 });

@@ -2158,7 +2158,7 @@ body:not(.is-mobile) .modal.mod-tasknotes .tn-task-modal__button-bar .mod-cta {
     gap: 12px;
 }
 
-.tasknotes-plugin.minimalist-task-modal .tn-task-modal__header-open-note {
+.tasknotes-plugin.minimalist-task-modal .tn-task-modal__header-action {
     display: inline-flex;
     align-items: center;
     gap: 7px;
@@ -2184,20 +2184,26 @@ body:not(.is-mobile) .modal.mod-tasknotes .tn-task-modal__button-bar .mod-cta {
     white-space: nowrap;
 }
 
-.tasknotes-plugin.minimalist-task-modal .tn-task-modal__header-open-note-icon {
+.tasknotes-plugin.minimalist-task-modal .tn-task-modal__header-action-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
 }
 
-.tasknotes-plugin.minimalist-task-modal .tn-task-modal__header-open-note-icon svg {
+.tasknotes-plugin.minimalist-task-modal .tn-task-modal__header-action-icon svg {
     width: 16px;
     height: 16px;
 }
 
-.tasknotes-plugin.minimalist-task-modal .tn-task-modal__header-open-note:hover {
+.tasknotes-plugin.minimalist-task-modal .tn-task-modal__header-action:hover {
     border-color: var(--interactive-accent);
     background: var(--background-modifier-hover);
+}
+
+.tasknotes-plugin.minimalist-task-modal .tn-task-modal__header-delete:hover,
+.tasknotes-plugin.minimalist-task-modal .tn-task-modal__header-delete:focus-visible {
+    border-color: var(--background-modifier-error);
+    color: var(--text-error);
 }
 
 .tasknotes-plugin.minimalist-task-modal > .modal > .modal-content,

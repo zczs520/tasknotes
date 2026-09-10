@@ -64,6 +64,7 @@ export class TaskLinkWidget extends WidgetType {
 			layout: "inline",
 			targetDate: this.targetDate,
 			displayText: this.displayText,
+			openEditOnAnyClick: true,
 		});
 
 		// Add card to wrapper

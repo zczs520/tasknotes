@@ -169,7 +169,7 @@ describe("TaskEditModal autosave", () => {
 		expect(container.children).toHaveLength(0);
 	});
 
-	it("renders one icon-labeled Open note action in the modal header", () => {
+	it("renders edit actions in the modal header", () => {
 		const plugin = createPlugin(app);
 		const modal = new TaskEditModal(app, plugin as never, { task });
 
@@ -178,13 +178,17 @@ describe("TaskEditModal autosave", () => {
 		const button = modal.containerEl.querySelector<HTMLButtonElement>(
 			".tn-task-modal__header-open-note"
 		);
-		expect(button?.querySelector(".tn-task-modal__header-open-note-icon")).toBeTruthy();
-		expect(button?.querySelector(".tn-task-modal__header-open-note-label")?.textContent).toBe(
+		expect(button?.querySelector(".tn-task-modal__header-action-icon")).toBeTruthy();
+		expect(button?.querySelector(".tn-task-modal__header-action-label")?.textContent).toBe(
 			"Open note"
 		);
 		expect(modal.containerEl.querySelectorAll(".tn-task-modal__header-open-note")).toHaveLength(
 			1
 		);
+		expect(modal.containerEl.querySelectorAll(".tn-task-modal__header-archive")).toHaveLength(
+			1
+		);
+		expect(modal.containerEl.querySelectorAll(".tn-task-modal__header-delete")).toHaveLength(1);
 	});
 
 	it("saves pending edits, closes immediately, and reuses the active leaf when opening the note", async () => {

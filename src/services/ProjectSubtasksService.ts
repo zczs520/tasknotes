@@ -373,3 +373,5 @@ export class ProjectSubtasksService {
 		});
 	}
 }
+
+/* eslint-enable @typescript-eslint/no-non-null-assertion -- End project graph compatibility section. */

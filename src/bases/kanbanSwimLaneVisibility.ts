@@ -2,6 +2,7 @@ import type { BasesToggleOption } from "obsidian";
 
 const AVAILABLE_SWIM_LANES_KEY = "availableSwimLanes";
 const SWIM_LANE_VISIBILITY_PREFIX = "swimLaneVisible_";
+const OPT_IN_VISIBILITY_MIGRATION_KEY = "swimLaneVisibilityOptInV1";
 
 export type KanbanSwimLaneVisibilityConfig = {
 	get?: (key: string) => unknown;
@@ -41,8 +42,30 @@ export function syncAvailableSwimLanes(
 ): boolean {
 	const next = Array.from(new Set(swimLaneKeys));
 	const current = getAvailableSwimLanes(config);
-	if (JSON.stringify(current) === JSON.stringify(next)) return false;
-	config.set?.(AVAILABLE_SWIM_LANES_KEY, JSON.stringify(next));
+	let changed = migrateExistingSwimLaneVisibility(config, current.length > 0 ? current : next);
+
+	if (JSON.stringify(current) !== JSON.stringify(next)) {
+		config.set?.(AVAILABLE_SWIM_LANES_KEY, JSON.stringify(next));
+		changed = true;
+	}
+
+	return changed;
+}
+
+function migrateExistingSwimLaneVisibility(
+	config: KanbanSwimLaneVisibilityConfig,
+	existingSwimLaneKeys: readonly string[]
+): boolean {
+	if (config.get?.(OPT_IN_VISIBILITY_MIGRATION_KEY) === true) return false;
+
+	for (const swimLaneKey of existingSwimLaneKeys) {
+		const visibilityKey = getSwimLaneVisibilityKey(swimLaneKey);
+		if (typeof config.get?.(visibilityKey) !== "boolean") {
+			config.set?.(visibilityKey, true);
+		}
+	}
+
+	config.set?.(OPT_IN_VISIBILITY_MIGRATION_KEY, true);
 	return true;
 }
 
@@ -50,7 +73,7 @@ export function isSwimLaneVisible(
 	config: KanbanSwimLaneVisibilityConfig,
 	swimLaneKey: string
 ): boolean {
-	return config.get?.(getSwimLaneVisibilityKey(swimLaneKey)) !== false;
+	return config.get?.(getSwimLaneVisibilityKey(swimLaneKey)) === true;
 }
 
 export function filterVisibleSwimLanes<T>(
@@ -71,6 +94,6 @@ export function buildSwimLaneVisibilityToggleOptions(
 		type: "toggle",
 		key: getSwimLaneVisibilityKey(swimLaneKey),
 		displayName: swimLaneKey,
-		default: true,
+		default: false,
 	}));
 }

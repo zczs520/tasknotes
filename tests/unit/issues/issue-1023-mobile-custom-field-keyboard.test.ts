@@ -105,8 +105,9 @@ describe("Issue #1023: mobile custom field keyboard visibility", () => {
 
 	it("adds temporary mobile scroll padding while keyboard-backed fields are focused", () => {
 		const cssContent = fs.readFileSync(cssFilePath, "utf-8");
+		const normalizedCss = cssContent.replace(/\s+/g, " ");
 
-		expect(cssContent).toContain(
+		expect(normalizedCss).toContain(
 			".is-mobile-keyboard-focused.expanded .modal-split-content"
 		);
 		expect(cssContent).toContain("scroll-padding-bottom");

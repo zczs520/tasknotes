@@ -7,7 +7,7 @@ import {
 } from "../../../src/bases/kanbanSwimLaneVisibility";
 
 describe("Kanban swim lane visibility", () => {
-	it("exposes only the swim lanes discovered in the current board and defaults them on", () => {
+	it("preserves the lanes visible when opt-in visibility is first initialized", () => {
 		const values = new Map<string, unknown>();
 		const config = {
 			get: (key: string) => values.get(key),
@@ -21,6 +21,45 @@ describe("Kanban swim lane visibility", () => {
 			buildSwimLaneVisibilityToggleOptions(config).map((option) => option.displayName)
 		).toEqual(["项目/产品经理/PartnerShare", "创作", "None"]);
 		expect(isSwimLaneVisible(config, "创作")).toBe(true);
+		expect(
+			buildSwimLaneVisibilityToggleOptions(config).every((option) => option.default === false)
+		).toBe(true);
+	});
+
+	it("defaults newly discovered swim lanes off until they are explicitly enabled", () => {
+		const values = new Map<string, unknown>();
+		const config = {
+			get: (key: string) => values.get(key),
+			set: (key: string, value: unknown) => values.set(key, value),
+		};
+
+		syncAvailableSwimLanes(config, ["创作", "None"]);
+		expect(isSwimLaneVisible(config, "创作")).toBe(true);
+
+		syncAvailableSwimLanes(config, ["创作", "None", "学习/微观经济学"]);
+		expect(isSwimLaneVisible(config, "创作")).toBe(true);
+		expect(isSwimLaneVisible(config, "学习/微观经济学")).toBe(false);
+
+		values.set(getSwimLaneVisibilityKey("学习/微观经济学"), true);
+		expect(isSwimLaneVisible(config, "学习/微观经济学")).toBe(true);
+	});
+
+	it("migrates an existing board without re-enabling lanes that were turned off", () => {
+		const hiddenKey = getSwimLaneVisibilityKey("None");
+		const values = new Map<string, unknown>([
+			["availableSwimLanes", JSON.stringify(["创作", "None"])],
+			[hiddenKey, false],
+		]);
+		const config = {
+			get: (key: string) => values.get(key),
+			set: (key: string, value: unknown) => values.set(key, value),
+		};
+
+		syncAvailableSwimLanes(config, ["创作", "None", "学习"]);
+
+		expect(isSwimLaneVisible(config, "创作")).toBe(true);
+		expect(isSwimLaneVisible(config, "None")).toBe(false);
+		expect(isSwimLaneVisible(config, "学习")).toBe(false);
 	});
 
 	it("uses a stable config key and remembers when a swim lane is turned off", () => {
@@ -35,6 +74,7 @@ describe("Kanban swim lane visibility", () => {
 	});
 	it("filters hidden lanes again after saved ordering recreates an empty lane", () => {
 		const values = new Map<string, unknown>([
+			[getSwimLaneVisibilityKey("项目/产品经理/PartnerShare"), true],
 			[getSwimLaneVisibilityKey("task"), false],
 		]);
 		const config = { get: (key: string) => values.get(key) };

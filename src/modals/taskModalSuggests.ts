@@ -110,7 +110,7 @@ export class TagSuggest extends AbstractInputSuggest<TagSuggestion> {
 		const tags = filterTagsForTaskModalSuggestions(
 			mergeTaskModalTagSuggestionSources(
 				this.plugin.cacheManager.getAllTags(),
-				this.plugin.app.metadataCache.getTags?.() ?? {}
+				this.plugin.app?.metadataCache?.getTags?.() ?? {}
 			),
 			this.plugin.settings
 		);

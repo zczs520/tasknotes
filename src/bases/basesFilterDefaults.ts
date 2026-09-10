@@ -143,7 +143,18 @@ function normalizeFilterProperty(
 	if (listMatch) {
 		property = listMatch[1].trim();
 	}
-	property = property.replace(/^(note|task)\./, "");
+
+	const bracketPropertyMatch = property.match(
+		/^(?:note|task)\["((?:\\.|[^"\\])*)"\]$/
+	);
+	if (bracketPropertyMatch) {
+		return decodeQuotedValue(bracketPropertyMatch[1]);
+	}
+
+	const dottedPropertyMatch = property.match(/^(?:note|task)\.([^.[\]]+)$/);
+	if (dottedPropertyMatch) {
+		return dottedPropertyMatch[1];
+	}
 
 	if (property === "tags" || property === "file.tags") {
 		return "tags";

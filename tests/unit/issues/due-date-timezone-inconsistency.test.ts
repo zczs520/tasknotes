@@ -138,7 +138,7 @@ describe('Due Date Timezone Inconsistency Bug', () => {
     describe('Comparison with current implementation', () => {
         it('should verify date formatting is consistent', () => {
             // Test that date formatting produces consistent results
-            const testDate = '2024-10-01T14:00:00.000Z';
+			const testDate = '2024-10-01T22:00:00.000Z';
             const date = parseDate(testDate);
 
             // Current implementation should use UTC methods consistently

@@ -44,5 +44,7 @@ describe("TaskNotes Kanban Notion-style layout", () => {
 		expect(source).toContain('translate("views.kanban.tagsLabel")');
 		expect(source).toContain('cls: "kanban-view__add-task-label"');
 		expect(source).toContain('translate("views.kanban.newTask")');
+		expect(source).toContain("An empty date period still");
+		expect(source).not.toContain("this.renderEmptyState();");
 	});
 });

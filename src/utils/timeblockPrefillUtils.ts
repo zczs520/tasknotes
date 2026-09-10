@@ -1,9 +1,5 @@
 import { TaskInfo } from "../types";
-import {
-	formatDateForStorage,
-	hasTimeComponent,
-	parseDateToLocal,
-} from "./dateUtils";
+import { formatDateForStorage, getDatePart, hasTimeComponent, parseDateToLocal } from "./dateUtils";
 
 export interface TimeblockPrefill {
 	date: string;
@@ -17,10 +13,7 @@ function formatTimeForInput(date: Date): string {
 	return `${hours}:${minutes}`;
 }
 
-export function buildTimeblockPrefillForTask(
-	task: TaskInfo,
-	targetDate: Date
-): TimeblockPrefill {
+export function buildTimeblockPrefillForTask(task: TaskInfo, targetDate: Date): TimeblockPrefill {
 	let startDate: Date | null = null;
 
 	if (task.scheduled) {
@@ -45,9 +38,11 @@ export function buildTimeblockPrefillForTask(
 
 	const durationMinutes = task.timeEstimate && task.timeEstimate > 0 ? task.timeEstimate : 60;
 	const endDate = new Date(startDate.getTime() + durationMinutes * 60 * 1000);
+	const scheduledDateOnly =
+		task.scheduled && !hasTimeComponent(task.scheduled) ? getDatePart(task.scheduled) : null;
 
 	return {
-		date: formatDateForStorage(startDate),
+		date: scheduledDateOnly ?? formatDateForStorage(startDate),
 		startTime: formatTimeForInput(startDate),
 		endTime: formatTimeForInput(endDate),
 	};

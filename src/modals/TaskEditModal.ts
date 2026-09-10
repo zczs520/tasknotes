@@ -41,6 +41,7 @@ export class TaskEditModal extends TaskModal {
 	private unresolvedBlockingEntries: string[] = [];
 	private initialTags = "";
 	private isConvertingNoteToTask = false;
+	private conversionOriginalDetails: string | null = null;
 	private autoSaveReady = false;
 	private autoSaveTimer: number | null = null;
 	private autoSaveInFlight: Promise<boolean> | null = null;
@@ -112,7 +113,10 @@ export class TaskEditModal extends TaskModal {
 		this.recurrenceAnchor = formState.recurrenceAnchor;
 		this.reminders = formState.reminders;
 		this.details = formState.details;
-		this.originalDetails = formState.originalDetails;
+		this.originalDetails =
+			this.isConvertingNoteToTask && this.conversionOriginalDetails !== null
+				? this.normalizeDetails(this.conversionOriginalDetails)
+				: formState.originalDetails;
 		this.userFields = formState.userFields;
 
 		// Initialize subtasks (tasks that have this task as a project)
@@ -200,8 +204,9 @@ export class TaskEditModal extends TaskModal {
 			}
 
 			const content = await this.app.vault.read(file);
-			this.details = this.extractDetailsFromContent(content);
-			this.originalDetails = this.details;
+			const fileDetails = this.extractDetailsFromContent(content);
+			this.details = fileDetails;
+			this.originalDetails = fileDetails;
 
 			// Check if this file is actually a task (has task tag/property)
 			// If not, keep the original task data (e.g., for "convert note to task" flow)
@@ -213,11 +218,14 @@ export class TaskEditModal extends TaskModal {
 				// File is not yet a task - keep the original task data passed to constructor
 				// This preserves user's default settings for status/priority during conversion
 				this.isConvertingNoteToTask = true;
-				this.task.details = this.details;
+				this.conversionOriginalDetails = fileDetails;
+				this.details =
+					typeof this.task.details === "string" ? this.task.details : fileDetails;
 				return;
 			}
 
 			this.isConvertingNoteToTask = false;
+			this.conversionOriginalDetails = null;
 
 			const cachedTaskInfo = await this.plugin.cacheManager.getTaskInfo(this.task.path);
 
@@ -255,25 +263,53 @@ export class TaskEditModal extends TaskModal {
 		const header = this.titleEl.parentElement;
 		if (!header) return;
 
-		header.querySelector(".tn-task-modal__header-open-note")?.remove();
-		const openButton = header.createEl("button", {
-			cls: "tn-task-modal__header-open-note",
-			attr: {
-				type: "button",
-				"aria-label": this.t("modals.task.buttons.openNote"),
-				title: this.t("modals.task.buttons.openNote"),
-			},
-		});
-		const icon = openButton.createSpan("tn-task-modal__header-open-note-icon");
-		setIcon(icon, "file-text");
-		openButton.createSpan({
-			cls: "tn-task-modal__header-open-note-label",
-			text: this.t("modals.task.buttons.openNote"),
-		});
-		openButton.addEventListener("click", () => {
-			void this.openTaskNote();
-		});
-		header.insertBefore(openButton, this.titleEl);
+		header
+			.querySelectorAll(".tn-task-modal__header-action")
+			.forEach((button) => button.remove());
+		const createHeaderAction = (
+			className: string,
+			label: string,
+			iconName: string,
+			onClick: () => void
+		): void => {
+			const button = header.createEl("button", {
+				cls: `tn-task-modal__header-action ${className}`,
+				attr: {
+					type: "button",
+					"aria-label": label,
+					title: label,
+				},
+			});
+			const icon = button.createSpan("tn-task-modal__header-action-icon");
+			setIcon(icon, iconName);
+			button.createSpan({
+				cls: "tn-task-modal__header-action-label",
+				text: label,
+			});
+			button.addEventListener("click", onClick);
+			header.insertBefore(button, this.titleEl);
+		};
+
+		createHeaderAction(
+			"tn-task-modal__header-open-note",
+			this.t("modals.task.buttons.openNote"),
+			"file-text",
+			() => void this.openTaskNote()
+		);
+		createHeaderAction(
+			"tn-task-modal__header-archive",
+			this.task.archived
+				? this.t("modals.taskEdit.buttons.unarchive")
+				: this.t("modals.taskEdit.buttons.archive"),
+			"archive",
+			() => void this.archiveTask()
+		);
+		createHeaderAction(
+			"mod-warning tn-task-modal__header-delete",
+			this.t("contextMenus.task.delete"),
+			"trash-2",
+			() => void this.deleteTask()
+		);
 	}
 
 	protected createPrimaryInput(container: HTMLElement): void {
@@ -738,8 +774,8 @@ export class TaskEditModal extends TaskModal {
 		}
 	}
 
-	protected createActionButtons(_container: HTMLElement): void {
-		// Edit mode persists continuously and uses the native top-right close button.
+	protected createActionButtons(container: HTMLElement): void {
+		void container;
 	}
 
 	protected async initializeSubtasks(): Promise<void> {
@@ -808,3 +844,5 @@ export class TaskEditModal extends TaskModal {
 	// Start expanded for edit modal - override parent property
 	protected isExpanded = true;
 }
+
+/* eslint-enable @typescript-eslint/no-non-null-assertion -- End modal lifecycle compatibility section. */

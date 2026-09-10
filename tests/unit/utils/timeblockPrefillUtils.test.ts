@@ -1,10 +1,7 @@
 import { describe, expect, it } from "@jest/globals";
 
 import { TaskInfo } from "../../../src/types";
-import {
-	formatDateForStorage,
-	parseDateToLocal,
-} from "../../../src/utils/dateUtils";
+import { formatDateForStorage, parseDateToLocal } from "../../../src/utils/dateUtils";
 import { buildTimeblockPrefillForTask } from "../../../src/utils/timeblockPrefillUtils";
 
 function makeTask(overrides: Partial<TaskInfo> = {}): TaskInfo {
@@ -28,7 +25,7 @@ describe("buildTimeblockPrefillForTask", () => {
 		);
 
 		expect(prefill).toEqual({
-			date: formatDateForStorage(parseDateToLocal("2026-03-10")),
+			date: "2026-03-10",
 			startTime: "09:00",
 			endTime: "09:30",
 		});

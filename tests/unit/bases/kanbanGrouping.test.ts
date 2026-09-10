@@ -313,6 +313,35 @@ describe("Kanban grouping helpers", () => {
 		expect([...priorityGroups.keys()]).toEqual(["high", "low"]);
 	});
 
+	it("keeps configured status columns available when a date filter has no tasks", () => {
+		const statuses = [status("open"), status("in-progress"), status("done")];
+		const aliases = (config: StatusConfig) => getKanbanStatusGroupKeyAliases(config);
+		const groups = buildKanbanTaskGroups({
+			taskNotes: [],
+			groupByPropertyId: "note.status",
+			pathToProps: new Map(),
+			explodeListColumns: false,
+			groupedData: [],
+			convertGroupKeyToString: String,
+			isListTypeProperty: () => false,
+			getListPropertyValue: () => undefined,
+			canonicalizeGroupKey: (groupKey) => groupKey,
+			statusConfigs: statuses,
+			priorityConfigs: [],
+			isStatusGroupingProperty: (propertyId) =>
+				isKanbanStatusGroupingProperty(propertyId, "status"),
+			isPriorityGroupingProperty: () => false,
+			getStatusGroupKeyAliases: aliases,
+			pinnedColumns: [],
+		});
+
+		expect([...groups.entries()]).toEqual([
+			["open", []],
+			["in-progress", []],
+			["done", []],
+		]);
+	});
+
 	it("removes stale empty status columns without hiding tasks that still use an unknown status", () => {
 		const statuses = [status("todo", "To Do")];
 		const aliases = (config: StatusConfig) => getKanbanStatusGroupKeyAliases(config);

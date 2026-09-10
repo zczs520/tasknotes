@@ -20,6 +20,7 @@ describe("Bases create-file view helpers", () => {
 				filters: {
 					conjunction: "and",
 					filters: [
+						{ rule: { text: 'note["taskType"] == "task"' } },
 						{ rule: { text: 'status == "open"' } },
 						{ rule: { text: 'file.hasTag("phase-live")' } },
 						{ rule: { text: "projects.contains(this.file.asLink())" } },
@@ -44,6 +45,7 @@ describe("Bases create-file view helpers", () => {
 			tags: ["phase-live"],
 			archived: false,
 			customFrontmatter: {
+				taskType: "task",
 				client: "Acme",
 				extra: "kept",
 			},

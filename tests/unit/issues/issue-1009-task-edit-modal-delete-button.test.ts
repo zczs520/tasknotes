@@ -1,11 +1,11 @@
-import { TaskEditModal } from '../../../src/modals/TaskEditModal';
-import { showConfirmationModal } from '../../../src/modals/ConfirmationModal';
-import { MockObsidian, Notice } from '../../helpers/obsidian-runtime';
-import { makeContainer } from '../../helpers/dom-helpers';
-import type { App } from 'obsidian';
-import type { TaskInfo } from '../../../src/types';
+import { TaskEditModal } from "../../../src/modals/TaskEditModal";
+import { showConfirmationModal } from "../../../src/modals/ConfirmationModal";
+import { MockObsidian, Notice } from "../../helpers/obsidian-runtime";
+import { makeContainer } from "../../helpers/dom-helpers";
+import type { App } from "obsidian";
+import type { TaskInfo } from "../../../src/types";
 
-jest.mock('../../../src/modals/ConfirmationModal', () => ({
+jest.mock("../../../src/modals/ConfirmationModal", () => ({
 	ConfirmationModal: jest.fn().mockImplementation(() => ({
 		show: jest.fn().mockResolvedValue(false),
 		open: jest.fn(),
@@ -24,21 +24,21 @@ function createMockApp(mockApp: unknown): App {
 
 function translate(key: string, params?: Record<string, string | number>): string {
 	const translations: Record<string, string> = {
-		'common.cancel': 'Cancel',
-		'contextMenus.task.delete': 'Delete',
-		'contextMenus.task.deleteTitle': 'Delete file',
-		'contextMenus.task.deleteMessage': 'Are you sure you want to delete "{name}"?',
-		'contextMenus.task.deleteConfirm': 'Delete',
-		'modals.taskEdit.deleteConfirmation.title': 'Delete task',
-		'modals.taskEdit.deleteConfirmation.message':
+		"common.cancel": "Cancel",
+		"contextMenus.task.delete": "Delete",
+		"contextMenus.task.deleteTitle": "Delete file",
+		"contextMenus.task.deleteMessage": 'Are you sure you want to delete "{name}"?',
+		"contextMenus.task.deleteConfirm": "Delete",
+		"modals.taskEdit.deleteConfirmation.title": "Delete task",
+		"modals.taskEdit.deleteConfirmation.message":
 			'Are you sure you want to delete "{title}"? This moves the task note to Obsidian trash.',
-		'modals.taskEdit.deleteConfirmation.confirm': 'Delete task',
-		'modals.taskEdit.buttons.archive': 'Archive',
-		'modals.taskEdit.buttons.unarchive': 'Unarchive',
-		'modals.taskEdit.notices.deleteSuccess': 'Task "{title}" deleted successfully',
-		'modals.taskEdit.notices.deleteFailure': 'Failed to delete task: {message}',
-		'modals.task.buttons.openNote': 'Open note',
-		'modals.task.buttons.save': 'Save',
+		"modals.taskEdit.deleteConfirmation.confirm": "Delete task",
+		"modals.taskEdit.buttons.archive": "Archive",
+		"modals.taskEdit.buttons.unarchive": "Unarchive",
+		"modals.taskEdit.notices.deleteSuccess": 'Task "{title}" deleted successfully',
+		"modals.taskEdit.notices.deleteFailure": "Failed to delete task: {message}",
+		"modals.task.buttons.openNote": "Open note",
+		"modals.task.buttons.save": "Save",
 	};
 	const template = translations[key] || key;
 	return template.replace(/\{(\w+)\}/g, (_match, name: string) =>
@@ -54,10 +54,10 @@ function createMockPlugin(app: App) {
 		},
 		settings: {
 			enableModalSplitLayout: false,
-			taskTag: 'task',
-			taskIdentificationMethod: 'tag',
-			hideIdentifyingTagsMode: 'exact',
-			defaultTaskStatus: 'open',
+			taskTag: "task",
+			taskIdentificationMethod: "tag",
+			hideIdentifyingTagsMode: "exact",
+			defaultTaskStatus: "open",
 			userFields: [],
 		},
 		taskService: {
@@ -80,12 +80,12 @@ function createMockPlugin(app: App) {
 
 function createTask(): TaskInfo {
 	return {
-		title: 'Delete me',
-		status: 'open',
-		priority: 'normal',
-		path: 'TaskNotes/Tasks/delete-me.md',
+		title: "Delete me",
+		status: "open",
+		priority: "normal",
+		path: "TaskNotes/Tasks/delete-me.md",
 		archived: false,
-		tags: ['task'],
+		tags: ["task"],
 		contexts: [],
 		projects: [],
 	} as TaskInfo;
@@ -95,7 +95,7 @@ function flushPromises(): Promise<void> {
 	return new Promise((resolve) => setTimeout(resolve, 0));
 }
 
-describe('Issue #1009 - Edit Task modal delete action', () => {
+describe("Issue #1009 - Edit Task modal delete action", () => {
 	let app: App;
 	let plugin: ReturnType<typeof createMockPlugin>;
 	let task: TaskInfo;
@@ -109,36 +109,33 @@ describe('Issue #1009 - Edit Task modal delete action', () => {
 		plugin = createMockPlugin(app);
 		task = createTask();
 		modal = new TaskEditModal(app, plugin as any, { task });
-		jest.spyOn(modal, 'forceClose').mockImplementation(jest.fn());
-		container = makeContainer();
-		(modal as unknown as { createActionButtons(container: HTMLElement): void })
-			.createActionButtons(container);
+		jest.spyOn(modal, "forceClose").mockImplementation(jest.fn());
+		container = modal.containerEl;
+		(modal as unknown as { createHeaderOpenNoteButton(): void }).createHeaderOpenNoteButton();
 	});
 
-	it('adds a delete button to the edit modal action bar', () => {
+	it("adds a delete button to the edit modal header", () => {
 		const deleteButton = container.querySelector<HTMLButtonElement>(
-			'.tn-task-modal__delete-button'
+			".tn-task-modal__header-delete"
 		);
 
 		expect(deleteButton).not.toBeNull();
-		expect(deleteButton?.textContent).toBe('Delete');
-		expect(deleteButton?.classList.contains('mod-warning')).toBe(true);
+		expect(deleteButton?.textContent).toBe("Delete");
+		expect(deleteButton?.classList.contains("mod-warning")).toBe(true);
 	});
 
-	it('confirms before deleting the task file from the modal', async () => {
+	it("confirms before deleting the task file from the modal", async () => {
 		mockShowConfirmationModal.mockResolvedValue(true);
 
-		container
-			.querySelector<HTMLButtonElement>('.tn-task-modal__delete-button')!
-			.click();
+		container.querySelector<HTMLButtonElement>(".tn-task-modal__header-delete")!.click();
 		await flushPromises();
 
 		expect(mockShowConfirmationModal).toHaveBeenCalledWith(app, {
-			title: 'Delete task',
+			title: "Delete task",
 			message:
 				'Are you sure you want to delete "Delete me"? This moves the task note to Obsidian trash.',
-			confirmText: 'Delete task',
-			cancelText: 'Cancel',
+			confirmText: "Delete task",
+			cancelText: "Cancel",
 			isDestructive: true,
 		});
 		expect(plugin.taskService.deleteTask).toHaveBeenCalledWith(task);
@@ -146,12 +143,10 @@ describe('Issue #1009 - Edit Task modal delete action', () => {
 		expect(modal.forceClose).toHaveBeenCalled();
 	});
 
-	it('does not delete when the confirmation is cancelled', async () => {
+	it("does not delete when the confirmation is cancelled", async () => {
 		mockShowConfirmationModal.mockResolvedValue(false);
 
-		container
-			.querySelector<HTMLButtonElement>('.tn-task-modal__delete-button')!
-			.click();
+		container.querySelector<HTMLButtonElement>(".tn-task-modal__header-delete")!.click();
 		await flushPromises();
 
 		expect(plugin.taskService.deleteTask).not.toHaveBeenCalled();

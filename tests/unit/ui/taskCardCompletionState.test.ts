@@ -28,6 +28,7 @@ function createPlugin(overrides: Partial<TaskNotesPlugin> = {}): TaskNotesPlugin
 		},
 		statusManager: {
 			getNextStatus: jest.fn(() => "In Progress"),
+			isCompletedStatus: jest.fn(() => false),
 			getStatusConfig: jest.fn((status: string) => ({
 				id: status,
 				value: status,

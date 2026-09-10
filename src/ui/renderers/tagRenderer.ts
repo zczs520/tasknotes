@@ -239,3 +239,5 @@ export function normalizeContext(raw: string): string | null {
 
 	return cleaned ? `@${cleaned}` : null;
 }
+
+/* eslint-enable @typescript-eslint/no-non-null-assertion -- End renderer compatibility section. */

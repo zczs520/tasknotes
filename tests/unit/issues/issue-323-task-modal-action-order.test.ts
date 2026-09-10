@@ -16,10 +16,7 @@ class TaskModalHarness extends TaskModal {
 	}
 
 	renderActionTypes(): string[] {
-		this.createActionBar(this.contentEl);
-		return Array.from(this.contentEl.querySelectorAll<HTMLElement>("[data-type]")).map(
-			(icon) => icon.dataset.type || ""
-		);
+		return this.getCoreActionIconSpecs().map((spec) => spec.dataType || "");
 	}
 }
 

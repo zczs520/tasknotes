@@ -89,6 +89,7 @@ import {
 } from "./utils/taskCreationPrepopulation";
 import type { ParentNoteProjectDefaultContext } from "./utils/taskCreationPrepopulation";
 import { applySearchQueryToView } from "./utils/obsidianSearchView";
+import { collectCacheTags } from "./utils/tagExtraction";
 import { TaskContextMenu } from "./components/TaskContextMenu";
 import {
 	LoadedSettingsData,
@@ -1237,6 +1238,11 @@ export default class TaskNotesPlugin extends Plugin {
 			basename: activeFile.basename,
 			content,
 			frontmatter,
+			documentTags: collectCacheTags(metadata),
+			inlineTagRanges: (metadata?.tags ?? []).map((tag) => ({
+				start: tag.position.start.offset,
+				end: tag.position.end.offset,
+			})),
 			settings: this.settings,
 		});
 

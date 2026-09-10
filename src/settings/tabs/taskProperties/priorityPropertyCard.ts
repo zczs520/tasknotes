@@ -417,3 +417,5 @@ function renderPriorityList(
 		});
 	});
 }
+
+/* eslint-enable @typescript-eslint/no-non-null-assertion -- End synchronous settings controls section. */

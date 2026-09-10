@@ -28,6 +28,7 @@ function createPlugin(): TaskNotesPlugin {
 			),
 		},
 		statusManager: {
+			isCompletedStatus: jest.fn((status: string) => status === "done"),
 			getStatusConfig: jest.fn((status: string) => {
 				if (status === "open") {
 					return { value: "open", label: "Open", color: "#111111" };

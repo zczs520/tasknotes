@@ -26,9 +26,18 @@
 import { formatDateForStorage, convertUTCToLocalCalendarDate, getDatePart } from '../../../src/utils/dateUtils';
 
 // Set timezone to test edge cases
+const originalTimezone = process.env.TZ;
 process.env.TZ = "America/Los_Angeles"; // UTC-8 (or UTC-7 during DST)
 
 describe('Issue #1003: Notes view one day behind minicalendar', () => {
+	afterAll(() => {
+		if (originalTimezone === undefined) {
+			delete process.env.TZ;
+		} else {
+			process.env.TZ = originalTimezone;
+		}
+	});
+
 	describe('Date key consistency between calendar and notes lookup', () => {
 		it('reproduces issue #1003: clicking a date should show notes for that exact date', () => {
 			// User clicks on January 15, 2025 in the mini calendar

@@ -650,7 +650,10 @@ export class GoogleCalendarService extends CalendarProvider {
 
 		if (timeSinceLastRefresh < minInterval) {
 			const remainingMs = minInterval - timeSinceLastRefresh;
-			publishUserNotice(this.plugin.emitter, `Please wait ${Math.ceil(remainingMs / 1000)}s before refreshing again`);
+			publishUserNotice(
+				this.plugin.emitter,
+				`Please wait ${Math.ceil(remainingMs / 1000)}s before refreshing again`
+			);
 			return;
 		}
 
@@ -1047,3 +1050,5 @@ export class GoogleCalendarService extends CalendarProvider {
 		this.removeAllListeners();
 	}
 }
+
+/* eslint-enable @typescript-eslint/no-non-null-assertion -- End calendar credential compatibility section. */

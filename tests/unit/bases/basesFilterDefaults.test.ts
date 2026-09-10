@@ -46,6 +46,7 @@ describe("Bases filter defaults", () => {
 						filters: [
 							{ rule: { text: 'file.hasTag("task")' } },
 							{ rule: { text: 'file.hasTag("client")' } },
+							{ rule: { text: 'note["taskType"] == "task"' } },
 							{ rule: { text: 'note.state == "doing"' } },
 							{ rule: { text: 'note.title == "Escaped \\"Title\\""' } },
 							{ rule: { text: 'list(note.projectLinks).contains("[[Alpha]]")' } },
@@ -74,6 +75,7 @@ describe("Bases filter defaults", () => {
 
 		expect(defaults).toEqual({
 			tags: ["client"],
+			taskType: "task",
 			state: "doing",
 			title: 'Escaped "Title"',
 			projectLinks: ["[[Alpha]]", "[[Current]]"],
@@ -82,7 +84,7 @@ describe("Bases filter defaults", () => {
 		});
 	});
 
-	it("ignores ambiguous OR filters and unknown properties", () => {
+	it("ignores ambiguous OR filters and preserves deterministic custom properties", () => {
 		const defaults = extractBasesFilterDefaults({
 			config: {
 				filters: {
@@ -106,6 +108,7 @@ describe("Bases filter defaults", () => {
 		});
 
 		expect(defaults).toEqual({
+			unknown: "ignored",
 			due: "2026-05-20",
 		});
 	});

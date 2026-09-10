@@ -535,7 +535,7 @@ function getResolvedOccurrenceParentKey(task: TaskInfo, plugin: TaskNotesPlugin)
 	const resolved = metadataCache?.getFirstLinkpathDest?.(linkPath, task.path);
 	const resolvedPath =
 		resolved && typeof (resolved as { path?: unknown }).path === "string"
-			? ((resolved as { path: string }).path)
+			? (resolved as { path: string }).path
 			: undefined;
 
 	return resolvedPath ? normalizeTaskReference(resolvedPath) : normalizedReference;
@@ -573,10 +573,7 @@ function buildMaterializedOccurrenceDateIndex(
 	return index;
 }
 
-function addMaterializedOccurrenceMetadata(
-	event: CalendarEvent,
-	task: TaskInfo
-): CalendarEvent {
+function addMaterializedOccurrenceMetadata(event: CalendarEvent, task: TaskInfo): CalendarEvent {
 	if (!isMaterializedOccurrenceTask(task)) {
 		return event;
 	}
@@ -1159,9 +1156,7 @@ export function generateRecurringTaskInstances(
 		if (typeof task.recurrence === "string" && task.recurrence.includes("FREQ=YEARLY")) {
 			// For yearly tasks, look ahead ~2.2 years to ensure we find at least one occurrence
 			const lookAheadDays = 800;
-			adjustedEndDate = new Date(
-				startDate.getTime() + lookAheadDays * 24 * 60 * 60 * 1000
-			);
+			adjustedEndDate = new Date(startDate.getTime() + lookAheadDays * 24 * 60 * 60 * 1000);
 		}
 		const recurringDates = generateRecurringInstances(
 			task,
@@ -1223,7 +1218,13 @@ export function generateRecurringTaskInstances(
 			}
 
 			const eventStart = hasOriginalTime ? `${instanceDate}T${templateTime}` : instanceDate;
-			const event = createRecurringEvent(task, eventStart, instanceDate, templateTime, plugin);
+			const event = createRecurringEvent(
+				task,
+				eventStart,
+				instanceDate,
+				templateTime,
+				plugin
+			);
 			if (event) {
 				instances.push(event);
 				emittedInstanceDates.add(instanceDate);
@@ -2124,3 +2125,5 @@ export function calculateTaskCreationValues(
 
 	return prePopulatedValues;
 }
+
+/* eslint-enable @typescript-eslint/no-non-null-assertion -- End FullCalendar callback compatibility section. */
