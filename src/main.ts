@@ -1,3 +1,7 @@
+import { migrateLegacyViewPaths } from "./bootstrap/legacyViewPaths";
+import { ensureExampleTasks } from "./bootstrap/exampleTasks";
+import { ensureProductGuides } from "./bootstrap/productGuides";
+import { isViewEnabled } from "./settings/viewFeatures";
 import {
 	Notice,
 	Plugin,
@@ -822,6 +826,10 @@ export default class TaskNotesPlugin extends Plugin {
 	}
 
 	async openBasesFileForCommand(commandId: string): Promise<void> {
+		if (!isViewEnabled(this.settings, commandId)) {
+			new Notice(this.i18n.translate("onboarding.viewDisabled"));
+			return;
+		}
 		await this.workspaceNavigationService.openBasesFileForCommand(commandId);
 	}
 
@@ -858,6 +866,9 @@ export default class TaskNotesPlugin extends Plugin {
 	async ensureBasesViewFiles(
 		options: { overwriteExisting?: boolean } = {}
 	): Promise<{ created: string[]; updated: string[]; skipped: string[] }> {
+		await migrateLegacyViewPaths(this);
+		await ensureProductGuides(this.app);
+		await ensureExampleTasks(this);
 		return ensureDefaultBasesViewFiles(
 			{
 				app: this.app,

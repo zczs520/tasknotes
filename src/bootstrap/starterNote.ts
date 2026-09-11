@@ -2,153 +2,97 @@ import { TFile, normalizePath, type App } from "obsidian";
 import type { TaskNotesSettings } from "../types/settings";
 import { ensureFolderHierarchy } from "./defaultBasesFiles";
 
-export const STARTER_NOTE_ENGLISH_PATH = "TaskNotes/Start Here.md";
-export const STARTER_NOTE_CHINESE_PATH = "TaskNotes/开始使用.md";
+export const STARTER_NOTE_ENGLISH_PATH = "TASKquence/Start Here.md";
+export const STARTER_NOTE_CHINESE_PATH = "TASKquence/开始使用.md";
 
 export const STARTER_NOTE_ENGLISH_CONTENT = `# Welcome to TASKquence
 
-> 中文版：[[开始使用]]
+> 中文版：[[TASKquence/开始使用|开始使用]]
 
-TASKquence is an independent TaskNotes fork for planning work and life in Obsidian. It combines Markdown tasks, Bases-powered views, calendars, Pomodoro, time tracking, visual statistics, and TASKquence iOS life-event sync.
+Start with three actions: **Create new task**, **Open Kanban board**, and **Open time statistics**. Your tasks stay ordinary Markdown notes in your Obsidian vault.
 
-Your tasks remain ordinary Markdown notes in your vault. TASKquence adds a faster way to capture, plan, focus, and review them without locking your data into a separate database.
+## Set up once
 
-## Before you start
+1. Enable **Bases** in Obsidian → Settings → Core plugins.
+2. Create a task from the plus icon on the ribbon or the TASKquence command palette.
+3. Open the Kanban icon to plan your work. Start a task timer, then open time statistics to review it.
 
-- [ ] Enable Obsidian's **Bases** core plugin.
-- [ ] Confirm the default \`.base\` files exist in \`TaskNotes/Views/\`.
-- [ ] Open the command palette and run **TASKquence: Open tasks view**.
+New tasks go into **TASKquence/Tasks** by default. Each task has the property **taskType: task**; Kanban and time statistics use this same fixed identity. Tags are for organization, not task identification. To include an existing note, use **Convert current note to task** or add this property in the note's Properties section.
 
-If a default view is missing, go to **Settings → TASKquence → General → Views & base files → Create files**.
+## Capture and plan
 
-## 1. Capture a task in seconds
+The task sheet creates a note immediately and saves edits automatically. Enter a title such as “Review the launch plan tomorrow at 3pm #planning”, then adjust its status, planned date and tags.
 
-Run **TASKquence: Create new task**. The task note is created immediately and every edit is autosaved, so you can close the sheet or open the note without a separate save step.
+Drag tasks between status columns. Tags create horizontal swimlanes, and new tags appear automatically. Use search and the date filter to narrow the board. The menu beside a status title edits its name, color, icon and completion behavior for all boards.
 
-Natural-language capture can fill dates, contexts, and tags while you type. For example:
+Read [[TASKquence/Kanban Guide|the Kanban guide]] for setup, filters, swimlanes and troubleshooting.
 
-\`\`\`text
-Review the launch plan tomorrow at 3pm @office #planning
-\`\`\`
+## Track and review
 
-Use the compact property controls for status, priority, scheduled date, tags, projects, recurrence, reminders, estimates, and other fields. Select **Open note** whenever you want the full Markdown file.
+Start and stop a task timer from a card or task note. Open time statistics for daily timelines, weekly/monthly/yearly totals and individual records. A task needs recorded time to contribute to statistics. Timeline blocks and labels share the task's tag color.
 
-## 2. Plan visually
+## Optional views
 
-Open **TASKquence: Open Kanban board** to move tasks through your workflow. The redesigned board includes color-coded columns, task search, date filters, configurable swimlanes, quick scheduled-date changes, and task creation that inherits the current column and swimlane.
+Task lists, calendars, agenda, Pomodoro and relationship views start disabled. Enable what you need in **Settings → TASKquence → General → Views & base files**. Enabling a view adds its shortcuts and creates its Base file when applicable. Disabling it removes shortcuts and stops automatic file creation; existing notes and Base files are retained.
 
-The default Bases views are ready to embed in dashboards, daily notes, or project notes:
+Default active views:
+- [[TASKquence/Views/kanban-default.base|Kanban]]
+- [[TASKquence/Views/time-statistics.base|Time statistics]]
 
-- \`![[TaskNotes/Views/tasks-default.base]]\` — task list
-- \`![[TaskNotes/Views/agenda-default.base]]\` — agenda
-- \`![[TaskNotes/Views/mini-calendar-default.base]]\` — compact calendar
-- \`![[TaskNotes/Views/calendar-default.base]]\` — day, week, month, and year planning
-- \`![[TaskNotes/Views/kanban-default.base]]\` — status workflow
+You can change their file paths in settings, or embed a Base by adding ! before its wiki link.
 
-## 3. Focus and track time
+## Use TASKquence on iPhone
 
-Start a task timer from a task card or task note. The floating active-task control keeps elapsed time and the Stop/Complete actions visible while you work. Moving a task into the configured in-progress status can start tracking automatically; moving it out stops the timer.
+Read [[TASKquence/Tasks/App/TASKquence iOS|the iOS companion guide]] for download and pairing instructions.
 
-Use Pomodoro for focus sessions, then open **TASKquence: Open time statistics** to review day, week, month, or year totals, timelines, heatmaps, task rankings, tag distribution, and individual time entries.
+## Help
 
-## 4. Connect plans with your life
-
-Use calendars and recurring tasks to combine scheduled work, due dates, time blocks, and external events. TASKquence can sync life events with the TASKquence iOS experience when that companion sync is configured, while your task source of truth stays in the vault.
-
-## 5. Make the system yours
-
-Every task property is configurable. Add fields such as \`energy\`, \`client\`, or \`area\`, then use them directly in Obsidian Bases filters, sorting, grouping, formulas, and swimlanes.
-
-Try these next:
-
-- Create one real task and start its timer.
-- Drag it between Kanban columns and change its scheduled date from the card.
-- Duplicate a default Base and filter it to one project or tag.
-- Open the time statistics dashboard after recording a few sessions.
-
-## Help and project links
-
-- TASKquence source and issues: [github.com/zczs520/tasknotes](https://github.com/zczs520/tasknotes)
-- Upstream TaskNotes documentation: [tasknotes.dev](https://tasknotes.dev/)
-
-TASKquence is an independent fork. Some upstream documentation and integrations may describe the original TaskNotes release and differ from this version.
-
-## You're ready
-
-Capture what matters, decide when it belongs, focus on one thing, and use the review views to improve the next cycle.
+[Source and issue tracker](https://github.com/zczs520/tasknotes)
 `;
 
 export const STARTER_NOTE_CHINESE_CONTENT = `# 欢迎使用 TASKquence
 
-> English guide: [[Start Here]]
+> English: [[TASKquence/Start Here|Start Here]]
 
-TASKquence 是一个独立维护的 TaskNotes 分支，面向在 Obsidian 中规划工作与生活的用户。它把 Markdown 任务、Bases 视图、日历、番茄钟、时间追踪、可视化统计和 TASKquence iOS 生活事件同步整合在一起。
+从三个入口开始：**创建新任务、看板、时间统计**。所有任务都是 Obsidian 仓库里的普通 Markdown 笔记。
 
-所有任务仍然是保存在你仓库里的普通 Markdown 笔记。TASKquence 只是在此基础上提供更顺手的捕捉、规划、专注与复盘体验，不会把数据锁进独立数据库。
+## 第一次使用
 
-## 开始前
+1. 在 **Obsidian → 设置 → 核心插件** 中启用 **Bases（数据库）**。
+2. 点击左侧功能区的加号，或在命令面板运行 **TASKquence: 创建新任务**。
+3. 点击看板图标安排任务；启动一次任务计时，再打开时间统计查看记录。
 
-- [ ] 启用 Obsidian 核心插件 **Bases（数据库）**。
-- [ ] 确认 \`TaskNotes/Views/\` 中已经生成默认的 \`.base\` 文件。
-- [ ] 打开命令面板，运行 **TASKquence: 打开任务视图**。
+新任务默认保存在 **TASKquence/Tasks**。每个任务都包含 **taskType: task** 属性；看板和时间统计固定使用同一条识别规则，标签仅用于分类。要纳入已有笔记，可运行 **将当前笔记转换为任务**，或在笔记属性区添加 taskType 并设为 task。
 
-如果缺少默认视图，请前往 **设置 → TASKquence → 常规 → 视图与 Base 文件 → 创建文件**。
+## 创建和安排任务
 
-## 1. 快速捕捉任务
+任务窗口打开时就会创建笔记，后续修改自动保存。试着输入“明天下午3点准备发布计划 #工作”，再调整状态、计划日期和标签。
 
-运行 **TASKquence: 创建新任务**。任务笔记会在窗口打开时立即创建，之后的每次修改都会自动保存；关闭窗口或直接打开笔记时，不需要再点一次“保存”。
+拖动卡片可修改状态。标签会形成横向泳道，新标签默认显示。使用顶部搜索框和日期筛选缩小范围。点击状态标题旁的菜单，可以修改名称、颜色、图标和完成状态；更改会同步到插件设置与其他看板。
 
-自然语言输入可以自动识别日期、场景和标签，例如：
+详细操作请阅读 [[TASKquence/看板使用说明|看板使用说明]]，包括泳道、筛选、状态和常见问题。
 
-\`\`\`text
-明天下午3点@家买杂货 #差事
-\`\`\`
+## 计时与复盘
 
-你可以在紧凑的属性区设置状态、优先级、计划日期、标签、项目、重复规则、提醒、预估时间等字段；需要完整编辑时，点击左上角的 **打开笔记**。
+在任务卡片或任务笔记中开始、停止计时。时间统计支持当日时间轴，以及周、月、年汇总和逐条记录。任务有计时记录后才会贡献统计时长。时间轴色块与任务标签文字使用相同颜色。
 
-## 2. 用看板和日历规划
+## 按需开启更多视图
 
-运行 **TASKquence: 打开看板**，把任务拖动到不同状态。新版看板提供柔和的彩色列、任务搜索、日期筛选、可配置泳道、卡片内快速改期，以及继承当前列和泳道属性的新建任务。
+任务列表、日历、议程、番茄钟和关系视图默认关闭。在 **设置 → TASKquence → 常规 → 视图与 Base 文件** 中开启需要的功能。开启后添加快捷入口，并创建适用的 Base 文件；关闭后移除入口并停止自动生成文件，已有笔记和 Base 文件会保留。
 
-默认 Bases 视图可以直接嵌入主页、日记或项目笔记：
+默认启用的视图：
+- [[TASKquence/Views/kanban-default.base|看板]]
+- [[TASKquence/Views/time-statistics.base|时间统计]]
 
-- \`![[TaskNotes/Views/tasks-default.base]]\` — 任务列表
-- \`![[TaskNotes/Views/agenda-default.base]]\` — 日程
-- \`![[TaskNotes/Views/mini-calendar-default.base]]\` — 迷你日历
-- \`![[TaskNotes/Views/calendar-default.base]]\` — 日、周、月、年计划
-- \`![[TaskNotes/Views/kanban-default.base]]\` — 状态看板
+可在设置里修改文件路径，也可以在上述双链前加上 ! 将视图嵌入笔记。
 
-## 3. 专注并记录时间
+## 搭配 iPhone 使用
 
-从任务卡片或任务笔记启动计时。可拖动的悬浮任务控件会一直显示当前任务、已用时间，以及“停止”和“完成”操作。任务进入设定的“进行中”状态时可以自动开始计时，移出该状态时会自动停止。
+阅读 [[TASKquence/Tasks/App/TASKquence iOS 中文指南|iOS 下载与配套使用指南]]。
 
-你也可以使用番茄钟安排专注周期。记录一段时间后，运行 **TASKquence: 打开时间统计**，从日、周、月、年四个尺度查看时间线、热力图、任务排行、标签分布和每条计时记录。
+## 获取帮助
 
-## 4. 连接计划与生活事件
-
-通过日历和重复任务统一管理计划日期、截止日期、时间块与外部日历事件。配置配套同步后，TASKquence 还可以与 TASKquence iOS 的生活事件保持同步，同时继续以 Obsidian 仓库作为任务数据源。
-
-## 5. 调整成你的系统
-
-任务属性可以自由配置。你可以添加 \`energy\`、\`client\`、\`area\` 等字段，并直接在 Obsidian Bases 中筛选、排序、分组、计算或用作看板泳道。
-
-接下来可以尝试：
-
-- 创建一个真实任务并启动计时。
-- 在看板中拖动任务，并从卡片直接修改计划日期。
-- 复制一个默认 Base，只显示某个项目或标签。
-- 记录几次专注时间后打开时间统计面板复盘。
-
-## 帮助与项目链接
-
-- TASKquence 源码与问题反馈：[github.com/zczs520/tasknotes](https://github.com/zczs520/tasknotes)
-- 上游 TaskNotes 文档：[tasknotes.dev](https://tasknotes.dev/)
-
-TASKquence 是独立维护的分支。上游文档和集成说明对应原版 TaskNotes，部分内容可能与本版本不同。
-
-## 可以开始了
-
-捕捉重要的事，决定它应该在什么时候发生，专注完成一件事，再通过统计和视图改进下一轮计划。
+[源码与问题反馈](https://github.com/zczs520/tasknotes)
 `;
 
 // Backward-compatible exports for callers and third-party tests that referenced the original note.

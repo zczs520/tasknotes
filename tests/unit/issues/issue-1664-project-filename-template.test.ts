@@ -100,7 +100,7 @@ describe("Issue #1664: project filename template variables", () => {
 			{ applyDefaults: false }
 		);
 
-		expect(result.file.path).toBe("TaskNotes/Tasks/TASK-Task Platform-write_summary.md");
+		expect(result.file.path).toBe("TASKquence/Tasks/TASK-Task Platform-write_summary.md");
 		expect(result.taskInfo.projects).toEqual(["[[Projects/Task Platform|Task Platform]]"]);
 	});
 });

@@ -1,3 +1,4 @@
+import { ensureExampleTasks } from "../../bootstrap/exampleTasks";
 import { Notice, TFile } from "obsidian";
 import TaskNotesPlugin from "../../main";
 import {
@@ -8,7 +9,8 @@ import {
 } from "../components/settingHelpers";
 import { TranslationKey } from "../../i18n";
 import { showConfirmationModal } from "../../modals/ConfirmationModal";
-import type { HideIdentifyingTagsMode } from "../../types/settings";
+import { isViewEnabled } from "../viewFeatures";
+import { registerRibbonIcons } from "../../bootstrap/pluginBootstrap";
 import { createTaskNotesLogger } from "../../utils/tasknotesLogger";
 import {
 	createVaultFile,
@@ -44,7 +46,7 @@ export function renderGeneralTab(
 					void configureTextSetting(setting, {
 						name: translate("settings.general.taskStorage.defaultFolder.name"),
 						desc: translate("settings.general.taskStorage.defaultFolder.description"),
-						placeholder: "TaskNotes",
+						placeholder: "TASKquence/Tasks",
 						getValue: () => plugin.settings.tasksFolder,
 						setValue: async (value: string) => {
 							plugin.settings.tasksFolder = value;
@@ -92,7 +94,7 @@ export function renderGeneralTab(
 							desc: translate(
 								"settings.general.taskStorage.archiveFolder.description"
 							),
-							placeholder: "TaskNotes/Archive",
+							placeholder: "TASKquence/Archive",
 							getValue: () => plugin.settings.archiveFolder,
 							setValue: async (value: string) => {
 								plugin.settings.archiveFolder = value;
@@ -105,155 +107,35 @@ export function renderGeneralTab(
 		}
 	);
 
-	// Task Identification Section
 	createSettingGroup(
 		container,
 		{
 			heading: translate("settings.general.taskIdentification.header"),
-			description: translate("settings.general.taskIdentification.description"),
+			description: translate("onboarding.fixedIdentity"),
 		},
 		(group) => {
-			group.addSetting(
-				(setting) =>
-					void configureDropdownSetting(setting, {
-						name: translate("settings.general.taskIdentification.identifyBy.name"),
-						desc: translate(
-							"settings.general.taskIdentification.identifyBy.description"
-						),
-						options: [
-							{
-								value: "tag",
-								label: translate(
-									"settings.general.taskIdentification.identifyBy.options.tag"
-								),
-							},
-							{
-								value: "property",
-								label: translate(
-									"settings.general.taskIdentification.identifyBy.options.property"
-								),
-							},
-						],
-						getValue: () => plugin.settings.taskIdentificationMethod,
-						setValue: async (value: string) => {
-							plugin.settings.taskIdentificationMethod = value as "tag" | "property";
-							save();
-							// Re-render to show/hide conditional fields
-							renderGeneralTab(container, plugin, save);
-						},
-						ariaLabel: "Task identification method",
-					})
-			);
-
-			if (plugin.settings.taskIdentificationMethod === "tag") {
-				group.addSetting(
-					(setting) =>
-						void configureTextSetting(setting, {
-							name: translate("settings.general.taskIdentification.taskTag.name"),
-							desc: translate(
-								"settings.general.taskIdentification.taskTag.description"
-							),
-							placeholder: "task",
-							getValue: () => plugin.settings.taskTag,
-							setValue: async (value: string) => {
-								plugin.settings.taskTag = value;
-								save();
-							},
-							ariaLabel: "Task identification tag",
-						})
-				);
-
-				group.addSetting(
-					(setting) =>
-						void configureToggleSetting(setting, {
-							name: translate(
-								"settings.general.taskIdentification.hideIdentifyingTags.name"
-							),
-							desc: translate(
-								"settings.general.taskIdentification.hideIdentifyingTags.description"
-							),
-							getValue: () => plugin.settings.hideIdentifyingTagsInCards,
-							setValue: async (value: boolean) => {
-								plugin.settings.hideIdentifyingTagsInCards = value;
-								save();
-								renderGeneralTab(container, plugin, save);
-							},
-						})
-				);
-
-				if (plugin.settings.hideIdentifyingTagsInCards) {
-					group.addSetting(
-						(setting) =>
-							void configureDropdownSetting(setting, {
-								name: translate(
-									"settings.general.taskIdentification.hideIdentifyingTagsMode.name"
-								),
-								desc: translate(
-									"settings.general.taskIdentification.hideIdentifyingTagsMode.description"
-								),
-								options: [
-									{
-										value: "all",
-										label: translate(
-											"settings.general.taskIdentification.hideIdentifyingTagsMode.options.all"
-										),
-									},
-									{
-										value: "exact-only",
-										label: translate(
-											"settings.general.taskIdentification.hideIdentifyingTagsMode.options.exactOnly"
-										),
-									},
-								],
-								getValue: () => plugin.settings.hideIdentifyingTagsMode,
-								setValue: async (value: string) => {
-									plugin.settings.hideIdentifyingTagsMode =
-										value as HideIdentifyingTagsMode;
-									save();
-								},
-								ariaLabel: "Hidden identification tag scope",
-							})
-					);
-				}
-			} else {
-				group.addSetting(
-					(setting) =>
-						void configureTextSetting(setting, {
-							name: translate(
-								"settings.general.taskIdentification.taskProperty.name"
-							),
-							desc: translate(
-								"settings.general.taskIdentification.taskProperty.description"
-							),
-							placeholder: "category",
-							getValue: () => plugin.settings.taskPropertyName,
-							setValue: async (value: string) => {
-								plugin.settings.taskPropertyName = value;
-								save();
-							},
-						})
-				);
-
-				group.addSetting(
-					(setting) =>
-						void configureTextSetting(setting, {
-							name: translate(
-								"settings.general.taskIdentification.taskPropertyValue.name"
-							),
-							desc: translate(
-								"settings.general.taskIdentification.taskPropertyValue.description"
-							),
-							placeholder: "task",
-							getValue: () => plugin.settings.taskPropertyValue,
-							setValue: async (value: string) => {
-								plugin.settings.taskPropertyValue = value;
-								save();
-							},
-						})
-				);
-			}
+			group.addSetting((setting) => {
+				setting
+					.setName(translate("settings.general.taskIdentification.taskProperty.name"))
+					.setDesc(translate("onboarding.fixedIdentityHint"));
+			});
 		}
 	);
+
+	const addViewToggle = (setting: import("obsidian").Setting, id: string) => {
+		setting.addToggle((toggle) =>
+			toggle
+				.setTooltip(translate("onboarding.enableView"))
+				.setValue(isViewEnabled(plugin.settings, id))
+				.onChange(async (value) => {
+					plugin.settings.enabledViews = { ...plugin.settings.enabledViews, [id]: value };
+					await plugin.saveSettings();
+					registerRibbonIcons(plugin);
+					plugin.commandRegistry.refreshTranslations();
+					if (value) await plugin.ensureBasesViewFiles();
+				})
+		);
+	};
 
 	// Views & Base Files Section (moved above Folder Management)
 	// Command file mappings data
@@ -261,42 +143,42 @@ export function renderGeneralTab(
 		{
 			id: "open-calendar-view",
 			nameKey: "miniCalendar" as const,
-			defaultPath: "TaskNotes/Views/mini-calendar-default.base",
+			defaultPath: "TASKquence/Views/mini-calendar-default.base",
 		},
 		{
 			id: "open-kanban-view",
 			nameKey: "kanban" as const,
-			defaultPath: "TaskNotes/Views/kanban-default.base",
+			defaultPath: "TASKquence/Views/kanban-default.base",
 		},
 		{
 			id: "open-tasks-view",
 			nameKey: "tasks" as const,
-			defaultPath: "TaskNotes/Views/tasks-default.base",
+			defaultPath: "TASKquence/Views/tasks-default.base",
 		},
 		{
 			id: "open-advanced-calendar-view",
 			nameKey: "advancedCalendar" as const,
-			defaultPath: "TaskNotes/Views/calendar-default.base",
+			defaultPath: "TASKquence/Views/calendar-default.base",
 		},
 		{
 			id: "open-agenda-view",
 			nameKey: "agenda" as const,
-			defaultPath: "TaskNotes/Views/agenda-default.base",
+			defaultPath: "TASKquence/Views/agenda-default.base",
 		},
 		{
 			id: "open-statistics",
 			nameKey: "timeStatistics" as const,
-			defaultPath: "TaskNotes/Views/time-statistics.base",
+			defaultPath: "TASKquence/Views/time-statistics.base",
 		},
 		{
 			id: "pomodoro-stats-base",
 			nameKey: "pomodoroStats" as const,
-			defaultPath: "TaskNotes/Views/pomodoro-stats.base",
+			defaultPath: "TASKquence/Views/pomodoro-stats.base",
 		},
 		{
 			id: "relationships",
 			nameKey: "relationships" as const,
-			defaultPath: "TaskNotes/Views/relationships.base",
+			defaultPath: "TASKquence/Views/relationships.base",
 		},
 	];
 
@@ -348,6 +230,7 @@ export function renderGeneralTab(
 						`settings.integrations.basesIntegration.viewCommands.commands.${nameKey}`
 					);
 					setting.setName(commandName);
+					addViewToggle(setting, id);
 					setting.setDesc(
 						translate("settings.integrations.basesIntegration.viewCommands.fileLabel", {
 							path: plugin.settings.commandFileMapping[id],
@@ -407,6 +290,30 @@ export function renderGeneralTab(
 						return button;
 					});
 				});
+			});
+
+			for (const [id, nameKey] of [
+				["open-pomodoro-view", "commands.openPomodoroView"],
+				["open-pomodoro-stats", "commands.openPomodoroStats"],
+			]) {
+				group.addSetting((setting) => {
+					setting.setName(translate(nameKey));
+					addViewToggle(setting, id);
+				});
+			}
+
+			group.addSetting((setting) => {
+				setting
+					.setName(translate("onboarding.restoreExamples"))
+					.setDesc(translate("onboarding.restoreExamplesHint"))
+					.addButton((button) =>
+						button
+							.setButtonText(translate("onboarding.restoreExamples"))
+							.onClick(async () => {
+								await ensureExampleTasks(plugin, { restoreMissing: true });
+								new Notice(translate("onboarding.examplesRestored"));
+							})
+					);
 			});
 
 			// Auto-create default files toggle
@@ -534,13 +441,13 @@ export function renderGeneralTab(
 											savedViews
 										);
 									const fileName = "all-saved-views.base";
-									const filePath = `TaskNotes/Views/${fileName}`;
+									const filePath = `TASKquence/Views/${fileName}`;
 
 									// Create folder if needed (check on-disk via adapter, not in-memory cache)
 									if (
-										!(await plugin.app.vault.adapter.exists("TaskNotes/Views"))
+										!(await plugin.app.vault.adapter.exists("TASKquence/Views"))
 									) {
-										await createVaultFolder(plugin.app, "TaskNotes/Views");
+										await createVaultFolder(plugin.app, "TASKquence/Views");
 									}
 
 									// Handle file overwrite confirmation

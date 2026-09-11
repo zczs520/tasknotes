@@ -16,6 +16,10 @@ function createPlugin(taskTag: string): TaskNotesPlugin {
 		taskIdentificationMethod: "tag",
 		taskTag,
 		commandFileMapping,
+		enabledViews: {
+			...DEFAULT_SETTINGS.enabledViews,
+			"open-tasks-view": true,
+		},
 	};
 
 	plugin.fieldMapper = {

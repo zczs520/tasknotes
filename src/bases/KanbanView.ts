@@ -1,10 +1,11 @@
+import { KanbanStatusModal, deleteKanbanStatus } from "../modals/KanbanStatusModal";
 /* eslint-disable @typescript-eslint/no-non-null-assertion -- Legacy Bases view rendering narrows DOM references through lifecycle checks. */
 import { Menu, Notice, Platform, setIcon, setTooltip, TFile } from "obsidian";
 import type { BasesView, BasesViewFactory } from "obsidian";
 import TaskNotesPlugin from "../main";
 import { BasesViewBase } from "./BasesViewBase";
 import type { StatusConfig, TaskInfo } from "../types";
-import { identifyTaskNotesFromBasesData } from "./helpers";
+import { identifyTaskNotesFromBasesData, hasFixedTaskIdentity } from "./helpers";
 import { createTaskCard, showTaskContextMenu, type TaskCardOptions } from "../ui/TaskCard";
 import { renderGroupTitle } from "./groupTitleRenderer";
 import { type LinkServices } from "../ui/renderers/linkRenderer";
@@ -301,7 +302,7 @@ export class KanbanView extends BasesViewBase {
 	private maxSwimlaneHeight = 600;
 	private hideEmptyColumns = false;
 	private explodeListColumns = true; // Show items with list properties in multiple columns
-	private consolidateStatusIcon = false; // Show status icon in header only when grouped by status
+	private consolidateStatusIcon = true; // Show status icon in header only when grouped by status
 	private columnOrders: Record<string, string[]> = {};
 	private pinnedColumns: string[] = [];
 	private wipLimits: Record<string, number> = {};
@@ -404,7 +405,10 @@ export class KanbanView extends BasesViewBase {
 		}
 
 		try {
-			this.swimLanePropertyId = this.config.getAsPropertyId("swimLane");
+			this.swimLanePropertyId =
+				this.config.get("swimLane") === undefined
+					? "note.tags"
+					: this.config.getAsPropertyId("swimLane");
 			this.columnWidth = (this.config.get("columnWidth") as number) || 280;
 			const boardLayout = normalizeKanbanBoardLayout(
 				this.config.get("boardFullWidth"),
@@ -423,7 +427,7 @@ export class KanbanView extends BasesViewBase {
 
 			// Read consolidateStatusIcon option (defaults to false)
 			const consolidateValue = this.config.get("consolidateStatusIcon");
-			this.consolidateStatusIcon = consolidateValue === true; // Default to false if not set
+			this.consolidateStatusIcon = consolidateValue !== false; // Default to true if not set
 
 			// Read column orders
 			this.columnOrders = normalizeKanbanOrderConfig(this.config.get("columnOrder"));
@@ -440,7 +444,7 @@ export class KanbanView extends BasesViewBase {
 
 			// Read enableSearch toggle (default: false for backward compatibility)
 			const enableSearchValue = this.config.get("enableSearch");
-			this.enableSearch = (enableSearchValue as boolean) ?? false;
+			this.enableSearch = (enableSearchValue as boolean) ?? true;
 			this.timeFilterField = normalizeKanbanTimeFilterField(
 				this.config.get(KANBAN_TIME_FILTER_CONFIG_KEYS.field)
 			);
@@ -810,7 +814,7 @@ export class KanbanView extends BasesViewBase {
 		}
 
 		try {
-			const dataItems = this.dataAdapter.extractDataItems();
+			const dataItems = this.dataAdapter.extractDataItems().filter(hasFixedTaskIdentity);
 
 			// Compute formulas before reading formula-based properties (swimlanes, etc.)
 			computeBasesFormulas(this.data, dataItems);
@@ -843,11 +847,14 @@ export class KanbanView extends BasesViewBase {
 				this.isSearchWithNoResults(filteredTasks, timeFilteredTasks.length)
 			) {
 				this.renderSearchNoResults(this.boardEl);
+				this.renderAddTaskButton(this.boardEl, null, "");
 				return;
 			}
 
 			// Build path -> props map for dynamic property access
-			const pathToProps = buildBasesPathProperties(this.dataAdapter.extractDataItems());
+			const pathToProps = buildBasesPathProperties(
+				this.dataAdapter.extractDataItems().filter(hasFixedTaskIdentity)
+			);
 
 			// Determine groupBy property ID
 			const groupByPropertyId = this.getGroupByPropertyId();
@@ -1857,6 +1864,15 @@ export class KanbanView extends BasesViewBase {
 			this.setupColumnHeaderDragHandlers(headerCell);
 		}
 
+		if (swimLanes.size === 0) {
+			const emptyRow = this.boardEl.createDiv({ cls: "kanban-view__swimlane-row" });
+			for (const columnKey of columnKeys) {
+				const cell = emptyRow.createDiv({ cls: "kanban-view__swimlane-column" });
+				this.renderAddTaskButton(cell, groupByPropertyId, columnKey);
+			}
+			if (columnKeys.length === 0) this.renderAddTaskButton(emptyRow, null, "");
+		}
+
 		// Get visible properties for cards
 		const visibleProperties = this.getVisibleProperties();
 
@@ -2139,6 +2155,21 @@ export class KanbanView extends BasesViewBase {
 		}
 
 		return `Add task to ${groupKey}`;
+	}
+
+	private renderAddTaskButton(
+		container: HTMLElement,
+		propertyId: string | null,
+		groupKey: string
+	): void {
+		const button = container.createEl("button", {
+			cls: "kanban-view__empty-create-task",
+			text: this.plugin.i18n.translate("commands.createNewTask"),
+			attr: { type: "button" },
+		});
+		button.addEventListener("click", () => {
+			void this.openTaskCreationForKanbanCell(propertyId, groupKey);
+		});
 	}
 
 	private renderEmptyCellHint(
@@ -4544,6 +4575,43 @@ export class KanbanView extends BasesViewBase {
 					setIcon(iconEl, statusConfig.icon);
 				}
 				this.renderLinkAwareGroupTitle(container, statusConfig.label);
+				if (!isSwimLane) {
+					const button = container.createEl("button", {
+						cls: "kanban-view__status-menu clickable-icon",
+						attr: {
+							type: "button",
+							"aria-label":
+								this.plugin.i18n?.translate("onboarding.editStatus") ?? "Edit status",
+						},
+					});
+					setIcon(button, "ellipsis");
+					button.addEventListener("pointerdown", (event) => event.stopPropagation());
+					button.addEventListener("click", (event) => {
+						event.stopPropagation();
+						const menu = new Menu();
+						menu.addItem((item) =>
+							item
+								.setTitle(this.plugin.i18n.translate("onboarding.editStatus"))
+								.setIcon("pencil")
+								.onClick(() =>
+									new KanbanStatusModal(this.plugin, statusConfig.id, () =>
+										this.refreshAfterStatusChange()
+									).open()
+								)
+						);
+						menu.addItem((item) =>
+							item
+								.setTitle(this.plugin.i18n.translate("onboarding.deleteStatus"))
+								.setIcon("trash")
+								.onClick(() =>
+									deleteKanbanStatus(this.plugin, statusConfig.id, () =>
+										this.refreshAfterStatusChange()
+									)
+								)
+						);
+						menu.showAtMouseEvent(event);
+					});
+				}
 				return;
 			}
 		}
@@ -4561,6 +4629,12 @@ export class KanbanView extends BasesViewBase {
 			workspace: app.workspace,
 		};
 		renderGroupTitle(container, title, linkServices);
+	}
+
+	private async refreshAfterStatusChange(): Promise<void> {
+		const savedState = this.getEphemeralState();
+		await this.render();
+		this.setEphemeralState(savedState);
 	}
 
 	private applyColumnOrder(groupBy: string, actualKeys: string[]): string[] {

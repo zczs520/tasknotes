@@ -1,3 +1,6 @@
+import { updateGeneratedTaskIdentity } from "./taskIdentityMigration";
+export { updateGeneratedTaskIdentity } from "./taskIdentityMigration";
+import { isViewEnabled } from "../settings/viewFeatures";
 import type { App } from "obsidian";
 import { TFile, normalizePath } from "obsidian";
 import { DEFAULT_SETTINGS } from "../settings/defaults";
@@ -72,7 +75,7 @@ export async function ensureDefaultBasesViewFiles(
 		host.settings.commandFileMapping = commandFileMapping;
 
 		for (const [commandId, rawPath] of Object.entries(commandFileMapping)) {
-			if (!rawPath) {
+			if (!rawPath || !isViewEnabled(host.settings, commandId)) {
 				continue;
 			}
 
@@ -85,6 +88,16 @@ export async function ensureDefaultBasesViewFiles(
 
 			if (await adapter.exists(normalizedPath)) {
 				if (!overwriteExisting) {
+					const existing = vault.getAbstractFileByPath(normalizedPath);
+					if (existing instanceof TFile) {
+						const content = await vault.read(existing);
+						const migrated = updateGeneratedTaskIdentity(commandId, content);
+						if (content !== migrated) {
+							await vault.modify(existing, migrated);
+							updated.push(rawPath);
+							continue;
+						}
+					}
 					skipped.push(rawPath);
 					continue;
 				}

@@ -24,7 +24,7 @@ import {
 } from "../utils/timeStatistics";
 import { createTaskNotesLogger } from "../utils/tasknotesLogger";
 import { BasesViewBase } from "./BasesViewBase";
-import { identifyTaskNotesFromBasesData } from "./helpers";
+import { identifyTaskNotesFromBasesData, hasFixedTaskIdentity } from "./helpers";
 
 const tasknotesLogger = createTaskNotesLogger({ tag: "Bases/TimeStatisticsView" });
 const PERIODS: readonly TimeStatisticsPeriod[] = ["day", "week", "month", "year"];
@@ -828,7 +828,7 @@ export class TimeStatisticsView extends BasesViewBase {
 		if (!this.rootElement || !this.data?.data) return;
 		try {
 			const tasks = await identifyTaskNotesFromBasesData(
-				this.dataAdapter.extractDataItems(),
+				this.dataAdapter.extractDataItems().filter(hasFixedTaskIdentity),
 				this.plugin
 			);
 			const range = getTimeStatisticsRange(

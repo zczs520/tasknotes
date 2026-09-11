@@ -125,6 +125,7 @@ export async function registerBasesTaskList(plugin: TaskNotesPlugin): Promise<vo
 							key: "swimLane",
 							displayName: t("kanban.swimLane"),
 							placeholder: t("kanban.swimLanePlaceholder"),
+							default: "note.tags",
 							filter: (prop: string) => {
 								// Show all note, task, and formula properties that could be used for swimlanes
 								return (
@@ -207,7 +208,7 @@ export async function registerBasesTaskList(plugin: TaskNotesPlugin): Promise<vo
 							type: "toggle",
 							key: "enableSearch",
 							displayName: t("kanban.enableSearchAndTimeFilter"),
-							default: false,
+							default: true,
 						},
 						{
 							type: "toggle",
@@ -219,7 +220,7 @@ export async function registerBasesTaskList(plugin: TaskNotesPlugin): Promise<vo
 							type: "toggle",
 							key: "consolidateStatusIcon",
 							displayName: t("kanban.showStatusIconInHeaderOnly"),
-							default: false,
+							default: true,
 						},
 						{
 							type: "dropdown",

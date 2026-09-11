@@ -169,6 +169,7 @@ export interface TaskNotesSettings {
 	lastNotifiedReleaseVersion?: string;
 	// Starter note onboarding
 	starterNoteCreated?: boolean;
+	exampleTasksCreated?: boolean;
 	// Status bar settings
 	showTrackedTasksInStatusBar: boolean;
 	activeTaskControlPosition?: { x: number; y: number };
@@ -222,6 +223,7 @@ export interface TaskNotesSettings {
 	// Bases integration settings
 	enableBases: boolean;
 	enableMdbaseSpec: boolean;
+	enabledViews: Record<string, boolean>; // Optional views and their shortcuts
 	autoCreateDefaultBasesFiles: boolean; // Auto-create missing default Base files on startup
 	// Command-to-file mappings for view commands (v4)
 	commandFileMapping: {

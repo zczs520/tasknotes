@@ -192,6 +192,7 @@ describe("settings persistence helpers", () => {
 
 	it("preserves an explicit normal task creation parent-note project setting", () => {
 		const { settings, shouldPersistMigratedSettings } = buildSettingsFromLoadedData({
+			...DEFAULT_SETTINGS,
 			fieldMapping: DEFAULT_SETTINGS.fieldMapping,
 			calendarViewSettings: DEFAULT_SETTINGS.calendarViewSettings,
 			commandFileMapping: DEFAULT_SETTINGS.commandFileMapping,

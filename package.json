@@ -1,6 +1,6 @@
 {
 	"name": "taskquence",
-	"version": "5.0.2",
+	"version": "5.0.3",
 	"description": "Plan tasks with calendars, Kanban, Pomodoro, time tracking, and TASKquence iOS life-event sync.",
 	"main": "main.js",
 	"scripts": {

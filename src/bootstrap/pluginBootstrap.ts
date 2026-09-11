@@ -1,3 +1,4 @@
+import { isViewEnabled } from "../settings/viewFeatures";
 import { MarkdownView, Platform, addIcon } from "obsidian";
 import { EditorView } from "@codemirror/view";
 import type TaskNotesPlugin from "../main";
@@ -159,70 +160,34 @@ export async function initializeCoreServices(plugin: TaskNotesPlugin): Promise<v
 	plugin.taskService.setAutoArchiveService(plugin.autoArchiveService);
 }
 
+const ribbonElements = new WeakMap<TaskNotesPlugin, HTMLElement[]>();
+
 export function registerRibbonIcons(plugin: TaskNotesPlugin): void {
-	plugin.addRibbonIcon(
-		"calendar-days",
-		plugin.i18n.translate("commands.openCalendarView"),
-		async () => {
-			await plugin.activateCalendarView();
-		}
-	);
-
-	plugin.addRibbonIcon(
-		"calendar",
-		plugin.i18n.translate("commands.openAdvancedCalendarView"),
-		async () => {
-			await plugin.openBasesFileForCommand("open-advanced-calendar-view");
-		}
-	);
-
-	plugin.addRibbonIcon(
-		"check-square",
-		plugin.i18n.translate("commands.openTasksView"),
-		async () => {
-			await plugin.openBasesFileForCommand("open-tasks-view");
-		}
-	);
-
-	plugin.addRibbonIcon("list", plugin.i18n.translate("commands.openAgendaView"), async () => {
-		await plugin.openBasesFileForCommand("open-agenda-view");
-	});
-
-	plugin.addRibbonIcon(
-		"columns-3",
-		plugin.i18n.translate("commands.openKanbanView"),
-		async () => {
-			await plugin.openBasesFileForCommand("open-kanban-view");
-		}
-	);
-
-	plugin.addRibbonIcon("timer", plugin.i18n.translate("commands.openPomodoroView"), async () => {
-		await plugin.activatePomodoroView();
-	});
-
-	plugin.addRibbonIcon(
-		"bar-chart-3",
-		plugin.i18n.translate("commands.openPomodoroStats"),
-		async () => {
-			await plugin.activatePomodoroStatsView();
-		}
-	);
-
-	plugin.addRibbonIcon(
-		"chart-no-axes-column",
-		plugin.i18n.translate("commands.openStatisticsView"),
-		async () => {
-			await plugin.openBasesFileForCommand("open-statistics");
-		}
-	);
-
-	plugin.addRibbonIcon(
-		"square-plus",
-		plugin.i18n.translate("commands.createNewTask"),
-		() => {
-			plugin.openTaskCreationModal();
-		}
-	);
+	for (const element of ribbonElements.get(plugin) ?? []) element.remove();
+	const elements: HTMLElement[] = [];
+	const entries = [
+		["open-calendar-view", "calendar-days", "commands.openCalendarView"],
+		["open-advanced-calendar-view", "calendar", "commands.openAdvancedCalendarView"],
+		["open-tasks-view", "check-square", "commands.openTasksView"],
+		["open-agenda-view", "list", "commands.openAgendaView"],
+		["open-kanban-view", "columns-3", "commands.openKanbanView"],
+		["open-pomodoro-view", "timer", "commands.openPomodoroView"],
+		["open-pomodoro-stats", "bar-chart-3", "commands.openPomodoroStats"],
+		["open-statistics", "chart-no-axes-column", "commands.openStatisticsView"],
+		["create-new-task", "square-plus", "commands.createNewTask"],
+	];
+	for (const [id, icon, key] of entries) {
+		if (!isViewEnabled(plugin.settings, id)) continue;
+		elements.push(
+			plugin.addRibbonIcon(icon, plugin.i18n.translate(key), async () => {
+				if (id === "create-new-task") plugin.openTaskCreationModal();
+				else if (id === "open-pomodoro-view") await plugin.activatePomodoroView();
+				else if (id === "open-pomodoro-stats") await plugin.activatePomodoroStatsView();
+				else await plugin.openBasesFileForCommand(id);
+			})
+		);
+	}
+	ribbonElements.set(plugin, elements);
 }
 
 export function initializeCalendarProviders(plugin: TaskNotesPlugin): void {

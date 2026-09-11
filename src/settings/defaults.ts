@@ -1,3 +1,4 @@
+import { DEFAULT_ENABLED_VIEWS } from "./viewFeatures";
 import { FieldMapping, StatusConfig, PriorityConfig } from "../types";
 import {
 	TaskNotesSettings,
@@ -248,15 +249,15 @@ export const DEFAULT_NLP_TRIGGERS: NLPTriggersConfig = {
 };
 
 export const DEFAULT_SETTINGS: TaskNotesSettings = {
-	tasksFolder: "TaskNotes/Tasks",
+	tasksFolder: "TASKquence/Tasks",
 	moveArchivedTasks: false,
-	archiveFolder: "TaskNotes/Archive",
+	archiveFolder: "TASKquence/Archive",
 	taskTag: "task",
-	taskIdentificationMethod: "tag", // Default to tag-based identification
+	taskIdentificationMethod: "property", // Shared, fixed task identity
 	hideIdentifyingTagsInCards: false, // Default to showing all tags (backward compatibility)
 	hideIdentifyingTagsMode: "all", // Default to existing exact + hierarchical hiding behavior
-	taskPropertyName: "",
-	taskPropertyValue: "",
+	taskPropertyName: "taskType",
+	taskPropertyValue: "task",
 	excludedFolders: "", // Default to no excluded folders
 	defaultTaskPriority: "normal",
 	defaultTaskStatus: "open",
@@ -322,6 +323,7 @@ export const DEFAULT_SETTINGS: TaskNotesSettings = {
 	checkForUpdatesOnStartup: true,
 	lastNotifiedReleaseVersion: undefined,
 	starterNoteCreated: false,
+	exampleTasksCreated: false,
 	// Status bar defaults
 	showTrackedTasksInStatusBar: false,
 	// Time tracking defaults
@@ -381,17 +383,18 @@ export const DEFAULT_SETTINGS: TaskNotesSettings = {
 	// Bases integration defaults
 	enableBases: true,
 	enableMdbaseSpec: false,
+	enabledViews: { ...DEFAULT_ENABLED_VIEWS },
 	autoCreateDefaultBasesFiles: true, // Auto-create missing default Base files on startup
 	// Command-to-file mappings for view commands (v4)
 	commandFileMapping: {
-		"open-calendar-view": "TaskNotes/Views/mini-calendar-default.base",
-		"open-kanban-view": "TaskNotes/Views/kanban-default.base",
-		"open-tasks-view": "TaskNotes/Views/tasks-default.base",
-		"open-advanced-calendar-view": "TaskNotes/Views/calendar-default.base",
-		"open-agenda-view": "TaskNotes/Views/agenda-default.base",
-		"open-statistics": "TaskNotes/Views/time-statistics.base",
-		"pomodoro-stats-base": "TaskNotes/Views/pomodoro-stats.base",
-		relationships: "TaskNotes/Views/relationships.base",
+		"open-calendar-view": "TASKquence/Views/mini-calendar-default.base",
+		"open-kanban-view": "TASKquence/Views/kanban-default.base",
+		"open-tasks-view": "TASKquence/Views/tasks-default.base",
+		"open-advanced-calendar-view": "TASKquence/Views/calendar-default.base",
+		"open-agenda-view": "TASKquence/Views/agenda-default.base",
+		"open-statistics": "TASKquence/Views/time-statistics.base",
+		"pomodoro-stats-base": "TASKquence/Views/pomodoro-stats.base",
+		relationships: "TASKquence/Views/relationships.base",
 	},
 	// Recurring task behavior defaults
 	maintainDueDateOffsetInRecurring: false,

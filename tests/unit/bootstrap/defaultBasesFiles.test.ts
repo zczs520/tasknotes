@@ -9,6 +9,7 @@ import type { TaskNotesSettings } from "../../../src/types/settings";
 function createSettings(commandPath: string): TaskNotesSettings {
 	return {
 		...DEFAULT_SETTINGS,
+		enabledViews: { ...DEFAULT_SETTINGS.enabledViews, "open-tasks-view": true },
 		commandFileMapping: {
 			...DEFAULT_SETTINGS.commandFileMapping,
 			"open-tasks-view": commandPath,
@@ -30,9 +31,9 @@ describe("default Bases file writes", () => {
 
 		expect(result.created).toContain("TaskNotes/Views/generated/tasks.base");
 		expect(app.vault.getAbstractFileByPath("TaskNotes")).not.toBeNull();
-		expect(app.vault.getAbstractFileByPath("TaskNotes/Views/generated/tasks.base")).toBeInstanceOf(
-			TFile
-		);
+		expect(
+			app.vault.getAbstractFileByPath("TaskNotes/Views/generated/tasks.base")
+		).toBeInstanceOf(TFile);
 	});
 
 	it("skips existing files unless overwrite is requested", async () => {

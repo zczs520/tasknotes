@@ -1,3 +1,4 @@
+import { isViewEnabled } from "../settings/viewFeatures";
 import type { Command, Editor, MarkdownView } from "obsidian";
 import type TaskNotesPlugin from "../main";
 import { createTaskNotesCommandDefinitions } from "./taskNotesCommands";
@@ -61,6 +62,7 @@ export class TranslatedCommandRegistry {
 	private registerCommands(): void {
 		this.registeredCommands.clear();
 		for (const definition of this.definitions) {
+			if (!isViewEnabled(this.plugin.settings, definition.id)) continue;
 			const commandConfig: Command = {
 				id: definition.id,
 				name: this.plugin.i18n.translate(definition.nameKey),

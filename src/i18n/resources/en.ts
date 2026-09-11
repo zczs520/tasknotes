@@ -1,6 +1,27 @@
 import { TranslationTree } from "../types";
 
 export const en: TranslationTree = {
+	onboarding: {
+		restoreExamples: "Create or restore examples",
+		restoreExamplesHint:
+			"Restore six bilingual work, study, creation, fitness, home and leisure examples plus the feature guide. Existing edits are preserved.",
+		examplesRestored: "Example tasks are ready in your task folder.",
+
+		statusSaved: "Status saved. The board has been refreshed.",
+		statusDeleted: "Status deleted. The board has been refreshed.",
+		fixedIdentity: "Tasks, Kanban and time statistics all use the same task identity.",
+		fixedIdentityHint:
+			"A task must have the property taskType set to task. This rule is fixed; tags organize tasks into swimlanes.",
+		enableView: "Enable this view and its shortcuts",
+		editStatus: "Edit status",
+		deleteStatus: "Delete status",
+		statusColor: "Color",
+		statusLabelRequired: "Enter a status name.",
+		keepOneStatus: "Keep at least one status.",
+		deleteStatusHint:
+			"This removes the status from all boards and plugin settings. Task notes are kept with their existing status value; move them to another column to assign a new status.",
+		viewDisabled: "Enable this view in settings → TASKquence → general → views & base files.",
+	},
 	common: {
 		appName: "Dayquence",
 		new: "New",

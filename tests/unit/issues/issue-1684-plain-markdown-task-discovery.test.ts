@@ -41,6 +41,7 @@ describe('Issue #1684: Plain markdown task discovery', () => {
 			taskPath,
 			[
 				'---',
+				'taskType: task',
 				'title: Manual frontmatter task',
 				'status: open',
 				'priority: normal',
@@ -54,6 +55,7 @@ describe('Issue #1684: Plain markdown task discovery', () => {
 		);
 		app.metadataCache.setCache(taskPath, {
 			frontmatter: {
+				taskType: 'task',
 				title: 'Manual frontmatter task',
 				status: 'open',
 				priority: 'normal',

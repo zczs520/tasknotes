@@ -6,24 +6,24 @@ dateModified: 2026-05-17T21:57:48+1000
 
 # Default Base Templates
 
-TaskNotes automatically generates [Bases](https://help.obsidian.md/Bases/Introduction+to+Bases) files for its built-in views when you first open them. These templates are configured based on your TaskNotes settings, including custom property names, statuses, and task identification methods.
+TaskNotes automatically generates [Bases](https://help.obsidian.md/Bases/Introduction+to+Bases) files for its built-in views when you first open them. These templates are configured based on your TaskNotes settings, including custom property names and statuses. TASKquence fixes task identification to `taskType: task`.
 
 This page shows the default templates as they would appear with TaskNotes' default settings. The actual templates generated in your vault may differ if you've customized your settings.
 This page documents generated defaults. It is reference material for understanding and editing `.base` files already created in your vault.
 
-Generated `.base` files are regular vault files. When you change task identification, field mapping, status, or priority settings, existing files keep their current content until you edit them. To replace the configured default files with templates generated from your current settings, use **Settings → TaskNotes → Views & base files → Update files** or run the **TaskNotes: Update default base files** command. Automation clients can call `api.bases.updateDefaultFiles()` from the runtime API or `POST /api/bases/default-files/update` from the local HTTP API. These update actions overwrite the configured default `.base` files, including any manual edits in those files.
+Generated `.base` files are regular vault files. Generated Kanban and time-statistics files have their task identity clause updated to `taskType: task` while retaining other filters and layout. Custom Base files are preserved, and both views also enforce task identity when rendering. Changes to field mapping, status or priority settings otherwise leave existing templates intact. To replace the configured default files with templates generated from your current settings, use **Settings → TaskNotes → Views & base files → Update files** or run the **TaskNotes: Update default base files** command. Automation clients can call `api.bases.updateDefaultFiles()` from the runtime API or `POST /api/bases/default-files/update` from the local HTTP API. These update actions overwrite the configured default `.base` files, including any manual edits in those files.
 
 ## Default settings assumptions
 
 The examples below assume:
 
-- **Task identification**: Tag-based using `#task`
+- **Task identification**: Fixed property `taskType: task`
 - **Field mapping**: Default property names (e.g., `status`, `due`, `scheduled`, `projects`, `contexts`)
 - **Statuses**: `none`, `open`, `in-progress`, `done` (only `done` is completed)
 - **Priorities**: `none`, `low`, `normal`, `high` (sorted by weight)
 - **Visible properties**: `status`, `priority`, `due`, `scheduled`, `projects`, `contexts`, `tags`, `blocked`, `blocking`
 
-When task identification uses a property instead of a tag, generated filters reference the identifying note property with bracket notation, such as `note["Task Type"] == true`. This keeps filters valid when custom property names contain spaces or other characters that cannot be used with dot notation.
+Kanban and time statistics start enabled. Other views must be enabled under General → Views & base files before their files and shortcuts are generated. New Kanban boards use `swimLane: note.tags`, `enableSearch: true`, `explodeListColumns: true` and `consolidateStatusIcon: true`. Newly discovered swimlanes are shown automatically; explicit hidden-lane choices are preserved.
 
 ## Included formulas
 
@@ -120,7 +120,7 @@ YAML examples in this document are complete snapshots. In custom files, targeted
 
 filters:
   and:
-    - file.hasTag("task")
+    - note["taskType"] == "task"
 
 formulas:
   # Sorting
@@ -211,7 +211,7 @@ Used by the **Kanban** command to display tasks organized by status.
 
 filters:
   and:
-    - file.hasTag("task")
+    - note["taskType"] == "task"
 
 formulas:
   # ... same formulas as Mini Calendar above ...
@@ -219,6 +219,10 @@ formulas:
 views:
   - type: tasknotesKanban
     name: "Kanban Board"
+    swimLane: note.tags
+    enableSearch: true
+    explodeListColumns: true
+    consolidateStatusIcon: true
     order:
       - status
       - priority
@@ -255,7 +259,7 @@ The default views cover common review horizons and can be kept, removed, or clon
 
 filters:
   and:
-    - file.hasTag("task")
+    - note["taskType"] == "task"
 
 formulas:
   # ... same formulas as Mini Calendar above ...
@@ -496,7 +500,7 @@ Used by the **Calendar** command to display tasks in a full calendar view with t
 
 filters:
   and:
-    - file.hasTag("task")
+    - note["taskType"] == "task"
 
 formulas:
   # ... same formulas as Mini Calendar above ...
@@ -557,7 +561,7 @@ To build an Agenda variant for completed tasks that do not have due or scheduled
 
 filters:
   and:
-    - file.hasTag("task")
+    - note["taskType"] == "task"
 
 formulas:
   # ... same formulas as Mini Calendar above ...
@@ -712,7 +716,7 @@ views:
     name: "Subtasks"
     filters:
       and:
-        - file.hasTag("task")
+        - note["taskType"] == "task"
         - file.hasLink(this.file) && list(note.projects).map(file(value.replace(/^\[[^\]]+\]\((.*)\)$/, "$1").replace(/%20/g, " ")).asLink()).contains(this.file.asLink())
     order:
       - status
@@ -737,7 +741,7 @@ views:
     name: "Occurrences"
     filters:
       and:
-        - file.hasTag("task")
+        - note["taskType"] == "task"
         - file.hasLink(this.file) && note.recurrence_parent && file(note.recurrence_parent.replace(/^\[[^\]]+\]\((.*)\)$/, "$1").replace(/%20/g, " ")).asLink() == this.file.asLink()
     order:
       - status
@@ -778,7 +782,7 @@ views:
     name: "Blocked By"
     filters:
       and:
-        - file.hasTag("task")
+        - note["taskType"] == "task"
         - list(this.note.blockedBy).map(file(if(value.isType("object"), value.uid, value)).asLink()).contains(file.asLink())
     order:
       - status
@@ -800,7 +804,7 @@ views:
     name: "Blocking"
     filters:
       and:
-        - file.hasTag("task")
+        - note["taskType"] == "task"
         - list(note.blockedBy).map(file(if(value.isType("object"), value.uid, value)).asLink()).contains(this.file.asLink())
     order:
       - status

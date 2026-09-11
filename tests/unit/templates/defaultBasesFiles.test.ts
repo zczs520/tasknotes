@@ -390,7 +390,7 @@ describe("defaultBasesFiles", () => {
 		expect(template).not.toContain('file.hasTag("task")');
 	});
 
-	it("generates a task time statistics Base using the configured task identifier", () => {
+	it("uses the fixed task identity in time statistics even with legacy settings", () => {
 		const template = generateBasesFileTemplate(
 			"open-statistics",
 			createMockPlugin({
@@ -401,7 +401,7 @@ describe("defaultBasesFiles", () => {
 		);
 
 		expect(template).toContain("# Time statistics");
-		expect(template).toContain('note["kind"] == "task"');
+		expect(template).toContain('note["taskType"] == "task"');
 		expect(template).toContain("type: tasknotesTimeStatistics");
 		expect(template).toContain('name: "Time Statistics"');
 		expect(template).not.toContain("pomodoros");

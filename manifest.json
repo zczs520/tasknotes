@@ -1,7 +1,7 @@
 {
 	"id": "taskquence",
 	"name": "TASKquence",
-	"version": "5.0.2",
+	"version": "5.0.3",
 	"minAppVersion": "1.12.2",
 	"description": "Plan tasks with calendars, Kanban, Pomodoro, time tracking, and TASKquence iOS life-event sync.",
 	"author": "zhuxiaocong",

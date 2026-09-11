@@ -73,7 +73,7 @@ export function isSwimLaneVisible(
 	config: KanbanSwimLaneVisibilityConfig,
 	swimLaneKey: string
 ): boolean {
-	return config.get?.(getSwimLaneVisibilityKey(swimLaneKey)) === true;
+	return config.get?.(getSwimLaneVisibilityKey(swimLaneKey)) !== false;
 }
 
 export function filterVisibleSwimLanes<T>(
@@ -94,6 +94,6 @@ export function buildSwimLaneVisibilityToggleOptions(
 		type: "toggle",
 		key: getSwimLaneVisibilityKey(swimLaneKey),
 		displayName: swimLaneKey,
-		default: false,
+		default: true,
 	}));
 }

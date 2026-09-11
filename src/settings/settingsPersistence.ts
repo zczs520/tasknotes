@@ -205,6 +205,14 @@ export function buildSettingsFromLoadedData(data: LoadedSettingsData | null): Se
 	const settings: TaskNotesSettings = {
 		...DEFAULT_SETTINGS,
 		...loadedData,
+		taskIdentificationMethod: "property",
+		taskPropertyName: "taskType",
+		taskPropertyValue: "task",
+		enabledViews: { ...DEFAULT_SETTINGS.enabledViews, ...loadedData?.enabledViews },
+		tasksFolder:
+			loadedData?.tasksFolder === "TaskNotes/Tasks"
+				? DEFAULT_SETTINGS.tasksFolder
+				: (loadedData?.tasksFolder ?? DEFAULT_SETTINGS.tasksFolder),
 		fieldMapping: {
 			...DEFAULT_SETTINGS.fieldMapping,
 			...(loadedData?.fieldMapping || {}),
@@ -236,12 +244,16 @@ export function buildSettingsFromLoadedData(data: LoadedSettingsData | null): Se
 		savedViews: loadedData?.savedViews || DEFAULT_SETTINGS.savedViews,
 	};
 	const modalFieldsNeedMigration =
-		Boolean(loadedData?.modalFieldsConfig) &&
-		(loadedData?.modalFieldsConfig?.version ?? 1) < 2;
+		Boolean(loadedData?.modalFieldsConfig) && (loadedData?.modalFieldsConfig?.version ?? 1) < 2;
 
 	return {
 		settings,
 		shouldPersistMigratedSettings:
+			data?.taskIdentificationMethod !== "property" ||
+			data?.taskPropertyName !== "taskType" ||
+			data?.taskPropertyValue !== "task" ||
+			!data?.enabledViews ||
+			data?.tasksFolder === "TaskNotes/Tasks" ||
 			hasMissingMigratedSettings(loadedData) ||
 			migratedLegacyCustomFilenameTemplate ||
 			migratedParentNoteTaskCreationDefault ||

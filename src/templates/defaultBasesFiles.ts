@@ -625,7 +625,16 @@ views:
  */
 export function generateBasesFileTemplate(commandId: string, plugin: TaskNotesPlugin): string {
 	const settings = plugin.settings;
-	const taskFilterConditions = generateTaskFilterConditions(settings);
+	const taskFilterConditions = generateTaskFilterConditions(
+		commandId === "open-kanban-view" || commandId === "open-statistics"
+			? {
+					...settings,
+					taskIdentificationMethod: "property",
+					taskPropertyName: "taskType",
+					taskPropertyValue: "task",
+				}
+			: settings
+	);
 	const excludedFolderFilterConditions = generateExcludedFolderFilterConditions(settings);
 	const orderArray = generateOrderArray(plugin);
 	const orderYaml = formatOrderArray(orderArray);
@@ -675,6 +684,10 @@ ${formulasSection}
 views:
   - type: tasknotesKanban
     name: "Kanban Board"
+    swimLane: note.tags
+    enableSearch: true
+    explodeListColumns: true
+    consolidateStatusIcon: true
     order:
 ${orderYaml}
     sort:

@@ -750,3 +750,30 @@ body.is-mobile .tasknotes-plugin .kanban-view__swimlane-column {
         transition: border-color 0.15s ease;
     }
 }
+
+.tasknotes-plugin .kanban-view__status-menu {
+    display: inline-flex;
+    flex-shrink: 0;
+    margin-left: 6px;
+    padding: 2px;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    color: inherit;
+    vertical-align: middle;
+}
+
+.tasknotes-plugin .kanban-view__empty-create-task {
+    width: calc(100% - 16px);
+    margin: 16px 8px;
+    min-height: 36px;
+    border: 1px dashed var(--background-modifier-border);
+    background: transparent;
+    box-shadow: none;
+    color: var(--text-muted);
+}
+
+.tasknotes-plugin .kanban-view__empty-create-task:hover {
+    background: var(--background-modifier-hover);
+    color: var(--text-normal);
+}
