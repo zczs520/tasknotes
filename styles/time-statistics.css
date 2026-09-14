@@ -338,7 +338,7 @@
 }
 
 .tn-time-statistics__timeline-block.is-compact.is-flipped .tn-time-statistics__timeline-label {
-	color: white;
+	color: var(--tn-stats-color);
 	right: calc(100% + 8px);
 	left: auto;
 }
