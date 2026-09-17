@@ -257,36 +257,47 @@ describe("reference goal and tag presentation", () => {
 		});
 		expect(parent.querySelector(".tn-goal-pending__input")).toBeNull();
 	});
-	it("shows editable pending milestones in current-day statistics", async () => {
-		const { plugin, parent } = setup([
-			goal("副业", {
-				mode: "floor",
-				milestones: [
-					{
-						name: "收入",
-						kind: "number",
-						unit: "美元",
-						current: 0,
-						tiers: [10],
-						achieved: {},
-						hours_at: {},
-					},
-				],
-			}),
-		]);
-		await renderGoalProgressPanel(parent, plugin, [], {
-			...options,
-			variant: "statistics",
-			period: "day",
-		});
-		expect(parent.querySelector(".tn-goal-ledger__milestone-heading")?.textContent).toBe(
-			"待更新的里程碑"
-		);
-		expect(parent.querySelector<HTMLInputElement>(".tn-goal-pending__input")).not.toBeNull();
-		expect(parent.querySelector(".tn-goal-pending__metrics")?.textContent).toContain(
-			"阶段目标10美元"
-		);
-	});
+	it.each(["day", "week", "month", "year"] as const)(
+		"shows pending milestones only in week, month and year statistics (%s)",
+		async (period) => {
+			const { plugin, parent } = setup([
+				goal("副业", {
+					mode: "floor",
+					milestones: [
+						{
+							name: "收入",
+							kind: "number",
+							unit: "美元",
+							current: 0,
+							tiers: [10],
+							achieved: {},
+							hours_at: {},
+						},
+					],
+				}),
+			]);
+			await renderGoalProgressPanel(parent, plugin, [], {
+				...options,
+				variant: "statistics",
+				period,
+			});
+			if (period === "day") {
+				expect(parent.querySelector(".tn-goal-ledger__milestones")).toBeNull();
+				expect(parent.querySelector(".tn-goal-pending__input")).toBeNull();
+				expect(parent.querySelector(".tn-goal-ledger")).not.toBeNull();
+				return;
+			}
+			expect(parent.querySelector(".tn-goal-ledger__milestone-heading")?.textContent).toBe(
+				"待更新的里程碑"
+			);
+			expect(
+				parent.querySelector<HTMLInputElement>(".tn-goal-pending__input")
+			).not.toBeNull();
+			expect(parent.querySelector(".tn-goal-pending__metrics")?.textContent).toContain(
+				"阶段目标10美元"
+			);
+		}
+	);
 	it("rejects blank inline milestone updates and submits explicit values", async () => {
 		const { plugin, parent } = setup([
 			goal("设计", {

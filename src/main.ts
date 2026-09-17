@@ -515,37 +515,15 @@ export default class TaskNotesPlugin extends Plugin {
 	}
 
 	/**
-	 * Check for version updates and show release notes if needed
+	 * Record version updates silently without opening release notes.
 	 */
 	async checkForVersionUpdate(): Promise<void> {
 		try {
 			const currentVersion = this.manifest.version;
-			const lastSeenVersion = this.settings.lastSeenVersion;
-
-			// If this is a new install or version has changed, show release notes (if enabled)
-			if (lastSeenVersion && lastSeenVersion !== currentVersion) {
-				const showReleaseNotes = this.settings.showReleaseNotesOnUpdate ?? true;
-				if (showReleaseNotes) {
-					// Show release notes after a delay to ensure UI is ready
-					window.setTimeout(() => {
-						void (async () => {
-							await this.activateReleaseNotesView();
-							// Update lastSeenVersion immediately after showing the release notes
-							// This ensures they only show once per version
-							this.settings.lastSeenVersion = currentVersion;
-							await this.saveSettings();
-						})();
-					}, 1500); // Slightly longer delay than migration to avoid conflicts
-				} else {
-					// Still update lastSeenVersion even if not showing release notes
-					this.settings.lastSeenVersion = currentVersion;
-					await this.saveSettings();
-				}
-			}
-
-			// Update lastSeenVersion if it hasn't been set yet (new install)
-			if (!lastSeenVersion) {
+			if (this.settings.lastSeenVersion !== currentVersion) {
 				this.settings.lastSeenVersion = currentVersion;
+				// Retire the legacy opt-in as well; existing installations stay silent.
+				this.settings.showReleaseNotesOnUpdate = false;
 				await this.saveSettings();
 			}
 		} catch (error) {

@@ -613,19 +613,6 @@ export function renderGeneralTab(
 			group.addSetting(
 				(setting) =>
 					void configureToggleSetting(setting, {
-						name: translate("settings.general.releaseNotes.showOnUpdate.name"),
-						desc: translate("settings.general.releaseNotes.showOnUpdate.description"),
-						getValue: () => plugin.settings.showReleaseNotesOnUpdate ?? true,
-						setValue: async (value: boolean) => {
-							plugin.settings.showReleaseNotesOnUpdate = value;
-							save();
-						},
-					})
-			);
-
-			group.addSetting(
-				(setting) =>
-					void configureToggleSetting(setting, {
 						name: translate("settings.general.releaseNotes.checkForUpdates.name"),
 						desc: translate(
 							"settings.general.releaseNotes.checkForUpdates.description"

@@ -319,7 +319,7 @@ export const DEFAULT_SETTINGS: TaskNotesSettings = {
 	recurrenceMigrated: false,
 	// Release notes defaults
 	lastSeenVersion: undefined,
-	showReleaseNotesOnUpdate: true,
+	showReleaseNotesOnUpdate: false,
 	checkForUpdatesOnStartup: true,
 	lastNotifiedReleaseVersion: undefined,
 	starterNoteCreated: false,

@@ -922,7 +922,7 @@ export async function renderGoalProgressPanel(
 				);
 		}
 	}
-	if (!options.readOnly) {
+	if (options.period !== "day" && !options.readOnly) {
 		const pending = result.goals
 			.flatMap((goal) =>
 				goal.milestones.map((milestone, index) => ({ goal, milestone, index }))
