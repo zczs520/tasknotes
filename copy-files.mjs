@@ -10,7 +10,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Default copy destination - the e2e-vault in this repo
 const defaultPaths = [
-    join(__dirname, 'tasknotes-e2e-vault', '.obsidian', 'plugins', 'taskquence'),
+    join(homedir(), 'Desktop', '插件测试仓库', '.obsidian', 'plugins', 'taskquence'),
 ];
 
 // Can be overridden with OBSIDIAN_PLUGIN_PATH environment variable (single path)
@@ -39,6 +39,16 @@ const files = ['main.js', 'styles.css', 'manifest.json'];
 async function copyToDestination(destPath) {
     // Resolve the destination path
     const resolvedPath = resolve(destPath);
+
+    const allowedPath = resolve(defaultPaths[0]);
+    if (resolvedPath.toLowerCase() !== allowedPath.toLowerCase()) {
+        throw new Error(`Development deployment is restricted to ${allowedPath}`);
+    }
+    const sourceManifest = JSON.parse(await readFile(join(__dirname, 'manifest.json'), 'utf8'));
+    const destinationManifest = JSON.parse(await readFile(join(resolvedPath, 'manifest.json'), 'utf8'));
+    if (sourceManifest.id !== 'taskquence' || destinationManifest.id !== 'taskquence') {
+        throw new Error('Both source and destination manifests must identify taskquence');
+    }
 
     // Ensure the directory exists (including nested)
     await mkdir(resolvedPath, { recursive: true });

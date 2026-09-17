@@ -6,7 +6,7 @@ dateModified: 2026-05-17T21:57:48+1000
 
 # Default Base Templates
 
-TaskNotes automatically generates [Bases](https://help.obsidian.md/Bases/Introduction+to+Bases) files for its built-in views when you first open them. These templates are configured based on your TaskNotes settings, including custom property names and statuses. TASKquence fixes task identification to `taskType: task`.
+TaskNotes Time automatically generates [Bases](https://help.obsidian.md/Bases/Introduction+to+Bases) files for its built-in views when you first open them. These templates are configured based on your TaskNotes Time settings, including custom property names and statuses. TaskNotes Time fixes task identification to `taskType: task`.
 
 This page shows the default templates as they would appear with TaskNotes' default settings. The actual templates generated in your vault may differ if you've customized your settings.
 This page documents generated defaults. It is reference material for understanding and editing `.base` files already created in your vault.

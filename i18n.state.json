@@ -16,8 +16,8 @@
     "onboarding.deleteStatusHint": null,
     "onboarding.viewDisabled": null,
     "common.appName": {
-      "source": "4cc46336291024ce6dd7dddb5176a2a66b236e86",
-      "translation": "4cc46336291024ce6dd7dddb5176a2a66b236e86"
+      "source": "bffe4aef17d4fdc2b3371c3305eb2af876bea3e9",
+      "translation": "bffe4aef17d4fdc2b3371c3305eb2af876bea3e9"
     },
     "common.new": {
       "source": "6403f2b7eb2aaafe6de34cbf2a029b01afebc512",
@@ -1498,12 +1498,12 @@
     "views.timeStatistics.empty.description": null,
     "views.timeStatistics.error.title": null,
     "views.releaseNotes.title": {
-      "source": "5939771f391859041bc57e5e05b04235b1ef8ee7",
-      "translation": "13e0a79179479dd7bd03740e53af56d3b965f8fc"
+      "source": "672830398e0652a449d547754c736a6132f8a472",
+      "translation": "60c32ddf5682c6c5a50d5fcf339cef22faa0e2d6"
     },
     "views.releaseNotes.header": {
-      "source": "5939771f391859041bc57e5e05b04235b1ef8ee7",
-      "translation": "13e0a79179479dd7bd03740e53af56d3b965f8fc"
+      "source": "672830398e0652a449d547754c736a6132f8a472",
+      "translation": "60c32ddf5682c6c5a50d5fcf339cef22faa0e2d6"
     },
     "views.releaseNotes.viewAllLink": {
       "source": "b37e5d2fb2faa630817557713df6363f4bd0f5cc",
@@ -1855,16 +1855,16 @@
       "translation": "d895170a7309ec578eb4d03b2bb3f14dd94f6333"
     },
     "settings.features.uiLanguage.description": {
-      "source": "46546b4e7272768d6591f3ab7aa2eae185c149d7",
-      "translation": "cdfec3bd21120c8ac8a9565196920848c5200925"
+      "source": "b019b3eb61762878ff0ad19e144dbd9cdbd12131",
+      "translation": "f7a91effb450336569773759a6999127b69f52fb"
     },
     "settings.features.uiLanguage.dropdown.name": {
       "source": "5a28c99d6d38a7489e8b1ab06a11507f8c6fd47f",
       "translation": "654f725871b1563974eb5393fcd9b92ce4a56683"
     },
     "settings.features.uiLanguage.dropdown.description": {
-      "source": "e37c5f2fc14b81da7c126695509b6bc357e658a9",
-      "translation": "230a132d0475650c45c9d709e3c32c07d2f90626"
+      "source": "396ce68f650d7113885df484efe682624566179e",
+      "translation": "69d38f997d6d597be410b99b4a6f2ce181da8e39"
     },
     "settings.features.pomodoroSound.enabledName": {
       "source": "7cc9086b601478eb0134bd757c77685ac8f08863",
@@ -5599,13 +5599,100 @@
       "source": "3b2bbbb17c26d8f902aca06fa76141862a613529",
       "translation": "125532012957c5db922d2bc2836a2653f352c68e"
     },
+    "goals.view.title": null,
+    "goals.view.goalCountOne": null,
+    "goals.view.goalCountOther": null,
+    "goals.view.filters.all": null,
+    "goals.view.filters.active": null,
+    "goals.view.filters.paused": null,
+    "goals.view.filters.done": null,
+    "goals.view.periods.day": null,
+    "goals.view.periods.week": null,
+    "goals.view.periods.month": null,
+    "goals.view.periods.year": null,
+    "goals.view.previousPeriod": null,
+    "goals.view.nextPeriod": null,
+    "goals.view.backToCurrent": null,
+    "goals.view.historyReadonly": null,
+    "goals.view.columns.goal": null,
+    "goals.view.columns.type": null,
+    "goals.view.columns.today": null,
+    "goals.view.columns.thisWeek": null,
+    "goals.view.columns.thisMonth": null,
+    "goals.view.columns.thisYear": null,
+    "goals.view.columns.tags": null,
+    "goals.view.columns.milestones": null,
+    "goals.view.childCountOne": null,
+    "goals.view.childCountOther": null,
+    "goals.view.ownedByChildren": null,
+    "goals.view.openGoal": null,
+    "goals.view.countActual": null,
+    "goals.view.countProgress": null,
+    "goals.view.milestones": null,
+    "goals.view.milestoneSubtitle": null,
+    "goals.view.milestoneSummary": null,
+    "goals.view.milestoneSummaryStale": null,
+    "goals.view.noMilestones": null,
+    "goals.management": null,
+    "goals.newGoal": null,
+    "goals.refresh": null,
+    "goals.paused": null,
+    "goals.emptyTitle": null,
+    "goals.emptyDescription": null,
+    "goals.createGoal": null,
+    "goals.cancel": null,
+    "goals.name": null,
+    "goals.type": null,
+    "goals.floor": null,
+    "goals.ceiling": null,
+    "goals.count": null,
+    "goals.floorHint": null,
+    "goals.ceilingHint": null,
+    "goals.countHint": null,
+    "goals.scope": null,
+    "goals.addTag": null,
+    "goals.baseline": null,
+    "goals.split": null,
+    "goals.period": null,
+    "goals.weekly": null,
+    "goals.monthly": null,
+    "goals.quarterly": null,
+    "goals.target": null,
+    "goals.milestone": null,
+    "goals.milestoneName": null,
+    "goals.tiers": null,
+    "goals.files": null,
+    "goals.created": null,
+    "goals.createFailed": null,
+    "goals.noGoals": null,
+    "goals.allGoals": null,
+    "goals.why": null,
+    "goals.children": null,
+    "goals.progress": null,
+    "goals.thisWeek": null,
+    "goals.thisMonth": null,
+    "goals.thisYear": null,
+    "goals.remaining": null,
+    "goals.achieved": null,
+    "goals.onTrack": null,
+    "goals.behind": null,
+    "goals.over": null,
+    "goals.idle": null,
+    "goals.aggregate": null,
+    "goals.noMilestone": null,
+    "goals.confirmAchievement": null,
+    "goals.confirmAchievementDescription": null,
+    "goals.continue": null,
+    "goals.undo": null,
+    "goals.openFile": null,
+    "goals.notDesktop": null,
     "notices.languageChanged": {
       "source": "05282acf7678258da0d996e5fbee70a567b92187",
       "translation": "7f26686cfeedf2599568056031748d77186b4775"
     },
     "notices.releaseAvailable.message": {
-      "source": "eef8954cafb95f98069002de07481d6fa1947cd2",
-      "translation": "18b5a590fecf528dcee80b777cfa6f745e2df944"
+      "source": "7928d47ec3c7975d07900187a1d357bced0deab1",
+      "translation": "a2976fb551873452ec5ee7050142da502d88ab2d"
     },
     "notices.releaseAvailable.action": {
       "source": "f296ebac414af3e7c7fc9229a7c7a1e575680fd8",
@@ -5728,9 +5815,14 @@
       "translation": "e5eb96e975bcdbca42b62a28abd6536826947af4"
     },
     "commands.openStatisticsView": {
-      "source": "ddff620f8a4d10c3c20a028fb132fb630bf118aa",
-      "translation": "786fe3f40a1313f00152caeae5806f05ed8e75d7"
+      "source": "13c12a1c059f92997c9c156e595d33baa0fe2af2",
+      "translation": "c89e296fb61b542adfbd8b14804a4fca80f5b368"
     },
+    "commands.openGoalsView": {
+      "source": "05a1a0d37d555e9f27eb235c116f3623698a3daa",
+      "translation": "5700e275bb52a0f0067c16654e00c4ad2c7b629e"
+    },
+    "commands.openGoalBoard": null,
     "commands.createNewTask": {
       "source": "5f80d7a8fe673e68c503e8500f81f243db25ed15",
       "translation": "821ae474d3ce8baf9d668257dc888b36b6e739eb"
@@ -6765,12 +6857,12 @@
       "translation": "1a0a2347c687925b0f4c999e3f706fcb856e1f1e"
     },
     "modals.taskCreation.actions.hideDetailedOptions": {
-      "source": "bc7df48222cf37e397ec57ab67689ebb40af171b",
-      "translation": "47264b2124762776a108a3a94e033c8f514255a2"
+      "source": "19eccc8cd177a041a721a751cc9b691319718b35",
+      "translation": "0f9490aadcb12407453737f0963523c2564346fc"
     },
     "modals.taskCreation.actions.showDetailedOptions": {
-      "source": "16b7ecbeb0343c45bedf04c519bca29267cd4c6f",
-      "translation": "c48230cab87ba575e8b6754892ee161feabb1c53"
+      "source": "be55a290aa8683c4e771abda11d376f18ac87ca5",
+      "translation": "6887a0e8dd571cd103966b29aee87b66269014fc"
     },
     "modals.taskCreation.nlPlaceholder": {
       "source": "611d4e0710fcdf8b36bd712dbf9bd6711f340188",
@@ -9196,8 +9288,8 @@
     "onboarding.deleteStatusHint": null,
     "onboarding.viewDisabled": null,
     "common.appName": {
-      "source": "4cc46336291024ce6dd7dddb5176a2a66b236e86",
-      "translation": "4cc46336291024ce6dd7dddb5176a2a66b236e86"
+      "source": "bffe4aef17d4fdc2b3371c3305eb2af876bea3e9",
+      "translation": "bffe4aef17d4fdc2b3371c3305eb2af876bea3e9"
     },
     "common.new": {
       "source": "6403f2b7eb2aaafe6de34cbf2a029b01afebc512",
@@ -10678,12 +10770,12 @@
     "views.timeStatistics.empty.description": null,
     "views.timeStatistics.error.title": null,
     "views.releaseNotes.title": {
-      "source": "5939771f391859041bc57e5e05b04235b1ef8ee7",
-      "translation": "d77248708380c01950bad45e2eee3593861fe33c"
+      "source": "672830398e0652a449d547754c736a6132f8a472",
+      "translation": "ddffb2ad4622650aa1cc85d418126d40f51da264"
     },
     "views.releaseNotes.header": {
-      "source": "5939771f391859041bc57e5e05b04235b1ef8ee7",
-      "translation": "d77248708380c01950bad45e2eee3593861fe33c"
+      "source": "672830398e0652a449d547754c736a6132f8a472",
+      "translation": "ddffb2ad4622650aa1cc85d418126d40f51da264"
     },
     "views.releaseNotes.viewAllLink": {
       "source": "b37e5d2fb2faa630817557713df6363f4bd0f5cc",
@@ -11035,16 +11127,16 @@
       "translation": "add12ca7e25ebc36794defe7b219ec3e02f5a67d"
     },
     "settings.features.uiLanguage.description": {
-      "source": "46546b4e7272768d6591f3ab7aa2eae185c149d7",
-      "translation": "254564e7b9ed76b532b42f2e5ec4585fb23220fe"
+      "source": "b019b3eb61762878ff0ad19e144dbd9cdbd12131",
+      "translation": "63ab48dab4b1ca740077901daef7e8f39c3e89b1"
     },
     "settings.features.uiLanguage.dropdown.name": {
       "source": "5a28c99d6d38a7489e8b1ab06a11507f8c6fd47f",
       "translation": "9be26caae4a7d0f841dee09312dac54cd2491c5b"
     },
     "settings.features.uiLanguage.dropdown.description": {
-      "source": "e37c5f2fc14b81da7c126695509b6bc357e658a9",
-      "translation": "55f97554709cad963b53cfb1a032e53f498d45f4"
+      "source": "396ce68f650d7113885df484efe682624566179e",
+      "translation": "e826efba496439518abb3729f7b939d74239e290"
     },
     "settings.features.pomodoroSound.enabledName": {
       "source": "7cc9086b601478eb0134bd757c77685ac8f08863",
@@ -14779,13 +14871,100 @@
       "source": "3b2bbbb17c26d8f902aca06fa76141862a613529",
       "translation": "8fc3208fb48a2ec6f52f0fca60b2af39c5b94ec5"
     },
+    "goals.view.title": null,
+    "goals.view.goalCountOne": null,
+    "goals.view.goalCountOther": null,
+    "goals.view.filters.all": null,
+    "goals.view.filters.active": null,
+    "goals.view.filters.paused": null,
+    "goals.view.filters.done": null,
+    "goals.view.periods.day": null,
+    "goals.view.periods.week": null,
+    "goals.view.periods.month": null,
+    "goals.view.periods.year": null,
+    "goals.view.previousPeriod": null,
+    "goals.view.nextPeriod": null,
+    "goals.view.backToCurrent": null,
+    "goals.view.historyReadonly": null,
+    "goals.view.columns.goal": null,
+    "goals.view.columns.type": null,
+    "goals.view.columns.today": null,
+    "goals.view.columns.thisWeek": null,
+    "goals.view.columns.thisMonth": null,
+    "goals.view.columns.thisYear": null,
+    "goals.view.columns.tags": null,
+    "goals.view.columns.milestones": null,
+    "goals.view.childCountOne": null,
+    "goals.view.childCountOther": null,
+    "goals.view.ownedByChildren": null,
+    "goals.view.openGoal": null,
+    "goals.view.countActual": null,
+    "goals.view.countProgress": null,
+    "goals.view.milestones": null,
+    "goals.view.milestoneSubtitle": null,
+    "goals.view.milestoneSummary": null,
+    "goals.view.milestoneSummaryStale": null,
+    "goals.view.noMilestones": null,
+    "goals.management": null,
+    "goals.newGoal": null,
+    "goals.refresh": null,
+    "goals.paused": null,
+    "goals.emptyTitle": null,
+    "goals.emptyDescription": null,
+    "goals.createGoal": null,
+    "goals.cancel": null,
+    "goals.name": null,
+    "goals.type": null,
+    "goals.floor": null,
+    "goals.ceiling": null,
+    "goals.count": null,
+    "goals.floorHint": null,
+    "goals.ceilingHint": null,
+    "goals.countHint": null,
+    "goals.scope": null,
+    "goals.addTag": null,
+    "goals.baseline": null,
+    "goals.split": null,
+    "goals.period": null,
+    "goals.weekly": null,
+    "goals.monthly": null,
+    "goals.quarterly": null,
+    "goals.target": null,
+    "goals.milestone": null,
+    "goals.milestoneName": null,
+    "goals.tiers": null,
+    "goals.files": null,
+    "goals.created": null,
+    "goals.createFailed": null,
+    "goals.noGoals": null,
+    "goals.allGoals": null,
+    "goals.why": null,
+    "goals.children": null,
+    "goals.progress": null,
+    "goals.thisWeek": null,
+    "goals.thisMonth": null,
+    "goals.thisYear": null,
+    "goals.remaining": null,
+    "goals.achieved": null,
+    "goals.onTrack": null,
+    "goals.behind": null,
+    "goals.over": null,
+    "goals.idle": null,
+    "goals.aggregate": null,
+    "goals.noMilestone": null,
+    "goals.confirmAchievement": null,
+    "goals.confirmAchievementDescription": null,
+    "goals.continue": null,
+    "goals.undo": null,
+    "goals.openFile": null,
+    "goals.notDesktop": null,
     "notices.languageChanged": {
       "source": "05282acf7678258da0d996e5fbee70a567b92187",
       "translation": "eadada3d545e2a7410275a34377cee9b196ff8ae"
     },
     "notices.releaseAvailable.message": {
-      "source": "eef8954cafb95f98069002de07481d6fa1947cd2",
-      "translation": "5f631ea2366de87312765eb72a8c2c1fabb3873a"
+      "source": "7928d47ec3c7975d07900187a1d357bced0deab1",
+      "translation": "4d793f2cd6f84c9fdf1424bb7b51e02a017b1891"
     },
     "notices.releaseAvailable.action": {
       "source": "f296ebac414af3e7c7fc9229a7c7a1e575680fd8",
@@ -14908,9 +15087,14 @@
       "translation": "23e8df8de9362210b4a7848f550dff0082826a72"
     },
     "commands.openStatisticsView": {
-      "source": "ddff620f8a4d10c3c20a028fb132fb630bf118aa",
-      "translation": "43a1d2c64851dd23af5c526bca4f5a408aaeef78"
+      "source": "13c12a1c059f92997c9c156e595d33baa0fe2af2",
+      "translation": "125deca10f9e6e486a4bc9d092dc5adadcc9ce1b"
     },
+    "commands.openGoalsView": {
+      "source": "05a1a0d37d555e9f27eb235c116f3623698a3daa",
+      "translation": "649712e92504898dcbd7066c452f69d4eb96d28a"
+    },
+    "commands.openGoalBoard": null,
     "commands.createNewTask": {
       "source": "5f80d7a8fe673e68c503e8500f81f243db25ed15",
       "translation": "6b0c6d84aeb65744836ec4bd2fefe6cd6fcd1f50"
@@ -15945,12 +16129,12 @@
       "translation": "bf483460f439862e81f1e91ea36f8443e9670577"
     },
     "modals.taskCreation.actions.hideDetailedOptions": {
-      "source": "bc7df48222cf37e397ec57ab67689ebb40af171b",
-      "translation": "05bd1cca7c22c1155666417b3a935bcb242bd253"
+      "source": "19eccc8cd177a041a721a751cc9b691319718b35",
+      "translation": "64853ab905a8da3560d02668f662eb6a79d9ce39"
     },
     "modals.taskCreation.actions.showDetailedOptions": {
-      "source": "16b7ecbeb0343c45bedf04c519bca29267cd4c6f",
-      "translation": "911ec0e79ef2508e1955397cbedd40245eb83734"
+      "source": "be55a290aa8683c4e771abda11d376f18ac87ca5",
+      "translation": "5b66734ba15c8038c6102ac2ec8a0ce18b6b3ece"
     },
     "modals.taskCreation.nlPlaceholder": {
       "source": "611d4e0710fcdf8b36bd712dbf9bd6711f340188",
@@ -18376,8 +18560,8 @@
     "onboarding.deleteStatusHint": null,
     "onboarding.viewDisabled": null,
     "common.appName": {
-      "source": "4cc46336291024ce6dd7dddb5176a2a66b236e86",
-      "translation": "4cc46336291024ce6dd7dddb5176a2a66b236e86"
+      "source": "bffe4aef17d4fdc2b3371c3305eb2af876bea3e9",
+      "translation": "bffe4aef17d4fdc2b3371c3305eb2af876bea3e9"
     },
     "common.new": {
       "source": "6403f2b7eb2aaafe6de34cbf2a029b01afebc512",
@@ -19858,12 +20042,12 @@
     "views.timeStatistics.empty.description": null,
     "views.timeStatistics.error.title": null,
     "views.releaseNotes.title": {
-      "source": "5939771f391859041bc57e5e05b04235b1ef8ee7",
-      "translation": "eb15567c6afcd90288bcd72e1a8b2529f4f9c30f"
+      "source": "672830398e0652a449d547754c736a6132f8a472",
+      "translation": "469e30129f4a93e196fd9206dba9e48dfecd05ef"
     },
     "views.releaseNotes.header": {
-      "source": "5939771f391859041bc57e5e05b04235b1ef8ee7",
-      "translation": "eb15567c6afcd90288bcd72e1a8b2529f4f9c30f"
+      "source": "672830398e0652a449d547754c736a6132f8a472",
+      "translation": "469e30129f4a93e196fd9206dba9e48dfecd05ef"
     },
     "views.releaseNotes.viewAllLink": {
       "source": "b37e5d2fb2faa630817557713df6363f4bd0f5cc",
@@ -20215,16 +20399,16 @@
       "translation": "d36a7f5b30c0d29538afea14f2e2d99e99bac035"
     },
     "settings.features.uiLanguage.description": {
-      "source": "46546b4e7272768d6591f3ab7aa2eae185c149d7",
-      "translation": "0b5286a14c87a16e8d7afc875d5e81c703aaa03b"
+      "source": "b019b3eb61762878ff0ad19e144dbd9cdbd12131",
+      "translation": "1572734310196166836ec95d6f531a8b77f215b4"
     },
     "settings.features.uiLanguage.dropdown.name": {
       "source": "5a28c99d6d38a7489e8b1ab06a11507f8c6fd47f",
       "translation": "d36a7f5b30c0d29538afea14f2e2d99e99bac035"
     },
     "settings.features.uiLanguage.dropdown.description": {
-      "source": "e37c5f2fc14b81da7c126695509b6bc357e658a9",
-      "translation": "05f48416ac119d6ee935dbf3c1cef2e632dfd153"
+      "source": "396ce68f650d7113885df484efe682624566179e",
+      "translation": "fda40feabbfb65f51af52d0ed21b8c811aea6da7"
     },
     "settings.features.pomodoroSound.enabledName": {
       "source": "7cc9086b601478eb0134bd757c77685ac8f08863",
@@ -23959,13 +24143,100 @@
       "source": "3b2bbbb17c26d8f902aca06fa76141862a613529",
       "translation": "880b693c7506688999da06df5db53fef71487208"
     },
+    "goals.view.title": null,
+    "goals.view.goalCountOne": null,
+    "goals.view.goalCountOther": null,
+    "goals.view.filters.all": null,
+    "goals.view.filters.active": null,
+    "goals.view.filters.paused": null,
+    "goals.view.filters.done": null,
+    "goals.view.periods.day": null,
+    "goals.view.periods.week": null,
+    "goals.view.periods.month": null,
+    "goals.view.periods.year": null,
+    "goals.view.previousPeriod": null,
+    "goals.view.nextPeriod": null,
+    "goals.view.backToCurrent": null,
+    "goals.view.historyReadonly": null,
+    "goals.view.columns.goal": null,
+    "goals.view.columns.type": null,
+    "goals.view.columns.today": null,
+    "goals.view.columns.thisWeek": null,
+    "goals.view.columns.thisMonth": null,
+    "goals.view.columns.thisYear": null,
+    "goals.view.columns.tags": null,
+    "goals.view.columns.milestones": null,
+    "goals.view.childCountOne": null,
+    "goals.view.childCountOther": null,
+    "goals.view.ownedByChildren": null,
+    "goals.view.openGoal": null,
+    "goals.view.countActual": null,
+    "goals.view.countProgress": null,
+    "goals.view.milestones": null,
+    "goals.view.milestoneSubtitle": null,
+    "goals.view.milestoneSummary": null,
+    "goals.view.milestoneSummaryStale": null,
+    "goals.view.noMilestones": null,
+    "goals.management": null,
+    "goals.newGoal": null,
+    "goals.refresh": null,
+    "goals.paused": null,
+    "goals.emptyTitle": null,
+    "goals.emptyDescription": null,
+    "goals.createGoal": null,
+    "goals.cancel": null,
+    "goals.name": null,
+    "goals.type": null,
+    "goals.floor": null,
+    "goals.ceiling": null,
+    "goals.count": null,
+    "goals.floorHint": null,
+    "goals.ceilingHint": null,
+    "goals.countHint": null,
+    "goals.scope": null,
+    "goals.addTag": null,
+    "goals.baseline": null,
+    "goals.split": null,
+    "goals.period": null,
+    "goals.weekly": null,
+    "goals.monthly": null,
+    "goals.quarterly": null,
+    "goals.target": null,
+    "goals.milestone": null,
+    "goals.milestoneName": null,
+    "goals.tiers": null,
+    "goals.files": null,
+    "goals.created": null,
+    "goals.createFailed": null,
+    "goals.noGoals": null,
+    "goals.allGoals": null,
+    "goals.why": null,
+    "goals.children": null,
+    "goals.progress": null,
+    "goals.thisWeek": null,
+    "goals.thisMonth": null,
+    "goals.thisYear": null,
+    "goals.remaining": null,
+    "goals.achieved": null,
+    "goals.onTrack": null,
+    "goals.behind": null,
+    "goals.over": null,
+    "goals.idle": null,
+    "goals.aggregate": null,
+    "goals.noMilestone": null,
+    "goals.confirmAchievement": null,
+    "goals.confirmAchievementDescription": null,
+    "goals.continue": null,
+    "goals.undo": null,
+    "goals.openFile": null,
+    "goals.notDesktop": null,
     "notices.languageChanged": {
       "source": "05282acf7678258da0d996e5fbee70a567b92187",
       "translation": "c13447e51fba9156d2fa6a1720e72bf94aecbd75"
     },
     "notices.releaseAvailable.message": {
-      "source": "eef8954cafb95f98069002de07481d6fa1947cd2",
-      "translation": "6a2c9644ea16315eccac34ed79f2e151634bd2aa"
+      "source": "7928d47ec3c7975d07900187a1d357bced0deab1",
+      "translation": "8fd01f51b2b2fe9ab8553daa72fe7c70fe1cccd3"
     },
     "notices.releaseAvailable.action": {
       "source": "f296ebac414af3e7c7fc9229a7c7a1e575680fd8",
@@ -24088,9 +24359,14 @@
       "translation": "d99ffe78cd0420128c91d6235824a26a52f42205"
     },
     "commands.openStatisticsView": {
-      "source": "ddff620f8a4d10c3c20a028fb132fb630bf118aa",
-      "translation": "0dcd4a5775f475c1bb88dca849005842e412d8db"
+      "source": "13c12a1c059f92997c9c156e595d33baa0fe2af2",
+      "translation": "13d45f80d3c4ffc34dec6a69647ea0dbf53ef286"
     },
+    "commands.openGoalsView": {
+      "source": "05a1a0d37d555e9f27eb235c116f3623698a3daa",
+      "translation": "0e5cfd0dfb30faa8fa9ccb90982925ed440f1c15"
+    },
+    "commands.openGoalBoard": null,
     "commands.createNewTask": {
       "source": "5f80d7a8fe673e68c503e8500f81f243db25ed15",
       "translation": "cba0259d3c1b0d8e817dbb924415a19c2106814e"
@@ -25125,12 +25401,12 @@
       "translation": "181f33bbbfefab7a0e71968c4ea4d5fb2db930c9"
     },
     "modals.taskCreation.actions.hideDetailedOptions": {
-      "source": "bc7df48222cf37e397ec57ab67689ebb40af171b",
-      "translation": "418dbce002e1dadc67786fcba78b762cf8664e3f"
+      "source": "19eccc8cd177a041a721a751cc9b691319718b35",
+      "translation": "d464ac2196e842b439644d58645536fd022844a1"
     },
     "modals.taskCreation.actions.showDetailedOptions": {
-      "source": "16b7ecbeb0343c45bedf04c519bca29267cd4c6f",
-      "translation": "e00e1249ba6f20e067294d3a74a38820566b30d2"
+      "source": "be55a290aa8683c4e771abda11d376f18ac87ca5",
+      "translation": "81da585e5fa21c9f53fdace6ffdcbdc28d007b00"
     },
     "modals.taskCreation.nlPlaceholder": {
       "source": "611d4e0710fcdf8b36bd712dbf9bd6711f340188",
@@ -27556,8 +27832,8 @@
     "onboarding.deleteStatusHint": null,
     "onboarding.viewDisabled": null,
     "common.appName": {
-      "source": "4cc46336291024ce6dd7dddb5176a2a66b236e86",
-      "translation": "4cc46336291024ce6dd7dddb5176a2a66b236e86"
+      "source": "bffe4aef17d4fdc2b3371c3305eb2af876bea3e9",
+      "translation": "bffe4aef17d4fdc2b3371c3305eb2af876bea3e9"
     },
     "common.new": {
       "source": "6403f2b7eb2aaafe6de34cbf2a029b01afebc512",
@@ -29038,12 +29314,12 @@
     "views.timeStatistics.empty.description": null,
     "views.timeStatistics.error.title": null,
     "views.releaseNotes.title": {
-      "source": "5939771f391859041bc57e5e05b04235b1ef8ee7",
-      "translation": "b04d2e20a60a122b2f4926df86d88940f3050b39"
+      "source": "672830398e0652a449d547754c736a6132f8a472",
+      "translation": "ddf15ded95e60a51dc81dfd2db03150dfec52e57"
     },
     "views.releaseNotes.header": {
-      "source": "5939771f391859041bc57e5e05b04235b1ef8ee7",
-      "translation": "b04d2e20a60a122b2f4926df86d88940f3050b39"
+      "source": "672830398e0652a449d547754c736a6132f8a472",
+      "translation": "ddf15ded95e60a51dc81dfd2db03150dfec52e57"
     },
     "views.releaseNotes.viewAllLink": {
       "source": "b37e5d2fb2faa630817557713df6363f4bd0f5cc",
@@ -29395,16 +29671,16 @@
       "translation": "302c6a85316ba7ce01eb3bc6712e05b7f2330d61"
     },
     "settings.features.uiLanguage.description": {
-      "source": "46546b4e7272768d6591f3ab7aa2eae185c149d7",
-      "translation": "bcd9496a29babfa5417b082192e6f46ed03b1071"
+      "source": "b019b3eb61762878ff0ad19e144dbd9cdbd12131",
+      "translation": "135a099b28d60b146d01047ec757f698bb953124"
     },
     "settings.features.uiLanguage.dropdown.name": {
       "source": "5a28c99d6d38a7489e8b1ab06a11507f8c6fd47f",
       "translation": "d88592ea26a0dd356dc99b3c99682d44316d018e"
     },
     "settings.features.uiLanguage.dropdown.description": {
-      "source": "e37c5f2fc14b81da7c126695509b6bc357e658a9",
-      "translation": "16b7642c886833758cb7fdc5ac0ddc4edc14ce12"
+      "source": "396ce68f650d7113885df484efe682624566179e",
+      "translation": "1c25de8bdb055195b6be038212f388bb661488e0"
     },
     "settings.features.pomodoroSound.enabledName": {
       "source": "7cc9086b601478eb0134bd757c77685ac8f08863",
@@ -33139,13 +33415,100 @@
       "source": "3b2bbbb17c26d8f902aca06fa76141862a613529",
       "translation": "898b64a4fc683329e9fdd5e467a05e464756bfa1"
     },
+    "goals.view.title": null,
+    "goals.view.goalCountOne": null,
+    "goals.view.goalCountOther": null,
+    "goals.view.filters.all": null,
+    "goals.view.filters.active": null,
+    "goals.view.filters.paused": null,
+    "goals.view.filters.done": null,
+    "goals.view.periods.day": null,
+    "goals.view.periods.week": null,
+    "goals.view.periods.month": null,
+    "goals.view.periods.year": null,
+    "goals.view.previousPeriod": null,
+    "goals.view.nextPeriod": null,
+    "goals.view.backToCurrent": null,
+    "goals.view.historyReadonly": null,
+    "goals.view.columns.goal": null,
+    "goals.view.columns.type": null,
+    "goals.view.columns.today": null,
+    "goals.view.columns.thisWeek": null,
+    "goals.view.columns.thisMonth": null,
+    "goals.view.columns.thisYear": null,
+    "goals.view.columns.tags": null,
+    "goals.view.columns.milestones": null,
+    "goals.view.childCountOne": null,
+    "goals.view.childCountOther": null,
+    "goals.view.ownedByChildren": null,
+    "goals.view.openGoal": null,
+    "goals.view.countActual": null,
+    "goals.view.countProgress": null,
+    "goals.view.milestones": null,
+    "goals.view.milestoneSubtitle": null,
+    "goals.view.milestoneSummary": null,
+    "goals.view.milestoneSummaryStale": null,
+    "goals.view.noMilestones": null,
+    "goals.management": null,
+    "goals.newGoal": null,
+    "goals.refresh": null,
+    "goals.paused": null,
+    "goals.emptyTitle": null,
+    "goals.emptyDescription": null,
+    "goals.createGoal": null,
+    "goals.cancel": null,
+    "goals.name": null,
+    "goals.type": null,
+    "goals.floor": null,
+    "goals.ceiling": null,
+    "goals.count": null,
+    "goals.floorHint": null,
+    "goals.ceilingHint": null,
+    "goals.countHint": null,
+    "goals.scope": null,
+    "goals.addTag": null,
+    "goals.baseline": null,
+    "goals.split": null,
+    "goals.period": null,
+    "goals.weekly": null,
+    "goals.monthly": null,
+    "goals.quarterly": null,
+    "goals.target": null,
+    "goals.milestone": null,
+    "goals.milestoneName": null,
+    "goals.tiers": null,
+    "goals.files": null,
+    "goals.created": null,
+    "goals.createFailed": null,
+    "goals.noGoals": null,
+    "goals.allGoals": null,
+    "goals.why": null,
+    "goals.children": null,
+    "goals.progress": null,
+    "goals.thisWeek": null,
+    "goals.thisMonth": null,
+    "goals.thisYear": null,
+    "goals.remaining": null,
+    "goals.achieved": null,
+    "goals.onTrack": null,
+    "goals.behind": null,
+    "goals.over": null,
+    "goals.idle": null,
+    "goals.aggregate": null,
+    "goals.noMilestone": null,
+    "goals.confirmAchievement": null,
+    "goals.confirmAchievementDescription": null,
+    "goals.continue": null,
+    "goals.undo": null,
+    "goals.openFile": null,
+    "goals.notDesktop": null,
     "notices.languageChanged": {
       "source": "05282acf7678258da0d996e5fbee70a567b92187",
       "translation": "179c451a72075375c6a5e7df281cbb3cd06c0183"
     },
     "notices.releaseAvailable.message": {
-      "source": "eef8954cafb95f98069002de07481d6fa1947cd2",
-      "translation": "df03e7c12f3b3788d15125583286862fa74bcbca"
+      "source": "7928d47ec3c7975d07900187a1d357bced0deab1",
+      "translation": "e003916a34732b0e2315ad7844e43af01971e831"
     },
     "notices.releaseAvailable.action": {
       "source": "f296ebac414af3e7c7fc9229a7c7a1e575680fd8",
@@ -33268,9 +33631,14 @@
       "translation": "4cabb0abf4eb78fc587928e731ba284ef29859c1"
     },
     "commands.openStatisticsView": {
-      "source": "ddff620f8a4d10c3c20a028fb132fb630bf118aa",
-      "translation": "d94b7acce4445faf95d9c2f0328caed751a06f6f"
+      "source": "13c12a1c059f92997c9c156e595d33baa0fe2af2",
+      "translation": "6dab71b6e953fa56eeeae148db0d95fab1ede617"
     },
+    "commands.openGoalsView": {
+      "source": "05a1a0d37d555e9f27eb235c116f3623698a3daa",
+      "translation": "4475cbe68bf8d619cf979d06f02374ce7adbc7a1"
+    },
+    "commands.openGoalBoard": null,
     "commands.createNewTask": {
       "source": "5f80d7a8fe673e68c503e8500f81f243db25ed15",
       "translation": "5d6f39c5555cdfccd0e5cfbb20570dba1888102f"
@@ -34305,12 +34673,12 @@
       "translation": "45fc0fb25b4dfcbc7edf5531438d1be9fc2b3761"
     },
     "modals.taskCreation.actions.hideDetailedOptions": {
-      "source": "bc7df48222cf37e397ec57ab67689ebb40af171b",
-      "translation": "78e12d8335c8fc633b8f970645101587348cedc0"
+      "source": "19eccc8cd177a041a721a751cc9b691319718b35",
+      "translation": "4c791f81f8ead22eb71c1635f59ba747ad69cd49"
     },
     "modals.taskCreation.actions.showDetailedOptions": {
-      "source": "16b7ecbeb0343c45bedf04c519bca29267cd4c6f",
-      "translation": "3cec33420651121c8b8b7da031a7fb97afa49129"
+      "source": "be55a290aa8683c4e771abda11d376f18ac87ca5",
+      "translation": "dd0fc7fb9887074d32a25077254110250d7aada0"
     },
     "modals.taskCreation.nlPlaceholder": {
       "source": "611d4e0710fcdf8b36bd712dbf9bd6711f340188",
@@ -36736,8 +37104,8 @@
     "onboarding.deleteStatusHint": null,
     "onboarding.viewDisabled": null,
     "common.appName": {
-      "source": "4cc46336291024ce6dd7dddb5176a2a66b236e86",
-      "translation": "4cc46336291024ce6dd7dddb5176a2a66b236e86"
+      "source": "bffe4aef17d4fdc2b3371c3305eb2af876bea3e9",
+      "translation": "bffe4aef17d4fdc2b3371c3305eb2af876bea3e9"
     },
     "common.new": {
       "source": "6403f2b7eb2aaafe6de34cbf2a029b01afebc512",
@@ -38218,12 +38586,12 @@
     "views.timeStatistics.empty.description": null,
     "views.timeStatistics.error.title": null,
     "views.releaseNotes.title": {
-      "source": "5939771f391859041bc57e5e05b04235b1ef8ee7",
-      "translation": "6515a088a0943b6e37a28c33f251fc2b033046c5"
+      "source": "672830398e0652a449d547754c736a6132f8a472",
+      "translation": "b0d508cc496da5ef9b577078990825ed90de7ac8"
     },
     "views.releaseNotes.header": {
-      "source": "5939771f391859041bc57e5e05b04235b1ef8ee7",
-      "translation": "6515a088a0943b6e37a28c33f251fc2b033046c5"
+      "source": "672830398e0652a449d547754c736a6132f8a472",
+      "translation": "b0d508cc496da5ef9b577078990825ed90de7ac8"
     },
     "views.releaseNotes.viewAllLink": {
       "source": "b37e5d2fb2faa630817557713df6363f4bd0f5cc",
@@ -38575,16 +38943,16 @@
       "translation": "53eae44a18e3be17062bdbc759568ea554465e35"
     },
     "settings.features.uiLanguage.description": {
-      "source": "46546b4e7272768d6591f3ab7aa2eae185c149d7",
-      "translation": "452f231e74e028d672435cdac908e33de58994f7"
+      "source": "b019b3eb61762878ff0ad19e144dbd9cdbd12131",
+      "translation": "aec5201544d2c05f281fe9f1b9620a35702ad182"
     },
     "settings.features.uiLanguage.dropdown.name": {
       "source": "5a28c99d6d38a7489e8b1ab06a11507f8c6fd47f",
       "translation": "523ce6adc7fe0ce14570a5c45cae6a39dfa5d7f9"
     },
     "settings.features.uiLanguage.dropdown.description": {
-      "source": "e37c5f2fc14b81da7c126695509b6bc357e658a9",
-      "translation": "c40a0e780d7ac440d0fc9279bc1b5a187020560c"
+      "source": "396ce68f650d7113885df484efe682624566179e",
+      "translation": "15d94706c0478c197df889969d889e58e7f23761"
     },
     "settings.features.pomodoroSound.enabledName": {
       "source": "7cc9086b601478eb0134bd757c77685ac8f08863",
@@ -42319,13 +42687,100 @@
       "source": "3b2bbbb17c26d8f902aca06fa76141862a613529",
       "translation": "fef88a27d2ed24e73f9bf2edf038ca2cd4e297a2"
     },
+    "goals.view.title": null,
+    "goals.view.goalCountOne": null,
+    "goals.view.goalCountOther": null,
+    "goals.view.filters.all": null,
+    "goals.view.filters.active": null,
+    "goals.view.filters.paused": null,
+    "goals.view.filters.done": null,
+    "goals.view.periods.day": null,
+    "goals.view.periods.week": null,
+    "goals.view.periods.month": null,
+    "goals.view.periods.year": null,
+    "goals.view.previousPeriod": null,
+    "goals.view.nextPeriod": null,
+    "goals.view.backToCurrent": null,
+    "goals.view.historyReadonly": null,
+    "goals.view.columns.goal": null,
+    "goals.view.columns.type": null,
+    "goals.view.columns.today": null,
+    "goals.view.columns.thisWeek": null,
+    "goals.view.columns.thisMonth": null,
+    "goals.view.columns.thisYear": null,
+    "goals.view.columns.tags": null,
+    "goals.view.columns.milestones": null,
+    "goals.view.childCountOne": null,
+    "goals.view.childCountOther": null,
+    "goals.view.ownedByChildren": null,
+    "goals.view.openGoal": null,
+    "goals.view.countActual": null,
+    "goals.view.countProgress": null,
+    "goals.view.milestones": null,
+    "goals.view.milestoneSubtitle": null,
+    "goals.view.milestoneSummary": null,
+    "goals.view.milestoneSummaryStale": null,
+    "goals.view.noMilestones": null,
+    "goals.management": null,
+    "goals.newGoal": null,
+    "goals.refresh": null,
+    "goals.paused": null,
+    "goals.emptyTitle": null,
+    "goals.emptyDescription": null,
+    "goals.createGoal": null,
+    "goals.cancel": null,
+    "goals.name": null,
+    "goals.type": null,
+    "goals.floor": null,
+    "goals.ceiling": null,
+    "goals.count": null,
+    "goals.floorHint": null,
+    "goals.ceilingHint": null,
+    "goals.countHint": null,
+    "goals.scope": null,
+    "goals.addTag": null,
+    "goals.baseline": null,
+    "goals.split": null,
+    "goals.period": null,
+    "goals.weekly": null,
+    "goals.monthly": null,
+    "goals.quarterly": null,
+    "goals.target": null,
+    "goals.milestone": null,
+    "goals.milestoneName": null,
+    "goals.tiers": null,
+    "goals.files": null,
+    "goals.created": null,
+    "goals.createFailed": null,
+    "goals.noGoals": null,
+    "goals.allGoals": null,
+    "goals.why": null,
+    "goals.children": null,
+    "goals.progress": null,
+    "goals.thisWeek": null,
+    "goals.thisMonth": null,
+    "goals.thisYear": null,
+    "goals.remaining": null,
+    "goals.achieved": null,
+    "goals.onTrack": null,
+    "goals.behind": null,
+    "goals.over": null,
+    "goals.idle": null,
+    "goals.aggregate": null,
+    "goals.noMilestone": null,
+    "goals.confirmAchievement": null,
+    "goals.confirmAchievementDescription": null,
+    "goals.continue": null,
+    "goals.undo": null,
+    "goals.openFile": null,
+    "goals.notDesktop": null,
     "notices.languageChanged": {
       "source": "05282acf7678258da0d996e5fbee70a567b92187",
       "translation": "d901211ac95a39b48de80b3ab27533968bcf9578"
     },
     "notices.releaseAvailable.message": {
-      "source": "eef8954cafb95f98069002de07481d6fa1947cd2",
-      "translation": "576da6a608a12b528f12aece5809852baf3deca6"
+      "source": "7928d47ec3c7975d07900187a1d357bced0deab1",
+      "translation": "798638fa9a8e677cbba811398143938af549d8fb"
     },
     "notices.releaseAvailable.action": {
       "source": "f296ebac414af3e7c7fc9229a7c7a1e575680fd8",
@@ -42448,9 +42903,14 @@
       "translation": "75e6db37cd70e66d30d84d091905c93b3b884604"
     },
     "commands.openStatisticsView": {
-      "source": "ddff620f8a4d10c3c20a028fb132fb630bf118aa",
-      "translation": "5c73da065cffae688e0e6eb0d624fd4d0ef8ebb1"
+      "source": "13c12a1c059f92997c9c156e595d33baa0fe2af2",
+      "translation": "6b3f54b8f152d004b5988a404a30d6dcdd855811"
     },
+    "commands.openGoalsView": {
+      "source": "05a1a0d37d555e9f27eb235c116f3623698a3daa",
+      "translation": "f0db7b8630ec09d53acdaf8cfd2e0045713e25fc"
+    },
+    "commands.openGoalBoard": null,
     "commands.createNewTask": {
       "source": "5f80d7a8fe673e68c503e8500f81f243db25ed15",
       "translation": "fa5f811eea26056953fc512823b33d196b9fdd93"
@@ -43485,12 +43945,12 @@
       "translation": "930ab73bcb6a63f3b4637924752cce5c8ddbf8e2"
     },
     "modals.taskCreation.actions.hideDetailedOptions": {
-      "source": "bc7df48222cf37e397ec57ab67689ebb40af171b",
-      "translation": "01d7d8097c32f0e8d148a8ab8f680b1c8d6536de"
+      "source": "19eccc8cd177a041a721a751cc9b691319718b35",
+      "translation": "5e8390e75cc16ca6582e94df2f3854180472c104"
     },
     "modals.taskCreation.actions.showDetailedOptions": {
-      "source": "16b7ecbeb0343c45bedf04c519bca29267cd4c6f",
-      "translation": "c9147fe616bc5b4f3605a2a72e290e04ab55cffe"
+      "source": "be55a290aa8683c4e771abda11d376f18ac87ca5",
+      "translation": "54182db954a480790df557e035e2ec83c335f1d1"
     },
     "modals.taskCreation.nlPlaceholder": {
       "source": "611d4e0710fcdf8b36bd712dbf9bd6711f340188",
@@ -45916,8 +46376,8 @@
     "onboarding.deleteStatusHint": null,
     "onboarding.viewDisabled": null,
     "common.appName": {
-      "source": "4cc46336291024ce6dd7dddb5176a2a66b236e86",
-      "translation": "4cc46336291024ce6dd7dddb5176a2a66b236e86"
+      "source": "bffe4aef17d4fdc2b3371c3305eb2af876bea3e9",
+      "translation": "bffe4aef17d4fdc2b3371c3305eb2af876bea3e9"
     },
     "common.new": {
       "source": "6403f2b7eb2aaafe6de34cbf2a029b01afebc512",
@@ -47398,12 +47858,12 @@
     "views.timeStatistics.empty.description": null,
     "views.timeStatistics.error.title": null,
     "views.releaseNotes.title": {
-      "source": "5939771f391859041bc57e5e05b04235b1ef8ee7",
-      "translation": "09e80bb16ce2b51552feabf8454e04741c41c7c1"
+      "source": "672830398e0652a449d547754c736a6132f8a472",
+      "translation": "54693bba52750954a59c2f307abc0a7f3034f7e5"
     },
     "views.releaseNotes.header": {
-      "source": "5939771f391859041bc57e5e05b04235b1ef8ee7",
-      "translation": "09e80bb16ce2b51552feabf8454e04741c41c7c1"
+      "source": "672830398e0652a449d547754c736a6132f8a472",
+      "translation": "54693bba52750954a59c2f307abc0a7f3034f7e5"
     },
     "views.releaseNotes.viewAllLink": {
       "source": "b37e5d2fb2faa630817557713df6363f4bd0f5cc",
@@ -47755,16 +48215,16 @@
       "translation": "1b4c59b136df4f61182a52f55ceb14795ef4d3ca"
     },
     "settings.features.uiLanguage.description": {
-      "source": "46546b4e7272768d6591f3ab7aa2eae185c149d7",
-      "translation": "afe6cb2986962957d70372325f14cb3cd829b500"
+      "source": "b019b3eb61762878ff0ad19e144dbd9cdbd12131",
+      "translation": "4bcbd3c87ecf6e2010a1fa78362561cdbf2117d2"
     },
     "settings.features.uiLanguage.dropdown.name": {
       "source": "5a28c99d6d38a7489e8b1ab06a11507f8c6fd47f",
       "translation": "63028d4909e7dd3cf56bdf0e16907a8a4ff14ce4"
     },
     "settings.features.uiLanguage.dropdown.description": {
-      "source": "e37c5f2fc14b81da7c126695509b6bc357e658a9",
-      "translation": "0a76631db2e20ca4e547cfa39b7da71db3238656"
+      "source": "396ce68f650d7113885df484efe682624566179e",
+      "translation": "a97f77227bf22c43b15525d12831ca11e64589a2"
     },
     "settings.features.pomodoroSound.enabledName": {
       "source": "7cc9086b601478eb0134bd757c77685ac8f08863",
@@ -51499,13 +51959,100 @@
       "source": "3b2bbbb17c26d8f902aca06fa76141862a613529",
       "translation": "858285ff7194ec31edde59a7552e035dbec526ca"
     },
+    "goals.view.title": null,
+    "goals.view.goalCountOne": null,
+    "goals.view.goalCountOther": null,
+    "goals.view.filters.all": null,
+    "goals.view.filters.active": null,
+    "goals.view.filters.paused": null,
+    "goals.view.filters.done": null,
+    "goals.view.periods.day": null,
+    "goals.view.periods.week": null,
+    "goals.view.periods.month": null,
+    "goals.view.periods.year": null,
+    "goals.view.previousPeriod": null,
+    "goals.view.nextPeriod": null,
+    "goals.view.backToCurrent": null,
+    "goals.view.historyReadonly": null,
+    "goals.view.columns.goal": null,
+    "goals.view.columns.type": null,
+    "goals.view.columns.today": null,
+    "goals.view.columns.thisWeek": null,
+    "goals.view.columns.thisMonth": null,
+    "goals.view.columns.thisYear": null,
+    "goals.view.columns.tags": null,
+    "goals.view.columns.milestones": null,
+    "goals.view.childCountOne": null,
+    "goals.view.childCountOther": null,
+    "goals.view.ownedByChildren": null,
+    "goals.view.openGoal": null,
+    "goals.view.countActual": null,
+    "goals.view.countProgress": null,
+    "goals.view.milestones": null,
+    "goals.view.milestoneSubtitle": null,
+    "goals.view.milestoneSummary": null,
+    "goals.view.milestoneSummaryStale": null,
+    "goals.view.noMilestones": null,
+    "goals.management": null,
+    "goals.newGoal": null,
+    "goals.refresh": null,
+    "goals.paused": null,
+    "goals.emptyTitle": null,
+    "goals.emptyDescription": null,
+    "goals.createGoal": null,
+    "goals.cancel": null,
+    "goals.name": null,
+    "goals.type": null,
+    "goals.floor": null,
+    "goals.ceiling": null,
+    "goals.count": null,
+    "goals.floorHint": null,
+    "goals.ceilingHint": null,
+    "goals.countHint": null,
+    "goals.scope": null,
+    "goals.addTag": null,
+    "goals.baseline": null,
+    "goals.split": null,
+    "goals.period": null,
+    "goals.weekly": null,
+    "goals.monthly": null,
+    "goals.quarterly": null,
+    "goals.target": null,
+    "goals.milestone": null,
+    "goals.milestoneName": null,
+    "goals.tiers": null,
+    "goals.files": null,
+    "goals.created": null,
+    "goals.createFailed": null,
+    "goals.noGoals": null,
+    "goals.allGoals": null,
+    "goals.why": null,
+    "goals.children": null,
+    "goals.progress": null,
+    "goals.thisWeek": null,
+    "goals.thisMonth": null,
+    "goals.thisYear": null,
+    "goals.remaining": null,
+    "goals.achieved": null,
+    "goals.onTrack": null,
+    "goals.behind": null,
+    "goals.over": null,
+    "goals.idle": null,
+    "goals.aggregate": null,
+    "goals.noMilestone": null,
+    "goals.confirmAchievement": null,
+    "goals.confirmAchievementDescription": null,
+    "goals.continue": null,
+    "goals.undo": null,
+    "goals.openFile": null,
+    "goals.notDesktop": null,
     "notices.languageChanged": {
       "source": "05282acf7678258da0d996e5fbee70a567b92187",
       "translation": "8e158d856f5f6df85372f2997d05ba5b0b31da83"
     },
     "notices.releaseAvailable.message": {
-      "source": "eef8954cafb95f98069002de07481d6fa1947cd2",
-      "translation": "b4de74c972fbae7751553503f26e6088f9dd6f7b"
+      "source": "7928d47ec3c7975d07900187a1d357bced0deab1",
+      "translation": "dcc0ac13a4040c84ba8c89004da1b5fc2bd712dc"
     },
     "notices.releaseAvailable.action": {
       "source": "f296ebac414af3e7c7fc9229a7c7a1e575680fd8",
@@ -51628,9 +52175,14 @@
       "translation": "b760be18e0477f61f038ac031f9937847920770d"
     },
     "commands.openStatisticsView": {
-      "source": "ddff620f8a4d10c3c20a028fb132fb630bf118aa",
-      "translation": "ce0fcd96e67b1e171daf5b60798b866d26556e15"
+      "source": "13c12a1c059f92997c9c156e595d33baa0fe2af2",
+      "translation": "c2be6d9712d613bddf696b1662bf122b13f49503"
     },
+    "commands.openGoalsView": {
+      "source": "05a1a0d37d555e9f27eb235c116f3623698a3daa",
+      "translation": "ea97de41a2f2a0221ad30c7195ad01a26653ad5a"
+    },
+    "commands.openGoalBoard": null,
     "commands.createNewTask": {
       "source": "5f80d7a8fe673e68c503e8500f81f243db25ed15",
       "translation": "293c01146ae8a45ba2bcbceec7da1642d57f99aa"
@@ -52665,12 +53217,12 @@
       "translation": "8f07c8c0e6ff195ca936df218c9bfa48ba6cf80f"
     },
     "modals.taskCreation.actions.hideDetailedOptions": {
-      "source": "bc7df48222cf37e397ec57ab67689ebb40af171b",
-      "translation": "fbcf70115cfafad5325a08cee6c3d8c52272e63c"
+      "source": "19eccc8cd177a041a721a751cc9b691319718b35",
+      "translation": "b23f4b2eac99a08522a5b0abdf65fb28aab6363e"
     },
     "modals.taskCreation.actions.showDetailedOptions": {
-      "source": "16b7ecbeb0343c45bedf04c519bca29267cd4c6f",
-      "translation": "f389aede0eddec3c34d408142b69c6d5cf2b2564"
+      "source": "be55a290aa8683c4e771abda11d376f18ac87ca5",
+      "translation": "f7c7c5f4a592b98b12d7ec9742c975e320e8c467"
     },
     "modals.taskCreation.nlPlaceholder": {
       "source": "611d4e0710fcdf8b36bd712dbf9bd6711f340188",
@@ -55096,8 +55648,8 @@
     "onboarding.deleteStatusHint": null,
     "onboarding.viewDisabled": null,
     "common.appName": {
-      "source": "4cc46336291024ce6dd7dddb5176a2a66b236e86",
-      "translation": "4cc46336291024ce6dd7dddb5176a2a66b236e86"
+      "source": "bffe4aef17d4fdc2b3371c3305eb2af876bea3e9",
+      "translation": "bffe4aef17d4fdc2b3371c3305eb2af876bea3e9"
     },
     "common.new": {
       "source": "6403f2b7eb2aaafe6de34cbf2a029b01afebc512",
@@ -56578,12 +57130,12 @@
     "views.timeStatistics.empty.description": null,
     "views.timeStatistics.error.title": null,
     "views.releaseNotes.title": {
-      "source": "5939771f391859041bc57e5e05b04235b1ef8ee7",
-      "translation": "92e2d6dcf90925e3073f30916467f8d01ead921a"
+      "source": "672830398e0652a449d547754c736a6132f8a472",
+      "translation": "6fcac46ca135a1f93594741b9a384f92010ba6db"
     },
     "views.releaseNotes.header": {
-      "source": "5939771f391859041bc57e5e05b04235b1ef8ee7",
-      "translation": "92e2d6dcf90925e3073f30916467f8d01ead921a"
+      "source": "672830398e0652a449d547754c736a6132f8a472",
+      "translation": "6fcac46ca135a1f93594741b9a384f92010ba6db"
     },
     "views.releaseNotes.viewAllLink": {
       "source": "b37e5d2fb2faa630817557713df6363f4bd0f5cc",
@@ -56935,16 +57487,16 @@
       "translation": "d9396e7d7f043091de61ff08bda4303b21e81987"
     },
     "settings.features.uiLanguage.description": {
-      "source": "46546b4e7272768d6591f3ab7aa2eae185c149d7",
-      "translation": "e86271bf4103d63c966092086943a35bed2e75ae"
+      "source": "b019b3eb61762878ff0ad19e144dbd9cdbd12131",
+      "translation": "e27c94c449c9b2184d75a97793aba2c4ea215095"
     },
     "settings.features.uiLanguage.dropdown.name": {
       "source": "5a28c99d6d38a7489e8b1ab06a11507f8c6fd47f",
       "translation": "d9396e7d7f043091de61ff08bda4303b21e81987"
     },
     "settings.features.uiLanguage.dropdown.description": {
-      "source": "e37c5f2fc14b81da7c126695509b6bc357e658a9",
-      "translation": "6fe9790f8d5a295ad0e864fc6cbe02b70f695102"
+      "source": "396ce68f650d7113885df484efe682624566179e",
+      "translation": "3ff2c92e237c2c071d97c5244e6d741ae59792ab"
     },
     "settings.features.pomodoroSound.enabledName": {
       "source": "7cc9086b601478eb0134bd757c77685ac8f08863",
@@ -60679,13 +61231,100 @@
       "source": "3b2bbbb17c26d8f902aca06fa76141862a613529",
       "translation": "f0dd26856626b610cd7945fd827991ff38d41e17"
     },
+    "goals.view.title": null,
+    "goals.view.goalCountOne": null,
+    "goals.view.goalCountOther": null,
+    "goals.view.filters.all": null,
+    "goals.view.filters.active": null,
+    "goals.view.filters.paused": null,
+    "goals.view.filters.done": null,
+    "goals.view.periods.day": null,
+    "goals.view.periods.week": null,
+    "goals.view.periods.month": null,
+    "goals.view.periods.year": null,
+    "goals.view.previousPeriod": null,
+    "goals.view.nextPeriod": null,
+    "goals.view.backToCurrent": null,
+    "goals.view.historyReadonly": null,
+    "goals.view.columns.goal": null,
+    "goals.view.columns.type": null,
+    "goals.view.columns.today": null,
+    "goals.view.columns.thisWeek": null,
+    "goals.view.columns.thisMonth": null,
+    "goals.view.columns.thisYear": null,
+    "goals.view.columns.tags": null,
+    "goals.view.columns.milestones": null,
+    "goals.view.childCountOne": null,
+    "goals.view.childCountOther": null,
+    "goals.view.ownedByChildren": null,
+    "goals.view.openGoal": null,
+    "goals.view.countActual": null,
+    "goals.view.countProgress": null,
+    "goals.view.milestones": null,
+    "goals.view.milestoneSubtitle": null,
+    "goals.view.milestoneSummary": null,
+    "goals.view.milestoneSummaryStale": null,
+    "goals.view.noMilestones": null,
+    "goals.management": null,
+    "goals.newGoal": null,
+    "goals.refresh": null,
+    "goals.paused": null,
+    "goals.emptyTitle": null,
+    "goals.emptyDescription": null,
+    "goals.createGoal": null,
+    "goals.cancel": null,
+    "goals.name": null,
+    "goals.type": null,
+    "goals.floor": null,
+    "goals.ceiling": null,
+    "goals.count": null,
+    "goals.floorHint": null,
+    "goals.ceilingHint": null,
+    "goals.countHint": null,
+    "goals.scope": null,
+    "goals.addTag": null,
+    "goals.baseline": null,
+    "goals.split": null,
+    "goals.period": null,
+    "goals.weekly": null,
+    "goals.monthly": null,
+    "goals.quarterly": null,
+    "goals.target": null,
+    "goals.milestone": null,
+    "goals.milestoneName": null,
+    "goals.tiers": null,
+    "goals.files": null,
+    "goals.created": null,
+    "goals.createFailed": null,
+    "goals.noGoals": null,
+    "goals.allGoals": null,
+    "goals.why": null,
+    "goals.children": null,
+    "goals.progress": null,
+    "goals.thisWeek": null,
+    "goals.thisMonth": null,
+    "goals.thisYear": null,
+    "goals.remaining": null,
+    "goals.achieved": null,
+    "goals.onTrack": null,
+    "goals.behind": null,
+    "goals.over": null,
+    "goals.idle": null,
+    "goals.aggregate": null,
+    "goals.noMilestone": null,
+    "goals.confirmAchievement": null,
+    "goals.confirmAchievementDescription": null,
+    "goals.continue": null,
+    "goals.undo": null,
+    "goals.openFile": null,
+    "goals.notDesktop": null,
     "notices.languageChanged": {
       "source": "05282acf7678258da0d996e5fbee70a567b92187",
       "translation": "0b6ef1a910125926ea606ed12afb148595f5c167"
     },
     "notices.releaseAvailable.message": {
-      "source": "eef8954cafb95f98069002de07481d6fa1947cd2",
-      "translation": "f4e7982d0aae98be6a7898cf6a25c0d278db6c5a"
+      "source": "7928d47ec3c7975d07900187a1d357bced0deab1",
+      "translation": "591ec6e562a4b34c2b88a26c6d661b73f286ad95"
     },
     "notices.releaseAvailable.action": {
       "source": "f296ebac414af3e7c7fc9229a7c7a1e575680fd8",
@@ -60808,9 +61447,14 @@
       "translation": "cf2c274b7f2bf3095bd16ff610411cbdb180cb02"
     },
     "commands.openStatisticsView": {
-      "source": "ddff620f8a4d10c3c20a028fb132fb630bf118aa",
-      "translation": "8ae13a67a86a365de46d92acf23b63e06404ffcd"
+      "source": "13c12a1c059f92997c9c156e595d33baa0fe2af2",
+      "translation": "ae2187db454e187bc1aec5d95127fbf2b761c8e4"
     },
+    "commands.openGoalsView": {
+      "source": "05a1a0d37d555e9f27eb235c116f3623698a3daa",
+      "translation": "c157f147dfc30cd00b1da52d488e9635435856b8"
+    },
+    "commands.openGoalBoard": null,
     "commands.createNewTask": {
       "source": "5f80d7a8fe673e68c503e8500f81f243db25ed15",
       "translation": "86cc4073d7f602b4e07208365b6de10ac773bfda"
@@ -61845,12 +62489,12 @@
       "translation": "cb6145f64f561a0f7f44cb6e33fe9f8cfa3a938d"
     },
     "modals.taskCreation.actions.hideDetailedOptions": {
-      "source": "bc7df48222cf37e397ec57ab67689ebb40af171b",
-      "translation": "cf6084de7b46d894a27500de5f6788ba8f480d36"
+      "source": "19eccc8cd177a041a721a751cc9b691319718b35",
+      "translation": "574cae6ac3295d4ec255e3b30eab855440205cb5"
     },
     "modals.taskCreation.actions.showDetailedOptions": {
-      "source": "16b7ecbeb0343c45bedf04c519bca29267cd4c6f",
-      "translation": "0bf68a7db0a85fbb2094df4baa563e321b8ef55e"
+      "source": "be55a290aa8683c4e771abda11d376f18ac87ca5",
+      "translation": "71c71095b8ee2a1a1ec91689738b39440d2ea450"
     },
     "modals.taskCreation.nlPlaceholder": {
       "source": "611d4e0710fcdf8b36bd712dbf9bd6711f340188",
@@ -64317,12 +64961,12 @@
       "translation": "63ec52d48f064baa09016bb31ba74fbd8fae93e0"
     },
     "onboarding.viewDisabled": {
-      "source": "79e8b36a8fbc275b1588f889830e399dcb10318c",
-      "translation": "05e6403c3ac0b6ff9b4ed684945eed217dc20018"
+      "source": "0216a6c525bdb58a1658db1b0e20aa1399c63ad6",
+      "translation": "9043bc0f137fabf121c9d560e94afbaef00a6e30"
     },
     "common.appName": {
-      "source": "4cc46336291024ce6dd7dddb5176a2a66b236e86",
-      "translation": "4cc46336291024ce6dd7dddb5176a2a66b236e86"
+      "source": "bffe4aef17d4fdc2b3371c3305eb2af876bea3e9",
+      "translation": "bffe4aef17d4fdc2b3371c3305eb2af876bea3e9"
     },
     "common.new": {
       "source": "6403f2b7eb2aaafe6de34cbf2a029b01afebc512",
@@ -66001,12 +66645,12 @@
       "translation": "a176b86d4c552f73e81b4779b33802baf451c66a"
     },
     "views.releaseNotes.title": {
-      "source": "3a2406d6bdbf778334f881fdb54188b1144756c1",
-      "translation": "68882c851f10db9b855967007bc0acecf4b30063"
+      "source": "672830398e0652a449d547754c736a6132f8a472",
+      "translation": "7f522830d74c884887d94a8f0ce1fbad7b6a707a"
     },
     "views.releaseNotes.header": {
-      "source": "3a2406d6bdbf778334f881fdb54188b1144756c1",
-      "translation": "68882c851f10db9b855967007bc0acecf4b30063"
+      "source": "672830398e0652a449d547754c736a6132f8a472",
+      "translation": "7f522830d74c884887d94a8f0ce1fbad7b6a707a"
     },
     "views.releaseNotes.viewAllLink": {
       "source": "b37e5d2fb2faa630817557713df6363f4bd0f5cc",
@@ -66021,24 +66665,24 @@
       "translation": "c04129a717e2206fa438a84095fe9ffdfbd557f6"
     },
     "views.basesViewSettings.viewNames.taskList": {
-      "source": "95326ee9aa40123fd248645948038689bf578720",
-      "translation": "b3d1a339e22df443680b8dd8a27881d46413a5d8"
+      "source": "1dc4ed8f88d0e7e6d0c7f04c1390ecd1bfc27f62",
+      "translation": "7399f1fb18ab209ab8b4cfb64d9ca14922f5c95d"
     },
     "views.basesViewSettings.viewNames.kanban": {
-      "source": "f3cc1d4571c803bdfb59da03cdd5458a06f2bb48",
-      "translation": "cc7e06f0ca0f45235d6456c7a5a4119eb3bd7df9"
+      "source": "0c6aa18d405a484efcbb395b0a2779605a7861a6",
+      "translation": "6db748f5f118e0867805f2b897f05ad507b05f30"
     },
     "views.basesViewSettings.viewNames.calendar": {
-      "source": "ed23e77d20582d30044703050f1e453bbd070c73",
-      "translation": "e59b931129b0880f6479e63679ad50e87dad9824"
+      "source": "5d3c6026a7ef2ea0aab35c6f26008165e17db807",
+      "translation": "d4d6b620ce1cc71bfa297fb561bd60dc60f50644"
     },
     "views.basesViewSettings.viewNames.miniCalendar": {
-      "source": "4da1db391c8fc3f1782b0fa77a2230037c4ac7c6",
-      "translation": "0a6ea5f85d579441c3811964198462ff41afa639"
+      "source": "7c8cc2901fb4d00801cfc9ea56aa48bccdecc53d",
+      "translation": "8de187d48d485e807e607c9f9c59e5fbff4ed738"
     },
     "views.basesViewSettings.viewNames.timeStatistics": {
-      "source": "05688bdfc6b363346baf58454e62738ab562d6b9",
-      "translation": "c0dc69cfa55ad095a6b16e1af6e7628f70c93ba8"
+      "source": "2c656d843cae125fe7e0e939cb89d8f2bc41a2a1",
+      "translation": "8d5060773b451c435907bba673925005a7b56a08"
     },
     "views.basesViewSettings.common.enableSearch": {
       "source": "c814e198f0848e59affefac11f1186ff95464085",
@@ -66626,7 +67270,7 @@
     },
     "settings.features.uiLanguage.description": {
       "source": "b019b3eb61762878ff0ad19e144dbd9cdbd12131",
-      "translation": "6e619316b4ba5957eb0d1a08304cdf688f338af9"
+      "translation": "b10214a09a77bf7659dda07d286f1867ec274de3"
     },
     "settings.features.uiLanguage.dropdown.name": {
       "source": "5a28c99d6d38a7489e8b1ab06a11507f8c6fd47f",
@@ -66634,7 +67278,7 @@
     },
     "settings.features.uiLanguage.dropdown.description": {
       "source": "396ce68f650d7113885df484efe682624566179e",
-      "translation": "52b65873576be46488acd8745b306a08bc5ee983"
+      "translation": "e673e386395283be70fad3131d41d99b1884d7d1"
     },
     "settings.features.pomodoroSound.enabledName": {
       "source": "7cc9086b601478eb0134bd757c77685ac8f08863",
@@ -70372,13 +71016,361 @@
       "source": "3b2bbbb17c26d8f902aca06fa76141862a613529",
       "translation": "a1ab36bb5aae01ef12dde3eacfe348736ad60338"
     },
+    "goals.view.title": {
+      "source": "48d8c627be3c12fac8a0a9ddb9ceaa5e126cf358",
+      "translation": "941f08313a1de5727de3a52c539294df542056d5"
+    },
+    "goals.view.goalCountOne": {
+      "source": "b0c770e1956417465efd442c33e29721cf8ad975",
+      "translation": "e8aa6029e4a13b5d0e95424f671b19362834a264"
+    },
+    "goals.view.goalCountOther": {
+      "source": "6a5db6774dc9a7105bd486b7c3e63c4946103107",
+      "translation": "e8aa6029e4a13b5d0e95424f671b19362834a264"
+    },
+    "goals.view.filters.all": {
+      "source": "6a72085653e4c5be8c7640c868ef787cbcf063d1",
+      "translation": "778fc8f99453571cd4d37d39955a1383c8224500"
+    },
+    "goals.view.filters.active": {
+      "source": "b6bd42e4e7302e5e9a15930c8fcdb73fc2c0cf18",
+      "translation": "6f1972e48ec8556645dee4ff7f555e4b76101ef7"
+    },
+    "goals.view.filters.paused": {
+      "source": "c7dfb6f1d9c58a41a7c5eec76e7ed6dbd3750804",
+      "translation": "fcbae46bf890386e9bedc9f54c662e4232bcc001"
+    },
+    "goals.view.filters.done": {
+      "source": "33bc7ee556a0d7f63cf569c355427129c888ee0b",
+      "translation": "865f1cf18deb85183b74fd097228a3368666a657"
+    },
+    "goals.view.periods.day": {
+      "source": "987b9ced08d4ac5d11d286ca4b54b99a4f69164b",
+      "translation": "15917f3b32616f3c61f1bd69a435a449c35fa12d"
+    },
+    "goals.view.periods.week": {
+      "source": "f82be68a7fb4e7dec88f27463de94ad355242ee5",
+      "translation": "451b86707b5a9f672141e2eed24e4f7ebda794d6"
+    },
+    "goals.view.periods.month": {
+      "source": "082bc378cd60e17a38d99898b21955299c5b60c8",
+      "translation": "d9b59879f3b83656682a13244a4690ff63728156"
+    },
+    "goals.view.periods.year": {
+      "source": "879e32326c5217968ac8e3a14e4a8a5214957264",
+      "translation": "6f14c2641c259cd65bcfe5ba57a7a0aa34468fe7"
+    },
+    "goals.view.previousPeriod": {
+      "source": "0aab6a575e143c08cf2e8b9390ff5e673b15b168",
+      "translation": "4ef6d399f1e05ce3de209887afc0002d0740af34"
+    },
+    "goals.view.nextPeriod": {
+      "source": "0630852d72f5339b88fc5c456822239238bd4104",
+      "translation": "a8dfe3522d9b07f4794c32a090eefb390ebea3f3"
+    },
+    "goals.view.backToCurrent": {
+      "source": "ec50da549484832b230402c87c64b3c0139ee97c",
+      "translation": "4409b325a104c834bf212c48f9862207f260a6f1"
+    },
+    "goals.view.historyReadonly": {
+      "source": "99db8ec7d41acb135e67b47f241ad0f514455a8c",
+      "translation": "a788a4c7715609587958bab066d4a57a3cc89b92"
+    },
+    "goals.view.columns.goal": {
+      "source": "9fe00acebc106e4dba1611cdd1d7dc308a244991",
+      "translation": "941f08313a1de5727de3a52c539294df542056d5"
+    },
+    "goals.view.columns.type": {
+      "source": "3deb7456519697ecf4eefc455516c969a3681bae",
+      "translation": "e4e46c7235d165987c4994b3bf698841f8ce2e26"
+    },
+    "goals.view.columns.today": {
+      "source": "24345a14377fd821d3932f4e82f6431640955b0b",
+      "translation": "574cd4fb795bbf0b38d31b2edd3860f822be0c1c"
+    },
+    "goals.view.columns.thisWeek": {
+      "source": "7b72883e078a6858cf0c79bf3e93e72e765e9ada",
+      "translation": "e16e8248b16f6990d0f8bc8a96e342d59d5b1c87"
+    },
+    "goals.view.columns.thisMonth": {
+      "source": "1b4785331db3b08cd8e3cfa4bd36216731a79e54",
+      "translation": "389f0007de41e2232b27843cf20d56d073f5f963"
+    },
+    "goals.view.columns.thisYear": {
+      "source": "094c097f3b0700c6484ba1590ce87edbcb6f9dc1",
+      "translation": "fe9ea3f07077f7a6ca6dcb107bc2eeda3b6d3682"
+    },
+    "goals.view.columns.tags": {
+      "source": "848eed0fbd5429f556b2982dec3ea87136e33e44",
+      "translation": "ae0a7afecee1e83d27e322e287cb9bf351ea0018"
+    },
+    "goals.view.columns.milestones": {
+      "source": "e7bdefe8f85d7a7957b3db7a6838db87163edc0d",
+      "translation": "9b6eabd7ee1d95d1ad499da5261c1ffd7c34da2f"
+    },
+    "goals.view.childCountOne": {
+      "source": "65416c2eb25fa560c7d7a65b9f97e3fd584cbb63",
+      "translation": "1bfbf5da38283a2a560a13bbb56ef5c75972bd5a"
+    },
+    "goals.view.childCountOther": {
+      "source": "15d2f122c7a7385b7b1eb8388295b33ae4a223ca",
+      "translation": "1bfbf5da38283a2a560a13bbb56ef5c75972bd5a"
+    },
+    "goals.view.ownedByChildren": {
+      "source": "4cf5cd8e35171ddac8277c38cc5529de10f546f8",
+      "translation": "f19d84eeadeb706fbea98eb836c12f56c3af0584"
+    },
+    "goals.view.openGoal": {
+      "source": "e52c655409cb35f1fd6a1423cfc8f21913cf15c8",
+      "translation": "23db0bab03cd22654d25ec88f72b01e55da0918d"
+    },
+    "goals.view.countActual": {
+      "source": "7cdee9d855057bf2d2b09315343eca552953cd88",
+      "translation": "210c52b844dd0b4c4709f2da99bd0f2a89270150"
+    },
+    "goals.view.countProgress": {
+      "source": "79465f47089a5d7fae2b62b9b7064cc694c59507",
+      "translation": "c1f8c05c0435ccb70887a3029074da545c0e6821"
+    },
+    "goals.view.milestones": {
+      "source": "e7bdefe8f85d7a7957b3db7a6838db87163edc0d",
+      "translation": "9b6eabd7ee1d95d1ad499da5261c1ffd7c34da2f"
+    },
+    "goals.view.milestoneSubtitle": {
+      "source": "48efb363e56ddcb73d3f5e99149da8da37e27762",
+      "translation": "384b021202df7d8a8f4fd75423298c50dfc01980"
+    },
+    "goals.view.milestoneSummary": {
+      "source": "ec744064c8ab6b28b11dc0c20cb5814beb24ad7b",
+      "translation": "fb0f792cd7249638ee3b8a4cef31f40796560757"
+    },
+    "goals.view.milestoneSummaryStale": {
+      "source": "569eae10c8f0833225700be40afa021d9952c505",
+      "translation": "2e87bdcf20df090d14d6866a8d52d47cb49eb840"
+    },
+    "goals.view.noMilestones": {
+      "source": "65c3d7433eda9b66ec9a8c48c6f77433c2a06f46",
+      "translation": "e42a1aabbb06639119103b3918ab88dd6ce98ae7"
+    },
+    "goals.management": {
+      "source": "31ed08577de3ece8617528d49449fd2671aeebf8",
+      "translation": "d90e7eb36e2aa919577409be6b67685310dc7362"
+    },
+    "goals.newGoal": {
+      "source": "22dcb4fa3911de9ebf6e8796d76dc717cf8b114e",
+      "translation": "51a56d7936f9026545173b7d08f04b5c7983b3ac"
+    },
+    "goals.refresh": {
+      "source": "56e3badc4e6c5cc95e0ea5a9a878b9bd09f319d4",
+      "translation": "38108eaa1d32994acea9c1bfccdd5ce955541a8f"
+    },
+    "goals.paused": {
+      "source": "c7dfb6f1d9c58a41a7c5eec76e7ed6dbd3750804",
+      "translation": "fcbae46bf890386e9bedc9f54c662e4232bcc001"
+    },
+    "goals.emptyTitle": {
+      "source": "a707e86c20321df9f332f574b931bbeb72bd9004",
+      "translation": "210a7fb14f23c79e51651fbc6c8ff99ba85ed5ec"
+    },
+    "goals.emptyDescription": {
+      "source": "48afaecd19cce82310ac1beef5cba366e3ec76fc",
+      "translation": "09afcd087441985e135ff6915e7de4d295b091f6"
+    },
+    "goals.createGoal": {
+      "source": "7b0f387040e0a7f46666e00047c7633dbddfd52a",
+      "translation": "f4e8b2ec21e770417d059361543388c2647bb9d6"
+    },
+    "goals.cancel": {
+      "source": "77dfd2135f4db726c47299bb55be26f7f4525a46",
+      "translation": "4d0b4688c787cf6c33c744bdad5f7d7f56b0feee"
+    },
+    "goals.name": {
+      "source": "709a23220f2c3d64d1e1d6d18c4d5280f8d82fca",
+      "translation": "1be7ae4fc2571d6fe52d4a109018a6d5873c1b4f"
+    },
+    "goals.type": {
+      "source": "3deb7456519697ecf4eefc455516c969a3681bae",
+      "translation": "e4e46c7235d165987c4994b3bf698841f8ce2e26"
+    },
+    "goals.floor": {
+      "source": "fa7dd3365e06de039b81eacec90421eb5a707d7d",
+      "translation": "84a3fbfa67d76d6aa175c0acf613737f3329aba6"
+    },
+    "goals.ceiling": {
+      "source": "b35e1752de22edc9b9441a824f7d8b87e0987218",
+      "translation": "16913bcc04d71c7e9d087ac6b3f5cf1a624c84c6"
+    },
+    "goals.count": {
+      "source": "89836a870e44fb467d13116254b39e2482f5cdf1",
+      "translation": "d4a97e757743f0385405cf32fd2247d7dd4c0376"
+    },
+    "goals.floorHint": {
+      "source": "52c2e9cedbc8e2c9fc032fee4f2de0e8b1d3f984",
+      "translation": "935461a280e23695c9a983622201b2eb16fa053d"
+    },
+    "goals.ceilingHint": {
+      "source": "eb9c7dbbfa14ed37ea4d2261c714df03106f89b8",
+      "translation": "c79d49c8cf7a46cdf9f8f86a3c0568c17711de6d"
+    },
+    "goals.countHint": {
+      "source": "3adf0b0dc9dc457594b0c90f61b4294ec08db03c",
+      "translation": "0f10f28335154baa247dfc2b13c8ffecd5be1599"
+    },
+    "goals.scope": {
+      "source": "cc29aee401bd29f0c591d69aca1773a3a37e5b97",
+      "translation": "3cce0d0845226dd6e9a511069eef8adc842abe4e"
+    },
+    "goals.addTag": {
+      "source": "62eef22f42b9c9090c1b46f82d74a09570815f37",
+      "translation": "d52fd91d582aa031e9d158d3122f27c571594a7f"
+    },
+    "goals.baseline": {
+      "source": "d268df2705dacfeb378ae7731551c6aa26b0a506",
+      "translation": "511677f280c1dba37a15918a9ff276390cc7712d"
+    },
+    "goals.split": {
+      "source": "5c3cfe74eaddfd99049ee1550ae641af627ebb41",
+      "translation": "ed3d72d448b00c3dd9812a97b5e0abd9675d2c86"
+    },
+    "goals.period": {
+      "source": "170a28a9db6d27d7212fc6dc249434a57517e7bc",
+      "translation": "8a12b12125c2139cdcd059c6a5ccf7d1aab89719"
+    },
+    "goals.weekly": {
+      "source": "f82be68a7fb4e7dec88f27463de94ad355242ee5",
+      "translation": "451b86707b5a9f672141e2eed24e4f7ebda794d6"
+    },
+    "goals.monthly": {
+      "source": "082bc378cd60e17a38d99898b21955299c5b60c8",
+      "translation": "d9b59879f3b83656682a13244a4690ff63728156"
+    },
+    "goals.quarterly": {
+      "source": "0d3830748786cef6d1d371b9b4a4083c2ec61ee9",
+      "translation": "f2bdc852b9666e860ddebbd8ccda320f6059ab92"
+    },
+    "goals.target": {
+      "source": "61ad50a9b9189cc3cf1874568e35e7901ff4c982",
+      "translation": "ba60a36336b6a2575ed6685f3de147bc04396ae4"
+    },
+    "goals.milestone": {
+      "source": "15f97369723851a5d13639e504f00b4e6f506147",
+      "translation": "776a5faad2663c3eb35fd0ed164a61f7ba306d83"
+    },
+    "goals.milestoneName": {
+      "source": "9b9b680f9049c5f2054b7c4a1ac4f648a669f38c",
+      "translation": "66816dc8eb7615db44235b64ea9b47c24e47b980"
+    },
+    "goals.tiers": {
+      "source": "fbf7de292ef315fe54b1b6c8fd8512a893323eee",
+      "translation": "90055492d64c691c56156b327a6007b8e90b0432"
+    },
+    "goals.files": {
+      "source": "9a079f9b2adc11f91bed0875c6915ac508cb426c",
+      "translation": "acc1cb823a5e5b4c8637799cc1ca51045a5b0270"
+    },
+    "goals.created": {
+      "source": "5b8c080dc45ba883e3c96309e88754b805bf44ec",
+      "translation": "1749eb4227128522dff3d22b3e1b1618cd9f2123"
+    },
+    "goals.createFailed": {
+      "source": "7734767c518575468fe4a5514208177855d6c7a0",
+      "translation": "f14e72cbbf0913d6b3e9cf8b108f70272f505c3f"
+    },
+    "goals.noGoals": {
+      "source": "6bd524060cc056fbb5e998c34100e412817cd716",
+      "translation": "dd2f3dda870924e9a68d3050181dd2b96ac50232"
+    },
+    "goals.allGoals": {
+      "source": "1f4dc475bfd3ce11a238ef0103512339458fd474",
+      "translation": "f9b90729cbbf7e7fb12968f8fcc2fe4a4c689873"
+    },
+    "goals.why": {
+      "source": "21e2caea4476d26af34541ca7c909c7ff2fa4a7f",
+      "translation": "c98bd1e6b6a07e78b1557273045b6d95b6c15739"
+    },
+    "goals.children": {
+      "source": "38feb20e58db8781c749616d19bbb56379a56bbe",
+      "translation": "fd0091a368bbcbfdc789c3ed7496305d7ec21427"
+    },
+    "goals.progress": {
+      "source": "5fef78b15f8fd1e840ff17eaf9bda9fad80fd579",
+      "translation": "a1db6753e9e3488d802f589cc6fa22e3f1aad89d"
+    },
+    "goals.thisWeek": {
+      "source": "7b72883e078a6858cf0c79bf3e93e72e765e9ada",
+      "translation": "e16e8248b16f6990d0f8bc8a96e342d59d5b1c87"
+    },
+    "goals.thisMonth": {
+      "source": "1b4785331db3b08cd8e3cfa4bd36216731a79e54",
+      "translation": "389f0007de41e2232b27843cf20d56d073f5f963"
+    },
+    "goals.thisYear": {
+      "source": "094c097f3b0700c6484ba1590ce87edbcb6f9dc1",
+      "translation": "fe9ea3f07077f7a6ca6dcb107bc2eeda3b6d3682"
+    },
+    "goals.remaining": {
+      "source": "398658a601d9ccc4e7a808989f7e8c426c51bee6",
+      "translation": "f37c034a97bbe348b2bf47ef13588109b841c01b"
+    },
+    "goals.achieved": {
+      "source": "33bc7ee556a0d7f63cf569c355427129c888ee0b",
+      "translation": "865f1cf18deb85183b74fd097228a3368666a657"
+    },
+    "goals.onTrack": {
+      "source": "2788368d92677088c6adc1f3eff55958d397f617",
+      "translation": "9261aa4c0426c673595135746097fb39622a5edf"
+    },
+    "goals.behind": {
+      "source": "578f0025b23852ea0901e882911b264f588b3a10",
+      "translation": "c0b1dd08a3e9a2484d5d90ba67e2facbccbe5315"
+    },
+    "goals.over": {
+      "source": "2fdfd5ec48d15b6f74b2314f6a561d35b2f3f14e",
+      "translation": "5d13b77c816549a26fda6860b62d34cfe1ba3e5b"
+    },
+    "goals.idle": {
+      "source": "db2c45d5579367438b625f4cf40cad184e39bd54",
+      "translation": "434621d9fef50a629648374edaf173ca2e34dd2d"
+    },
+    "goals.aggregate": {
+      "source": "b6c533b56588b082aeca6ae9a0dfe499eba636a6",
+      "translation": "92bcbf71cb7bf6bd9f2e2e82957a7b8caa7d2662"
+    },
+    "goals.noMilestone": {
+      "source": "d9d2156d72e094ecbb840818e05a2f019c54b97b",
+      "translation": "919dea6d2577ecb29b5f7b88b060a7a653f25b20"
+    },
+    "goals.confirmAchievement": {
+      "source": "e75999d54a76e9055e3d350b3c813ecb354d4588",
+      "translation": "e614b1bc9db7502eeaa064e9aa2052fcbf440c37"
+    },
+    "goals.confirmAchievementDescription": {
+      "source": "9767e4e5d7b8511a0ab5084ce860a1c224b54120",
+      "translation": "84eb56e08e0412f5e1ff57feaa9ca085b377fe89"
+    },
+    "goals.continue": {
+      "source": "2e02623966f9391facf6eaefc8b079ed5b630bee",
+      "translation": "1fc1afc5c55ed8c0cc28f99715b53cace4c37228"
+    },
+    "goals.undo": {
+      "source": "3d9f368656004e8a2cb1bd51956918f3c288ce77",
+      "translation": "e97b02dd310f27bd75fa182551880e2dd6a7e64d"
+    },
+    "goals.openFile": {
+      "source": "bc1c998d776cd4b7d4e32a45977640aeb5005893",
+      "translation": "a882e4a3d9de88c75dac1a05cf4f0128e579d738"
+    },
+    "goals.notDesktop": {
+      "source": "abc6519a5825ca03d2f46afa8eb13d58a4b6e036",
+      "translation": "8a07f25e86248c8f0c2412b704c922db44a7c593"
+    },
     "notices.languageChanged": {
       "source": "05282acf7678258da0d996e5fbee70a567b92187",
       "translation": "98970fa5fc92738a2c3bd9e54e91b0ebc6801844"
     },
     "notices.releaseAvailable.message": {
-      "source": "00bb63900c92c4fe23fa08bda98129501b22a9f4",
-      "translation": "c20cd85e1b841c8bd52e72cc17626e13e9cea44d"
+      "source": "7928d47ec3c7975d07900187a1d357bced0deab1",
+      "translation": "398ffc17f9409b3e8517e36657a0f22f1487a6be"
     },
     "notices.releaseAvailable.action": {
       "source": "f296ebac414af3e7c7fc9229a7c7a1e575680fd8",
@@ -70503,6 +71495,14 @@
     "commands.openStatisticsView": {
       "source": "13c12a1c059f92997c9c156e595d33baa0fe2af2",
       "translation": "204e23b5b6e4c4747843e61312b9ff71b20c12f3"
+    },
+    "commands.openGoalsView": {
+      "source": "05a1a0d37d555e9f27eb235c116f3623698a3daa",
+      "translation": "ec916b09c448612f0aad71cb1d20c22ce402870c"
+    },
+    "commands.openGoalBoard": {
+      "source": "d427e34f6d4fb0063eff11cf9d569f625701abbc",
+      "translation": "3892aadcab389b118d4960de0599d73a53edaa3b"
     },
     "commands.createNewTask": {
       "source": "5f80d7a8fe673e68c503e8500f81f243db25ed15",

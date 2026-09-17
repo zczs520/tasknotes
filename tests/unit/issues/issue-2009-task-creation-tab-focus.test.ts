@@ -55,6 +55,15 @@ function createPlugin(app: App): any {
 }
 
 describe("Issue #2009: task creation NLP editor Tab focus", () => {
+	it("does not mount quick input in task creation even when NLP is enabled", () => {
+		const app = MockObsidian.createMockApp() as unknown as App;
+		const modal = new TaskCreationModal(app, createPlugin(app));
+		const title = jest.spyOn(modal as any, "createTitleInput").mockImplementation(() => {});
+		const quick = jest.spyOn(modal as any, "createNaturalLanguageInput").mockImplementation(() => {});
+		(modal as any).createPrimaryInput(modal.contentEl);
+		expect(title).toHaveBeenCalledTimes(1);
+		expect(quick).not.toHaveBeenCalled();
+	});
 	beforeEach(() => {
 		jest.useFakeTimers();
 		jest.clearAllMocks();

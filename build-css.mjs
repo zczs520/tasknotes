@@ -42,6 +42,7 @@ const CSS_FILES = [
 	"styles/bases-views.css", // Bases integration views (list and kanban)
 	"styles/kanban-notion.css", // Notion-inspired skin for the custom Bases Kanban
 	"styles/time-statistics.css", // Time statistics dashboard and timeline
+	"styles/goal-management.css", // Desktop goal management, progress, and milestone UI
 	"styles/static-style-utilities.css", // Static style utility classes migrated from inline styles
 ];
 
@@ -89,7 +90,15 @@ function buildCSS() {
 	// Read and concatenate each CSS file
 	for (const cssFile of CSS_FILES) {
 		try {
-			const content = readFileSync(cssFile, "utf8");
+			let content = readFileSync(cssFile, "utf8");
+			if (cssFile === "styles/time-statistics.css") {
+				// Keep the reference's numeric font available offline in the deployed CSS.
+				content = content.replace(
+					/url\("fonts\/(ibm-plex-mono-stats-(?:400|600)\.ttf)"\)/g,
+					(_match, filename) =>
+						`url("data:font/ttf;base64,${readFileSync(join("styles", "fonts", filename)).toString("base64")}")`
+				);
+			}
 
 			// Add a section header comment
 			const filename = cssFile.split("/").pop();

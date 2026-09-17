@@ -293,6 +293,7 @@ export function renderGeneralTab(
 			});
 
 			for (const [id, nameKey] of [
+				["open-goals-view", "commands.openGoalsView"],
 				["open-pomodoro-view", "commands.openPomodoroView"],
 				["open-pomodoro-stats", "commands.openPomodoroStats"],
 			]) {

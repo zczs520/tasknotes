@@ -2,7 +2,7 @@ import { TranslationTree } from "../types";
 
 export const fr: TranslationTree = {
 	common: {
-		appName: "Dayquence",
+		appName: "TaskNotes Time",
 		new: "Nouveau",
 		cancel: "Annuler",
 		confirm: "Confirmer",
@@ -520,8 +520,8 @@ export const fr: TranslationTree = {
 			loading: "Chargement...",
 		},
 		releaseNotes: {
-			title: "Nouveautés de TaskNotes {version}",
-			header: "Nouveautés de TaskNotes {version}",
+			title: "Nouveautés de TaskNotes Time {version}",
+			header: "Nouveautés de TaskNotes Time {version}",
 			viewAllLink: "Voir toutes les notes de version sur GitHub →",
 			starMessage:
 				"Nous apprécions vraiment tous les retours. Si quelque chose ne vous semble pas correct, dites-le-nous sur GitHub. Si TaskNotes vous est utile, pensez à lui donner une étoile.",
@@ -665,11 +665,11 @@ export const fr: TranslationTree = {
 			},
 			uiLanguage: {
 				header: "Langue de l'interface",
-				description: "Modifiez la langue des menus, notifications et vues de TaskNotes.",
+				description: "Modifiez la langue des menus, notifications et vues de TaskNotes Time.",
 				dropdown: {
 					name: "Langue de l'interface",
 					description:
-						"Sélectionnez la langue utilisée pour le texte de l'interface TaskNotes",
+						"Sélectionnez la langue utilisée pour le texte de l'interface TaskNotes Time",
 				},
 			},
 			pomodoroSound: {
@@ -2463,7 +2463,7 @@ export const fr: TranslationTree = {
 	notices: {
 		languageChanged: "Langue changée pour {language}.",
 		releaseAvailable: {
-			message: "TaskNotes {version} est disponible.",
+			message: "TaskNotes Time {version} est disponible.",
 			action: "Ouvrir dans les plugins communautaires",
 		},
 		exportTasksFailed: "Échec de l'export des tâches au format ICS",
@@ -2501,7 +2501,8 @@ export const fr: TranslationTree = {
 		openKanbanView: "Ouvrir le tableau Kanban",
 		updateDefaultBaseFiles: "Mettre à jour les fichiers Base par défaut",
 		openPomodoroStats: "Ouvrir les statistiques Pomodoro",
-		openStatisticsView: "Ouvrir les statistiques tâches & projets",
+		openStatisticsView: "Ouvrir les statistiques de temps",
+		openGoalsView: "Ouvrir la gestion des objectifs",
 		createNewTask: "Créer une nouvelle tâche",
 		convertCurrentNoteToTask: {
 			name: "Convertir la note actuelle en tâche",
@@ -2851,8 +2852,8 @@ export const fr: TranslationTree = {
 			title: "Créer une tâche",
 			actions: {
 				fillFromNaturalLanguage: "Remplir le formulaire avec le langage naturel",
-				hideDetailedOptions: "Masquer les options détaillées",
-				showDetailedOptions: "Afficher les options détaillées",
+				hideDetailedOptions: "Masquer les propriétés supplémentaires",
+				showDetailedOptions: "Afficher toutes les propriétés",
 			},
 			nlPlaceholder: "Acheter des courses demain à 15h @maison #courses",
 			notices: {

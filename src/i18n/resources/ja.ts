@@ -2,7 +2,7 @@ import { TranslationTree } from "../types";
 
 export const ja: TranslationTree = {
 	common: {
-		appName: "Dayquence",
+		appName: "TaskNotes Time",
 		new: "新規",
 		cancel: "キャンセル",
 		confirm: "確認",
@@ -514,8 +514,8 @@ export const ja: TranslationTree = {
 			loading: "読み込み中...",
 		},
 		releaseNotes: {
-			title: "TaskNotes {version} の新機能",
-			header: "TaskNotes {version} の新機能",
+			title: "TaskNotes Time {version} の新機能",
+			header: "TaskNotes Time {version} の新機能",
 			viewAllLink: "GitHubですべてのリリースノートを表示 →",
 			starMessage:
 				"どんなフィードバックも本当にありがたいです。何か違和感があれば、GitHubでお知らせください。TaskNotesが役に立ったら、スターもご検討ください。",
@@ -652,10 +652,10 @@ export const ja: TranslationTree = {
 			},
 			uiLanguage: {
 				header: "インターフェース言語",
-				description: "TaskNotesのメニュー、通知、ビューの言語を変更します。",
+				description: "TaskNotes Timeのメニュー、通知、ビューの言語を変更します。",
 				dropdown: {
 					name: "UI言語",
-					description: "TaskNotesインターフェーステキストに使用する言語を選択",
+					description: "TaskNotes Timeのインターフェーステキストに使用する言語を選択",
 				},
 			},
 			pomodoroSound: {
@@ -2396,7 +2396,7 @@ export const ja: TranslationTree = {
 	notices: {
 		languageChanged: "言語を{language}に変更しました。",
 		releaseAvailable: {
-			message: "TaskNotes {version} が利用可能です。",
+			message: "TaskNotes Time {version} が利用可能です。",
 			action: "コミュニティプラグインで開く",
 		},
 		exportTasksFailed: "タスクのICSファイルエクスポートに失敗しました",
@@ -2433,7 +2433,8 @@ export const ja: TranslationTree = {
 		openKanbanView: "カンバンボードを開く",
 		updateDefaultBaseFiles: "既定の Base ファイルを更新",
 		openPomodoroStats: "ポモドーロ統計を開く",
-		openStatisticsView: "タスクとプロジェクト統計を開く",
+		openStatisticsView: "時間統計を開く",
+		openGoalsView: "目標管理を開く",
 		createNewTask: "新しいタスクを作成",
 		convertCurrentNoteToTask: {
 			name: "現在のノートをタスクに変換",
@@ -2773,8 +2774,8 @@ export const ja: TranslationTree = {
 			title: "タスクを作成",
 			actions: {
 				fillFromNaturalLanguage: "自然言語からフォームを埋める",
-				hideDetailedOptions: "詳細オプションを非表示",
-				showDetailedOptions: "詳細オプションを表示",
+				hideDetailedOptions: "追加プロパティを非表示",
+				showDetailedOptions: "すべてのプロパティを表示",
 			},
 			nlPlaceholder: "明日午後3時に食料品を買う @家 #用事",
 			notices: {

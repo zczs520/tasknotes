@@ -98,6 +98,13 @@ export function createTaskNotesCommandDefinitions(
 			},
 		},
 		{
+			id: "open-goals-view",
+			nameKey: "commands.openGoalsView",
+			callback: async (ctx) => {
+				await ctx.activateGoalsView();
+			},
+		},
+		{
 			id: "convert-current-note-to-task",
 			nameKey: "commands.convertCurrentNoteToTask.name",
 			callback: async (ctx) => {

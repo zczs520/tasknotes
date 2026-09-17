@@ -1,4 +1,4 @@
-# TASKquence - Unreleased
+# TaskNotes Time - Unreleased
 
 <!--
 
@@ -15,6 +15,8 @@ Example:
 
 ```
 ## Fixed
+
+- Fixed deferred goal-overlay flashing after saving the Kanban rail state: presentation-only config writes no longer schedule the generic full-view refresh. Progress loading keeps the existing surface visible until its replacement is ready and preserves milestone input/focus and overlay scroll on data refresh. Removed the overlay's translate-in animation and reserved its scrollbar gutter to keep hover and overflow layouts stable.
 
 - Fixed Kanban tag clicks opening tag search instead of the task editor; clicking anywhere on a Kanban card now opens the task editor.
 - (#768) Fixed calendar view appearing empty in week and day views due to invalid time configuration values

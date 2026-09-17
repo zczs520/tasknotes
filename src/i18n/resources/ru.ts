@@ -2,7 +2,7 @@ import { TranslationTree } from "../types";
 
 export const ru: TranslationTree = {
 	common: {
-		appName: "Dayquence",
+		appName: "TaskNotes Time",
 		new: "Новый",
 		cancel: "Отмена",
 		confirm: "Подтвердить",
@@ -515,8 +515,8 @@ export const ru: TranslationTree = {
 			loading: "Загрузка...",
 		},
 		releaseNotes: {
-			title: "Что нового в TaskNotes {version}",
-			header: "Что нового в TaskNotes {version}",
+			title: "Что нового в TaskNotes Time {version}",
+			header: "Что нового в TaskNotes Time {version}",
 			viewAllLink: "Посмотреть все примечания к выпуску на GitHub →",
 			starMessage:
 				"Мы очень ценим любые отзывы. Если что-то кажется неправильным, пожалуйста, сообщите нам на GitHub. Если TaskNotes полезен для вас, пожалуйста, поставьте звезду.",
@@ -655,10 +655,10 @@ export const ru: TranslationTree = {
 			},
 			uiLanguage: {
 				header: "Язык интерфейса",
-				description: "Изменить язык меню, уведомлений и представлений TaskNotes.",
+				description: "Изменить язык меню, уведомлений и представлений TaskNotes Time.",
 				dropdown: {
 					name: "Язык интерфейса",
-					description: "Выберите язык, используемый для текста интерфейса TaskNotes",
+					description: "Выберите язык, используемый для текста интерфейса TaskNotes Time",
 				},
 			},
 			pomodoroSound: {
@@ -2430,7 +2430,7 @@ export const ru: TranslationTree = {
 	notices: {
 		languageChanged: "Язык изменен на {language}.",
 		releaseAvailable: {
-			message: "Доступен TaskNotes {version}.",
+			message: "Доступен TaskNotes Time {version}.",
 			action: "Открыть в плагинах сообщества",
 		},
 		exportTasksFailed: "Не удалось экспортировать задачи как файл ICS",
@@ -2467,7 +2467,8 @@ export const ru: TranslationTree = {
 		openKanbanView: "Открыть доску канбан",
 		updateDefaultBaseFiles: "Обновить файлы Base по умолчанию",
 		openPomodoroStats: "Открыть статистику помодоро",
-		openStatisticsView: "Открыть статистику задач и проектов",
+		openStatisticsView: "Открыть статистику времени",
+		openGoalsView: "Открыть управление целями",
 		createNewTask: "Создать новую задачу",
 		convertCurrentNoteToTask: {
 			name: "Преобразовать текущую заметку в задачу",
@@ -2809,8 +2810,8 @@ export const ru: TranslationTree = {
 			title: "Создать задачу",
 			actions: {
 				fillFromNaturalLanguage: "Заполнить форму из естественного языка",
-				hideDetailedOptions: "Скрыть подробные опции",
-				showDetailedOptions: "Показать подробные опции",
+				hideDetailedOptions: "Скрыть дополнительные свойства",
+				showDetailedOptions: "Показать все свойства",
 			},
 			nlPlaceholder: "Купить продукты завтра в 15:00 @дом #поручения",
 			notices: {

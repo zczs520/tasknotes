@@ -2,7 +2,7 @@ import { TranslationTree } from "../types";
 
 export const ko: TranslationTree = {
 	common: {
-		appName: "Dayquence",
+		appName: "TaskNotes Time",
 		new: "새로 만들기",
 		cancel: "취소",
 		confirm: "확인",
@@ -513,8 +513,8 @@ export const ko: TranslationTree = {
 			loading: "로딩 중...",
 		},
 		releaseNotes: {
-			title: "TaskNotes {version}의 새로운 기능",
-			header: "TaskNotes {version}의 새로운 기능",
+			title: "TaskNotes Time {version}의 새로운 기능",
+			header: "TaskNotes Time {version}의 새로운 기능",
 			viewAllLink: "GitHub에서 모든 릴리스 노트 보기 →",
 			starMessage:
 				"모든 피드백을 정말 감사하게 생각합니다. 뭔가 맞지 않는 느낌이 들면 GitHub에서 알려 주세요. TaskNotes가 유용하다면 별표도 고려해 주세요.",
@@ -647,10 +647,10 @@ export const ko: TranslationTree = {
 			},
 			uiLanguage: {
 				header: "인터페이스 언어",
-				description: "TaskNotes 메뉴, 알림 및 뷰의 언어를 변경합니다.",
+				description: "TaskNotes Time 메뉴, 알림 및 뷰의 언어를 변경합니다.",
 				dropdown: {
 					name: "UI 언어",
-					description: "TaskNotes 인터페이스 텍스트에 사용할 언어 선택",
+					description: "TaskNotes Time 인터페이스 텍스트에 사용할 언어 선택",
 				},
 			},
 			pomodoroSound: {
@@ -2351,7 +2351,7 @@ export const ko: TranslationTree = {
 	notices: {
 		languageChanged: "언어가 {language}(으)로 변경되었습니다.",
 		releaseAvailable: {
-			message: "TaskNotes {version} 릴리스를 사용할 수 있습니다.",
+			message: "TaskNotes Time {version} 릴리스를 사용할 수 있습니다.",
 			action: "커뮤니티 플러그인에서 열기",
 		},
 		exportTasksFailed: "ICS 파일로 작업 내보내기 실패",
@@ -2386,7 +2386,8 @@ export const ko: TranslationTree = {
 		openKanbanView: "칸반 보드 열기",
 		updateDefaultBaseFiles: "기본 Base 파일 업데이트",
 		openPomodoroStats: "뽀모도로 통계 열기",
-		openStatisticsView: "작업 및 프로젝트 통계 열기",
+		openStatisticsView: "시간 통계 열기",
+		openGoalsView: "목표 관리 열기",
 		createNewTask: "새 작업 만들기",
 		convertCurrentNoteToTask: {
 			name: "현재 노트를 작업으로 변환",
@@ -2726,8 +2727,8 @@ export const ko: TranslationTree = {
 			title: "작업 만들기",
 			actions: {
 				fillFromNaturalLanguage: "자연어에서 양식 채우기",
-				hideDetailedOptions: "상세 옵션 숨기기",
-				showDetailedOptions: "상세 옵션 보기",
+				hideDetailedOptions: "추가 속성 숨기기",
+				showDetailedOptions: "모든 속성 보기",
 			},
 			nlPlaceholder: "내일 오후 3시에 장보기 @home #심부름",
 			notices: {

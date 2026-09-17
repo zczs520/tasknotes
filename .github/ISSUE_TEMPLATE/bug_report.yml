@@ -1,5 +1,5 @@
 name: Bug Report
-description: Report a bug or issue with TASKquence
+description: Report a bug or issue with TaskNotes Time
 title: "[Bug]: "
 labels: ["bug"]
 body:
@@ -35,8 +35,8 @@ body:
     - type: textarea
       id: debug-info
       attributes:
-          label: TASKquence Debug Info
-          description: Run Obsidian's "Show debug info" command from the command palette and paste the TASKquence/Obsidian/system output here.
+          label: TaskNotes Time Debug Info
+          description: Run Obsidian's "Show debug info" command from the command palette and paste the TaskNotes Time/Obsidian/system output here.
           render: text
           placeholder: |
               Paste the output of "Show debug info" here.

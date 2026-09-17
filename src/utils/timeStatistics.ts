@@ -250,12 +250,21 @@ export function calculateUniqueTimeStatisticsTotal(
 }
 
 export function buildTagTimeStatistics(
-	segments: readonly TimeStatisticsSegment[]
+	segments: readonly TimeStatisticsSegment[],
+	tasks: readonly Pick<TaskInfo, "tags">[] = []
 ): TagTimeStatistic[] {
 	const aggregates = new Map<
 		string,
 		{ tag: string | null; durationMs: number; taskPaths: Set<string> }
 	>();
+	// Keep known task tags visible even when they have no tracked time this period.
+	for (const task of tasks) {
+		for (const tag of task.tags ?? []) {
+			if (tag && !aggregates.has(tag)) {
+				aggregates.set(tag, { tag, durationMs: 0, taskPaths: new Set<string>() });
+			}
+		}
+	}
 
 	for (const segment of segments) {
 		const tags = segment.tags.length > 0 ? segment.tags : [null];

@@ -38,7 +38,7 @@ test.beforeAll(async () => {
 		};
 	});
 	if (!pluginState.loaded.includes("taskquence")) {
-		throw new Error(`TASKquence did not load. Plugin state: ${JSON.stringify(pluginState)}`);
+		throw new Error(`TaskNotes Time did not load. Plugin state: ${JSON.stringify(pluginState)}`);
 	}
 	await app.page.addStyleTag({
 		content: ".tasknotes-active-task-control { display: none !important; }",

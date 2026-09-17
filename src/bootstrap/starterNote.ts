@@ -5,7 +5,7 @@ import { ensureFolderHierarchy } from "./defaultBasesFiles";
 export const STARTER_NOTE_ENGLISH_PATH = "TASKquence/Start Here.md";
 export const STARTER_NOTE_CHINESE_PATH = "TASKquence/开始使用.md";
 
-export const STARTER_NOTE_ENGLISH_CONTENT = `# Welcome to TASKquence
+export const STARTER_NOTE_ENGLISH_CONTENT = `# Welcome to TaskNotes Time
 
 > 中文版：[[TASKquence/开始使用|开始使用]]
 
@@ -14,7 +14,7 @@ Start with three actions: **Create new task**, **Open Kanban board**, and **Open
 ## Set up once
 
 1. Enable **Bases** in Obsidian → Settings → Core plugins.
-2. Create a task from the plus icon on the ribbon or the TASKquence command palette.
+2. Create a task from the plus icon on the ribbon or the TaskNotes Time command palette.
 3. Open the Kanban icon to plan your work. Start a task timer, then open time statistics to review it.
 
 New tasks go into **TASKquence/Tasks** by default. Each task has the property **taskType: task**; Kanban and time statistics use this same fixed identity. Tags are for organization, not task identification. To include an existing note, use **Convert current note to task** or add this property in the note's Properties section.
@@ -33,7 +33,7 @@ Start and stop a task timer from a card or task note. Open time statistics for d
 
 ## Optional views
 
-Task lists, calendars, agenda, Pomodoro and relationship views start disabled. Enable what you need in **Settings → TASKquence → General → Views & base files**. Enabling a view adds its shortcuts and creates its Base file when applicable. Disabling it removes shortcuts and stops automatic file creation; existing notes and Base files are retained.
+Task lists, calendars, agenda, Pomodoro and relationship views start disabled. Enable what you need in **Settings → TaskNotes Time → General → Views & base files**. Enabling a view adds its shortcuts and creates its Base file when applicable. Disabling it removes shortcuts and stops automatic file creation; existing notes and Base files are retained.
 
 Default active views:
 - [[TASKquence/Views/kanban-default.base|Kanban]]
@@ -41,16 +41,16 @@ Default active views:
 
 You can change their file paths in settings, or embed a Base by adding ! before its wiki link.
 
-## Use TASKquence on iPhone
+## Use TaskNotes Time on iPhone
 
-Read [[TASKquence/Tasks/App/TASKquence iOS|the iOS companion guide]] for download and pairing instructions.
+Read [[TASKquence/Tasks/App/TASKquence iOS|the TaskNotes Time iOS companion guide]] for download and pairing instructions.
 
 ## Help
 
 [Source and issue tracker](https://github.com/zczs520/tasknotes)
 `;
 
-export const STARTER_NOTE_CHINESE_CONTENT = `# 欢迎使用 TASKquence
+export const STARTER_NOTE_CHINESE_CONTENT = `# 欢迎使用 TaskNotes Time
 
 > English: [[TASKquence/Start Here|Start Here]]
 
@@ -59,7 +59,7 @@ export const STARTER_NOTE_CHINESE_CONTENT = `# 欢迎使用 TASKquence
 ## 第一次使用
 
 1. 在 **Obsidian → 设置 → 核心插件** 中启用 **Bases（数据库）**。
-2. 点击左侧功能区的加号，或在命令面板运行 **TASKquence: 创建新任务**。
+2. 点击左侧功能区的加号，或在命令面板运行 **TaskNotes Time: 创建新任务**。
 3. 点击看板图标安排任务；启动一次任务计时，再打开时间统计查看记录。
 
 新任务默认保存在 **TASKquence/Tasks**。每个任务都包含 **taskType: task** 属性；看板和时间统计固定使用同一条识别规则，标签仅用于分类。要纳入已有笔记，可运行 **将当前笔记转换为任务**，或在笔记属性区添加 taskType 并设为 task。
@@ -78,7 +78,7 @@ export const STARTER_NOTE_CHINESE_CONTENT = `# 欢迎使用 TASKquence
 
 ## 按需开启更多视图
 
-任务列表、日历、议程、番茄钟和关系视图默认关闭。在 **设置 → TASKquence → 常规 → 视图与 Base 文件** 中开启需要的功能。开启后添加快捷入口，并创建适用的 Base 文件；关闭后移除入口并停止自动生成文件，已有笔记和 Base 文件会保留。
+任务列表、日历、议程、番茄钟和关系视图默认关闭。在 **设置 → TaskNotes Time → 常规 → 视图与 Base 文件** 中开启需要的功能。开启后添加快捷入口，并创建适用的 Base 文件；关闭后移除入口并停止自动生成文件，已有笔记和 Base 文件会保留。
 
 默认启用的视图：
 - [[TASKquence/Views/kanban-default.base|看板]]
@@ -148,7 +148,7 @@ export async function ensureStarterNote(host: StarterNoteHost): Promise<StarterN
 					availableFiles.set(note.locale, existingFile);
 				} else {
 					host.warn?.(
-						`[TASKquence][StarterNote] Starter note path exists but is not a file: ${normalizedPath}`
+						`[TaskNotes Time][StarterNote] Starter note path exists but is not a file: ${normalizedPath}`
 					);
 				}
 				continue;
@@ -177,7 +177,7 @@ export async function ensureStarterNote(host: StarterNoteHost): Promise<StarterN
 		await host.app.workspace.getLeaf("tab").openFile(file);
 		return createdAny ? "created" : "opened-existing";
 	} catch (error) {
-		host.warn?.("[TASKquence][StarterNote] Failed to create starter notes:", error);
+		host.warn?.("[TaskNotes Time][StarterNote] Failed to create starter notes:", error);
 		return "failed";
 	}
 }

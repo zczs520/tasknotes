@@ -1,6 +1,10 @@
 import { spawnSync } from "node:child_process";
 
-const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
+const npmCliPath = process.env.npm_execpath;
+
+if (!npmCliPath) {
+	throw new Error("npm_execpath is unavailable; run this script through npm run lint.");
+}
 
 const tasks = [
 	["run", "lint:ts"],
@@ -12,7 +16,7 @@ const tasks = [
 let failed = false;
 
 for (const args of tasks) {
-	const result = spawnSync(npmCommand, args, {
+	const result = spawnSync(process.execPath, [npmCliPath, ...args], {
 		stdio: "inherit",
 	});
 

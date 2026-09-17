@@ -74,7 +74,7 @@ test.describe('Issue #974: Timeblock external calendar sync', () => {
         // Navigate to TaskNotes plugin settings
         const pluginTab = settingsModal.locator(
           'text=TaskNotes, ' +
-            '.vertical-tab-nav-item:has-text("TASKquence"), ' +
+            '.vertical-tab-nav-item:has-text("TaskNotes Time"), ' +
             '[data-tab="taskquence"]'
         );
 

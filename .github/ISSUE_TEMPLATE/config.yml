@@ -2,7 +2,7 @@ blank_issues_enabled: false
 contact_links:
   - name: Documentation
     url: https://github.com/zczs520/tasknotes#readme
-    about: Check the TASKquence documentation for guides and troubleshooting
+    about: Check the TaskNotes Time documentation for guides and troubleshooting
   - name: GitHub Discussions
     url: https://github.com/zczs520/tasknotes/discussions
-    about: Ask questions, share ideas, or discuss TASKquence with the community
+    about: Ask questions, share ideas, or discuss TaskNotes Time with the community

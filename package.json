@@ -1,7 +1,7 @@
 {
 	"name": "taskquence",
-	"version": "5.0.4",
-	"description": "Plan tasks with calendars, Kanban, Pomodoro, time tracking, and TASKquence iOS life-event sync.",
+	"version": "5.1.0",
+	"description": "Connect goals, Markdown tasks, Kanban planning, time tracking, and reviews in one workflow.",
 	"main": "main.js",
 	"scripts": {
 		"build": "npm run build-css && node generate-release-notes-import.mjs && tsc -noEmit --skipLibCheck && node esbuild.config.mjs production",
@@ -51,7 +51,7 @@
 		"i18n:generate-template": "i18n-state generate-template"
 	},
 	"keywords": [],
-	"author": "zhuxiaocong",
+	"author": "congzi",
 	"license": "MIT",
 	"devDependencies": {
 		"@codemirror/autocomplete": "^6.19.1",

@@ -3,6 +3,7 @@ import type { TaskNotesSettings } from "../types/settings";
 export const DEFAULT_ENABLED_VIEWS: Record<string, boolean> = {
 	"open-kanban-view": true,
 	"open-statistics": true,
+	"open-goals-view": true,
 	"open-calendar-view": false,
 	"open-advanced-calendar-view": false,
 	"open-tasks-view": false,

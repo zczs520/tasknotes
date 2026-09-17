@@ -23,3 +23,15 @@ export async function modifyVaultFile(app: App, file: TFile, content: string): P
 export async function renameVaultFile(app: App, file: TFile, newPath: string): Promise<void> {
 	await app.vault.rename(file, newPath);
 }
+
+export async function trashVaultFile(app: App, file: TFile): Promise<void> {
+	await app.fileManager.trashFile(file);
+}
+
+export async function processVaultFile(
+	app: App,
+	file: TFile,
+	update: (content: string) => string
+): Promise<void> {
+	await app.vault.process(file, update);
+}

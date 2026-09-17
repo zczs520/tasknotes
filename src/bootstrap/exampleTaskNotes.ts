@@ -178,7 +178,7 @@ export function buildExampleTaskNotes(options: {
 	});
 	notes.push({
 		path: "TASKquence/Tasks/功能说明与示例指南.md",
-		content: `# TASKquence 功能说明与示例指南 / Feature and example guide
+		content: `# TaskNotes Time 功能说明与示例指南 / Feature and example guide
 
 这六个双语示例分别使用工作、学习、创作、健身、家务和娱乐标签。计时数据从今年 1 月 1 日覆盖到今天：每天都有记录，每周覆盖全部六类活动，每个月也都有数据。今天的多段记录用于展示时间线；工作投入略高，用于形成更清晰的标签占比和任务排行。
 

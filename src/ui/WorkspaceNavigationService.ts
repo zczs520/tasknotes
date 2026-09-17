@@ -1,15 +1,11 @@
-import {
-	Platform,
-	TFile,
-	WorkspaceLeaf,
-	normalizePath,
-} from "obsidian";
+import { Platform, TFile, WorkspaceLeaf, normalizePath } from "obsidian";
 import type TaskNotesPlugin from "../main";
 import {
 	AGENDA_VIEW_TYPE,
 	POMODORO_STATS_VIEW_TYPE,
 	POMODORO_VIEW_TYPE,
 	STATS_VIEW_TYPE,
+	GOALS_VIEW_TYPE,
 } from "../types";
 import { RELEASE_NOTES_VIEW_TYPE } from "../views/ReleaseNotesView";
 import { showNotice } from "../ui/notifications";
@@ -18,7 +14,11 @@ type WorkspaceLeafLike = {
 	isDeferred?: boolean;
 	loadIfDeferred(): Promise<void>;
 	openFile?(file: TFile): Promise<void>;
-	setViewState(state: { type: string; active?: boolean }): Promise<void>;
+	setViewState(state: {
+		type: string;
+		active?: boolean;
+		state?: Record<string, unknown>;
+	}): Promise<void>;
 	view?: {
 		file?: TFile;
 		getState?(): { file?: string };
@@ -101,6 +101,18 @@ export class WorkspaceNavigationService {
 
 	async activateStatsView(): Promise<WorkspaceLeaf> {
 		return this.activateView(STATS_VIEW_TYPE);
+	}
+
+	async activateGoalsView(goalPath?: string): Promise<WorkspaceLeaf> {
+		const leaf = await this.activateView(GOALS_VIEW_TYPE);
+		if (goalPath) {
+			await leaf.setViewState({
+				type: GOALS_VIEW_TYPE,
+				active: true,
+				state: { selectedGoalPath: goalPath },
+			});
+		}
+		return leaf;
 	}
 
 	async activateReleaseNotesView(): Promise<WorkspaceLeaf> {

@@ -166,6 +166,7 @@ export default class TaskNotesPlugin extends Plugin {
 	expandedProjectsService: ExpandedProjectsService;
 	autoArchiveService: AutoArchiveService;
 	viewPerformanceService: ViewPerformanceService;
+	goalService: import("./services/GoalService").GoalService;
 
 	// Task selection service for batch operations
 	taskSelectionService: import("./services/TaskSelectionService").TaskSelectionService;
@@ -819,6 +820,10 @@ export default class TaskNotesPlugin extends Plugin {
 
 	async activateStatsView() {
 		return this.workspaceNavigationService.activateStatsView();
+	}
+
+	async activateGoalsView(goalPath?: string) {
+		return this.workspaceNavigationService.activateGoalsView(goalPath);
 	}
 
 	async activateReleaseNotesView() {

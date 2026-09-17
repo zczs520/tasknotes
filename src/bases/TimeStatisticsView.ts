@@ -25,6 +25,10 @@ import {
 import { createTaskNotesLogger } from "../utils/tasknotesLogger";
 import { BasesViewBase } from "./BasesViewBase";
 import { identifyTaskNotesFromBasesData, hasFixedTaskIdentity } from "./helpers";
+import { renderGoalProgressPanel } from "../ui/goals/GoalProgressPanel";
+import { findGoalForTags } from "../goals/goalCalculations";
+import type { GoalDefinition } from "../goals/goalTypes";
+import { applyStatisticsTagColor } from "../utils/statisticsColors";
 
 const tasknotesLogger = createTaskNotesLogger({ tag: "Bases/TimeStatisticsView" });
 const PERIODS: readonly TimeStatisticsPeriod[] = ["day", "week", "month", "year"];
@@ -50,15 +54,6 @@ interface RecordGroup {
 	segments: TimeStatisticsSegment[];
 }
 
-const PRESET_TAG_COLOR_INDEX: Readonly<Record<string, number>> = {
-	产品设计: 0,
-	后台开发: 1,
-	标签系统: 2,
-	运营: 3,
-	其他: 7,
-	untagged: 7,
-};
-
 function padNumber(value: number): string {
 	return String(value).padStart(2, "0");
 }
@@ -77,18 +72,8 @@ export function getDayTimelineEndMinute(segment: TimeStatisticsSegment): number 
 		: DAY_TIMELINE_END_HOUR * 60;
 }
 
-function colorIndexForValue(value: string): number {
-	const preset = PRESET_TAG_COLOR_INDEX[value];
-	if (preset !== undefined) return preset;
-	let hash = 0;
-	for (let index = 0; index < value.length; index += 1) {
-		hash = (hash * 31 + value.charCodeAt(index)) | 0;
-	}
-	return Math.abs(hash) % 8;
-}
-
-function getPrimaryTag(tags: readonly string[]): string {
-	return tags[0] ?? "untagged";
+function getPrimaryTag(tags: readonly string[]): string | null {
+	return tags[0] ?? null;
 }
 
 function getLocalDateKey(date: Date): string {
@@ -109,6 +94,7 @@ export class TimeStatisticsView extends BasesViewBase {
 	type = "tasknotesTimeStatistics";
 	private period: TimeStatisticsPeriod = "day";
 	private referenceDate = new Date();
+	private renderVersion = 0;
 
 	onload(): void {
 		super.onload();
@@ -400,11 +386,10 @@ export class TimeStatisticsView extends BasesViewBase {
 			segment.end
 		)} · ${this.formatDuration(segment.durationMs)}`;
 		const button = parent.createEl("button", {
-			cls: `${className} is-color-${colorIndexForValue(getPrimaryTag(segment.tags))}${
-				segment.isActive ? " is-active" : ""
-			}`,
+			cls: `${className}${segment.isActive ? " is-active" : ""}`,
 			attr: { type: "button", title: label, "aria-label": label },
 		});
+		applyStatisticsTagColor(button, getPrimaryTag(segment.tags));
 		button.addEventListener("click", () => this.openTask(segment.taskPath));
 		return button;
 	}
@@ -506,15 +491,15 @@ export class TimeStatisticsView extends BasesViewBase {
 			)}%`;
 			if (bucket.durationMs === 0) track.addClass("is-empty");
 			for (const tag of byTag) {
-				const key = tag.tag ?? "untagged";
 				const segment = track.createDiv({
-					cls: `tn-time-statistics__bar-segment is-color-${colorIndexForValue(key)}`,
+					cls: "tn-time-statistics__bar-segment",
 					attr: {
 						"aria-label": `${tag.tag ?? this.translate("untagged")} · ${this.formatDuration(
 							tag.durationMs
 						)}`,
 					},
 				});
+				applyStatisticsTagColor(segment, tag.tag);
 				segment.style.flexGrow = String(tag.durationMs);
 			}
 			column.createDiv({ cls: "tn-time-statistics__bar-label", text: bucket.label });
@@ -529,10 +514,10 @@ export class TimeStatisticsView extends BasesViewBase {
 				tooltipHeader.createSpan({ text: bucket.label });
 				tooltipHeader.createSpan({ text: this.formatDuration(bucket.durationMs) });
 				for (const tag of byTag) {
-					const key = tag.tag ?? "untagged";
 					const row = tooltip.createDiv({ cls: "tn-time-statistics__bar-tooltip-row" });
+					applyStatisticsTagColor(row, tag.tag);
 					row.createSpan({
-						cls: `tn-time-statistics__color-dot is-color-${colorIndexForValue(key)}`,
+						cls: "tn-time-statistics__color-dot",
 					});
 					row.createSpan({
 						cls: "tn-time-statistics__bar-tooltip-tag",
@@ -651,40 +636,91 @@ export class TimeStatisticsView extends BasesViewBase {
 		this.renderBarChart(parent, buckets);
 	}
 
-	private renderTaskRanking(parent: HTMLElement, tasks: readonly TaskTimeStatistic[]): void {
-		const section = this.createPanel(parent, this.translate("ranking.title"));
+	private renderTaskRanking(
+		parent: HTMLElement,
+		tasks: readonly TaskTimeStatistic[],
+		goals: readonly GoalDefinition[]
+	): void {
+		const chinese = this.plugin.i18n.getCurrentLocale() === "zh";
+		const hasGoals = goals.length > 0;
+		const section = this.createPanel(
+			parent,
+			this.translate("ranking.title"),
+			chinese ? `共 ${tasks.length} 个任务` : `${tasks.length} tasks`
+		);
 		section.addClass("tn-time-statistics__ranking");
+		if (!hasGoals) section.addClass("tn-time-statistics__ranking--classic");
+		const heading = section.querySelector<HTMLElement>(".tn-time-statistics__panel-heading");
+		const description = section.ownerDocument.createElement("span");
+		description.className = "tn-time-statistics__rank-description";
+		description.textContent = chinese
+			? `${{ day: "当日", week: "本周", month: "本月", year: "全年" }[this.period]}单任务用时 Top 6 · 右侧标明算给了哪个目标`
+			: "Task time Top 6 · goal attribution on the right";
+		if (hasGoals)
+			heading?.querySelector(".tn-time-statistics__panel-title")?.after(description);
 		const maxDuration = Math.max(1, tasks[0]?.durationMs ?? 1);
-		for (const task of tasks) {
-			const primaryTag = task.tags[0] ?? null;
-			const colorKey = primaryTag ?? "untagged";
-			const row = section.createEl("button", {
-				cls: "tn-time-statistics__rank-row",
-				attr: { type: "button" },
+		const list = section.createDiv({ cls: "tn-time-statistics__ranking-list" });
+		for (const [index, task] of (hasGoals ? tasks.slice(0, 6) : tasks).entries()) {
+			const owner = findGoalForTags(goals, task.tags);
+			const row = list.createEl("button", {
+				cls: `tn-time-statistics__rank-row is-goal-${owner?.mode ?? "unassigned"}`,
+				attr: {
+					type: "button",
+					"aria-label": `${task.taskTitle} · ${this.formatDuration(task.durationMs)}`,
+				},
 			});
+			applyStatisticsTagColor(row, getPrimaryTag(task.tags));
 			row.addEventListener("click", () => this.openTask(task.taskPath));
 			row.createSpan({
-				cls: `tn-time-statistics__color-dot is-color-${colorIndexForValue(colorKey)}`,
+				cls: hasGoals ? "tn-time-statistics__rank-number" : "tn-time-statistics__color-dot",
+				text: hasGoals ? String(index + 1) : "",
 			});
 			row.createSpan({
 				cls: "tn-time-statistics__rank-name",
 				text: task.taskTitle,
 				attr: { title: task.taskTitle },
 			});
-			row.createSpan({
-				cls: "tn-time-statistics__rank-duration",
-				text: this.formatDuration(task.durationMs),
-			});
 			const bar = row.createSpan({ cls: "tn-time-statistics__rank-bar" });
 			const fill = bar.createSpan({
-				cls: `tn-time-statistics__rank-bar-fill is-color-${colorIndexForValue(colorKey)}`,
+				cls: "tn-time-statistics__rank-bar-fill",
 			});
 			fill.style.width = `${(task.durationMs / maxDuration) * 100}%`;
+			row.createSpan({
+				cls: "tn-time-statistics__rank-duration",
+				text: hasGoals
+					? this.formatCompactDuration(task.durationMs)
+					: this.formatDuration(task.durationMs),
+			});
+			if (hasGoals)
+				row.createSpan({
+					cls: `tn-time-statistics__goal-owner${owner ? "" : " is-unassigned"}`,
+					text: this.goalOwnerLabel(owner, goals, false),
+					attr: { title: this.goalOwnerLabel(owner, goals, false) },
+				});
 		}
 	}
 
-	private renderTagDistribution(parent: HTMLElement, tags: readonly TagTimeStatistic[]): void {
-		const section = parent.createDiv({ cls: "tn-time-statistics__side-section" });
+	private goalOwnerLabel(
+		owner: GoalDefinition | null,
+		goals: readonly GoalDefinition[],
+		withPrefix = true
+	): string {
+		const chinese = this.plugin.i18n.getCurrentLocale() === "zh";
+		if (!owner) return chinese ? "未分配" : "Unassigned";
+		const parent = goals.find((goal) => goal.name === owner.parent);
+		return `${withPrefix ? (chinese ? "算给 " : "To ") : ""}${parent ? `${parent.name} › ` : ""}${owner.name}`;
+	}
+
+	private renderTagDistribution(
+		parent: HTMLElement,
+		tags: readonly TagTimeStatistic[],
+		goals: readonly GoalDefinition[]
+	): void {
+		const chinese = this.plugin.i18n.getCurrentLocale() === "zh";
+		const hasGoals = goals.length > 0;
+		const section = parent.createDiv({
+			cls: `tn-time-statistics__side-section tn-time-statistics__tags${hasGoals ? "" : " tn-time-statistics__tags--classic"}`,
+		});
 		const heading = section.createDiv({ cls: "tn-time-statistics__side-heading" });
 		heading.createEl("h3", {
 			cls: "tn-time-statistics__panel-title",
@@ -692,42 +728,126 @@ export class TimeStatisticsView extends BasesViewBase {
 		});
 		heading.createSpan({
 			cls: "tn-time-statistics__panel-hint",
-			text: this.translate("summary.tagCount", { count: tags.length }),
+			text: `${this.translate("summary.tagCount", { count: tags.filter((tag) => tag.tag !== null).length })}${hasGoals ? ` · ${chinese ? "每行标明算给了哪个目标" : "Goal attribution per tag"}` : ""}`,
 		});
 		const attributedTotal = tags.reduce((total, tag) => total + tag.durationMs, 0);
-		const strip = section.createDiv({ cls: "tn-time-statistics__distribution-strip" });
-		for (const tag of tags) {
-			const key = tag.tag ?? "untagged";
-			const segment = strip.createSpan({
-				cls: `is-color-${colorIndexForValue(key)}`,
+		const maxDuration = Math.max(1, ...tags.map((tag) => tag.durationMs));
+		if (!tags.length) {
+			section.createDiv({
+				cls: "tn-time-statistics__tag-empty",
+				text: chinese ? "本期暂无标签计时记录" : "No tracked tags in this period",
 			});
-			segment.style.width = `${attributedTotal > 0 ? (tag.durationMs / attributedTotal) * 100 : 0}%`;
+			return;
+		}
+		const list = section.createDiv({ cls: "tn-time-statistics__tag-list" });
+		if (!hasGoals) {
+			const strip = section.createDiv({ cls: "tn-time-statistics__distribution-strip" });
+			list.before(strip);
+			for (const tag of tags.filter((item) => item.durationMs > 0)) {
+				const segment = strip.createSpan();
+				applyStatisticsTagColor(segment, tag.tag);
+				segment.style.width = `${(tag.durationMs / attributedTotal) * 100}%`;
+			}
 		}
 		for (const tag of tags) {
-			const key = tag.tag ?? "untagged";
+			const owner = tag.tag ? findGoalForTags(goals, [tag.tag]) : null;
 			const percentage =
 				attributedTotal > 0 ? Math.round((tag.durationMs / attributedTotal) * 100) : 0;
-			const row = section.createDiv({ cls: "tn-time-statistics__tag-row" });
-			row.createSpan({
-				cls: `tn-time-statistics__color-dot is-color-${colorIndexForValue(key)}`,
+			const row = list.createDiv({
+				cls: `tn-time-statistics__tag-row is-goal-${owner?.mode ?? "unassigned"}`,
 			});
-			row.createSpan({
-				cls: "tn-time-statistics__tag-name",
+			applyStatisticsTagColor(row, tag.tag);
+			if (!hasGoals) {
+				row.createSpan({ cls: "tn-time-statistics__color-dot" });
+				row.createSpan({
+					cls: "tn-time-statistics__tag-name",
+					text: tag.tag ?? this.translate("untagged"),
+					attr: { title: tag.tag ?? this.translate("untagged") },
+				});
+				row.createSpan({
+					cls: "tn-time-statistics__tag-duration",
+					text: this.formatDuration(tag.durationMs),
+				});
+				row.createSpan({ cls: "tn-time-statistics__tag-percent", text: `${percentage}%` });
+				continue;
+			}
+			const top = row.createDiv({ cls: "tn-time-statistics__tag-top" });
+			top.createSpan({
+				cls: "tn-time-statistics__tag-chip",
 				text: tag.tag ?? this.translate("untagged"),
+				attr: { title: tag.tag ?? this.translate("untagged") },
+			});
+			const bar = top.createSpan({ cls: "tn-time-statistics__tag-bar" });
+			const fill = bar.createSpan({ cls: "tn-time-statistics__tag-fill" });
+			fill.style.width = `${(tag.durationMs / maxDuration) * 100}%`;
+			top.createSpan({
+				cls: "tn-time-statistics__tag-duration",
+				text: `${(tag.durationMs / 3_600_000).toFixed(tag.durationMs > 0 ? 1 : 0)}h · ${percentage}%`,
 			});
 			row.createSpan({
-				cls: "tn-time-statistics__tag-duration",
-				text: this.formatDuration(tag.durationMs),
+				cls: `tn-time-statistics__goal-owner${owner ? "" : " is-unassigned"}`,
+				text: this.goalOwnerLabel(owner, goals),
 			});
-			row.createSpan({ cls: "tn-time-statistics__tag-percent", text: `${percentage}%` });
 		}
 	}
 
-	private renderInsights(parent: HTMLElement, tags: readonly TagTimeStatistic[]): void {
+	private async renderInsights(
+		parent: HTMLElement,
+		tasks: readonly TaskInfo[],
+		tags: readonly TagTimeStatistic[],
+		goals: readonly GoalDefinition[]
+	): Promise<void> {
 		const panel = parent.createDiv({
 			cls: "tn-time-statistics__panel tn-time-statistics__insights",
 		});
-		this.renderTagDistribution(panel, tags);
+		if (!goals.length) {
+			parent.addClass("tn-time-statistics__breakdown--classic");
+			panel.addClass("tn-time-statistics__insights--classic");
+			this.renderTagDistribution(panel, tags, goals);
+			return;
+		}
+		const goalHost = panel.createDiv({ cls: "tn-time-statistics__goal-section" });
+		this.renderTagDistribution(panel, tags, goals);
+		try {
+			await renderGoalProgressPanel(goalHost, this.plugin, tasks, {
+				variant: "statistics",
+				period: this.period,
+				referenceDate: this.referenceDate,
+				readOnly: !isCurrentTimeStatisticsPeriod(
+					this.referenceDate,
+					this.period,
+					new Date(),
+					this.getWeekStartsOn()
+				),
+				onRefresh: () => this.render(),
+				onOpenGoal: async (path) => {
+					await this.plugin.activateGoalsView(path);
+				},
+				recommendedTags: tags
+					.map((tag) => tag.tag)
+					.filter((tag): tag is string => Boolean(tag)),
+			});
+			// Historical/mobile snapshots can have attribution goals but no visible panel.
+			if (!goalHost.querySelector(".tn-goal-ledger__row, .tn-goal-ledger__milestones")) {
+				goalHost.remove();
+				panel.addClass("tn-time-statistics__insights--single");
+			}
+		} catch (error) {
+			panel.addClass("tn-time-statistics__insights--single");
+			goalHost.empty();
+			goalHost.createDiv({
+				cls: "tn-time-statistics__tag-empty",
+				text:
+					this.plugin.i18n.getCurrentLocale() === "zh"
+						? "目标暂时无法读取，标签统计仍可查看。"
+						: "Goals unavailable. Tag statistics remain visible.",
+			});
+			tasknotesLogger.error("Failed to render goal statistics", {
+				category: "internal",
+				operation: "render-goals",
+				error,
+			});
+		}
 	}
 
 	private formatRecordDate(date: Date): string {
@@ -762,8 +882,13 @@ export class TimeStatisticsView extends BasesViewBase {
 		return [...groups.values()].slice(0, limit);
 	}
 
-	private renderRecords(parent: HTMLElement, segments: readonly TimeStatisticsSegment[]): void {
+	private renderRecords(
+		parent: HTMLElement,
+		segments: readonly TimeStatisticsSegment[],
+		tasks: readonly TaskInfo[]
+	): void {
 		const groups = this.groupRecordSegments(segments);
+		const taskByPath = new Map(tasks.map((task) => [task.path, task]));
 		const sessionCount = new Set(segments.map((segment) => segment.sessionKey)).size;
 		const hint =
 			this.plugin.i18n.getCurrentLocale() === "zh"
@@ -784,23 +909,37 @@ export class TimeStatisticsView extends BasesViewBase {
 				text: this.formatDuration(group.durationMs),
 			});
 			for (const segment of group.segments) {
-				const colorKey = getPrimaryTag(segment.tags);
-				const row = list.createEl("button", {
+				const row = list.createDiv({
 					cls: `tn-time-statistics__record-row${segment.isActive ? " is-active" : ""}`,
-					attr: { type: "button" },
 				});
-				row.addEventListener("click", () => this.openTask(segment.taskPath));
+				applyStatisticsTagColor(row, getPrimaryTag(segment.tags));
 				row.createSpan({
-					cls: `tn-time-statistics__color-dot is-color-${colorIndexForValue(colorKey)}`,
+					cls: "tn-time-statistics__color-dot",
 				});
 				row.createSpan({
 					cls: "tn-time-statistics__record-time",
 					text: `${formatClockTime(segment.start)} – ${formatClockTime(segment.end)}`,
 				});
-				row.createSpan({ cls: "tn-time-statistics__record-task", text: segment.taskTitle });
+				const taskLink = row.createEl("button", {
+					cls: "tn-time-statistics__record-task",
+					text: segment.taskTitle,
+					attr: { type: "button", title: segment.taskTitle },
+				});
+				taskLink.addEventListener("click", () => this.openTask(segment.taskPath));
 				row.createSpan({
-					cls: `tn-time-statistics__record-tag is-color-${colorIndexForValue(colorKey)}`,
+					cls: "tn-time-statistics__record-tag",
 					text: segment.tags[0] ?? this.translate("untagged"),
+				});
+				const edit = row.createEl("button", {
+					cls: "tn-time-statistics__record-edit",
+					text: this.plugin.i18n.getCurrentLocale() === "zh" ? "编辑" : "Edit",
+					attr: { type: "button" },
+				});
+				const task = taskByPath.get(segment.taskPath);
+				edit.disabled = !task;
+				edit.addEventListener("click", () => {
+					if (!task) return;
+					this.plugin.openTimeEntryEditor(task, () => void this.render());
 				});
 				row.createSpan({
 					cls: "tn-time-statistics__record-duration",
@@ -826,11 +965,13 @@ export class TimeStatisticsView extends BasesViewBase {
 
 	async render(): Promise<void> {
 		if (!this.rootElement || !this.data?.data) return;
+		const version = ++this.renderVersion;
 		try {
 			const tasks = await identifyTaskNotesFromBasesData(
 				this.dataAdapter.extractDataItems().filter(hasFixedTaskIdentity),
 				this.plugin
 			);
+			if (version !== this.renderVersion) return;
 			const range = getTimeStatisticsRange(
 				this.referenceDate,
 				this.period,
@@ -838,26 +979,48 @@ export class TimeStatisticsView extends BasesViewBase {
 			);
 			const segments = buildTimeStatisticsSegments(tasks, range, new Date());
 			const taskStats = buildTaskTimeStatistics(segments);
-			const tagStats = buildTagTimeStatistics(segments);
+			const tagStats = buildTagTimeStatistics(segments, tasks);
 			const dailyStats = buildDailyTimeStatistics(segments, range);
+			const goals = await this.plugin.goalService
+				.listGoals()
+				.catch((error): GoalDefinition[] => {
+					tasknotesLogger.error("Failed to read goal attribution", {
+						category: "internal",
+						operation: "list-goals",
+						error,
+					});
+					return [];
+				});
+			if (version !== this.renderVersion) return;
 
-			this.rootElement.empty();
-			this.rootElement.addClass("tn-time-statistics");
-			const shell = this.rootElement.createDiv({ cls: "tn-time-statistics__shell" });
+			// Build off-screen so a slower period request cannot erase newer statistics.
+			const shell = this.rootElement.ownerDocument.createElement("div");
+			shell.className = "tn-time-statistics__shell";
 			this.renderHeader(shell, range);
 			this.renderSummary(shell, segments, taskStats);
 			if (segments.length === 0) {
 				this.renderEmptyState(shell);
+				const details = shell.createDiv({ cls: "tn-time-statistics__details" });
+				const breakdown = details.createDiv({ cls: "tn-time-statistics__breakdown" });
+				await this.renderInsights(breakdown, tasks, tagStats, goals);
+				this.renderTaskRanking(breakdown, taskStats, goals);
+				if (version !== this.renderVersion) return;
+				this.rootElement.addClass("tn-time-statistics");
+				this.rootElement.replaceChildren(shell);
 				return;
 			}
 			const overview = shell.createDiv({ cls: "tn-time-statistics__overview" });
 			this.renderMainChart(overview, range, segments, dailyStats);
 			const details = shell.createDiv({ cls: "tn-time-statistics__details" });
 			const breakdown = details.createDiv({ cls: "tn-time-statistics__breakdown" });
-			this.renderInsights(breakdown, tagStats);
-			this.renderTaskRanking(breakdown, taskStats);
-			this.renderRecords(details, segments);
+			await this.renderInsights(breakdown, tasks, tagStats, goals);
+			this.renderTaskRanking(breakdown, taskStats, goals);
+			this.renderRecords(details, segments, tasks);
+			if (version !== this.renderVersion) return;
+			this.rootElement.addClass("tn-time-statistics");
+			this.rootElement.replaceChildren(shell);
 		} catch (error) {
+			if (version !== this.renderVersion) return;
 			tasknotesLogger.error("Failed to render time statistics", {
 				category: "internal",
 				operation: "render",

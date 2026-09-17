@@ -12,13 +12,13 @@ export const PRODUCT_GUIDES = [
 	{ path: STARTER_NOTE_CHINESE_PATH, content: STARTER_NOTE_CHINESE_CONTENT },
 	{
 		path: "TASKquence/看板使用说明.md",
-		content: `# TASKquence 看板使用说明
+		content: `# TaskNotes Time 看板使用说明
 
 > English: [[TASKquence/Kanban Guide|Kanban Guide]] · [[TASKquence/开始使用|返回入门指南]]
 
 ## 打开你的第一个看板
 
-启用 Obsidian 核心插件 Bases 后，点击左侧看板图标，或运行“TASKquence: 打开看板”。默认文件是 [[TASKquence/Views/kanban-default.base]]。缺少文件时，在“设置 → TASKquence → 常规 → 视图与 Base 文件”中开启看板并点击“创建文件”。
+启用 Obsidian 核心插件 Bases 后，点击左侧看板图标，或运行“TaskNotes Time: 打开看板”。默认文件是 [[TASKquence/Views/kanban-default.base]]。缺少文件时，在“设置 → TaskNotes Time → 常规 → 视图与 Base 文件”中开启看板并点击“创建文件”。
 
 ## 哪些笔记会出现在这里
 
@@ -56,13 +56,13 @@ export const PRODUCT_GUIDES = [
 	},
 	{
 		path: "TASKquence/Kanban Guide.md",
-		content: `# TASKquence Kanban guide
+		content: `# TaskNotes Time Kanban guide
 
 > 中文：[[TASKquence/看板使用说明]] · [[TASKquence/Start Here|Getting started]]
 
 ## Open your board
 
-Enable Obsidian's Bases core plugin, then use the ribbon's Kanban icon or “TASKquence: Open Kanban board”. The default file is [[TASKquence/Views/kanban-default.base]]. If missing, enable Kanban under Settings → TASKquence → General → Views & base files and select Create files.
+Enable Obsidian's Bases core plugin, then use the ribbon's Kanban icon or “TaskNotes Time: Open Kanban board”. The default file is [[TASKquence/Views/kanban-default.base]]. If missing, enable Kanban under Settings → TaskNotes Time → General → Views & base files and select Create files.
 
 ## Which notes appear?
 
@@ -99,15 +99,15 @@ Start and stop a timer from a task card, then open [[TASKquence/Views/time-stati
 	},
 	{
 		path: "TASKquence/Tasks/App/TASKquence iOS 中文指南.md",
-		content: `# 在 iPhone 上使用 TASKquence
+		content: `# 在 iPhone 上使用 TaskNotes Time
 
 > English: [[TASKquence/Tasks/App/TASKquence iOS]] · [[TASKquence/开始使用|插件入门]]
 
-TASKquence 提供 iOS 端，可与 Obsidian 插件搭配使用：在电脑上用看板安排任务、记录时间和查看统计，在 iPhone 上使用配套 App 管理日常事项。
+TaskNotes Time 提供 iOS 端，可与 Obsidian 插件搭配使用：在电脑上用看板安排任务、记录时间和查看统计，在 iPhone 上使用配套 App 管理日常事项。
 
 ## 下载
 
-在 iPhone 的 App Store 中搜索 **TASKquence**，找到对应应用后下载。具体上架地区、系统要求和功能以 App Store 页面为准。
+在 iPhone 的 App Store 中搜索 **TaskNotes Time**，找到对应应用后下载。具体上架地区、系统要求和功能以 App Store 页面为准。
 
 ## 配合插件使用
 
@@ -123,15 +123,15 @@ TASKquence 提供 iOS 端，可与 Obsidian 插件搭配使用：在电脑上用
 	},
 	{
 		path: "TASKquence/Tasks/App/TASKquence iOS.md",
-		content: `# TASKquence on iPhone
+		content: `# TaskNotes Time on iPhone
 
 > 中文：[[TASKquence/Tasks/App/TASKquence iOS 中文指南]] · [[TASKquence/Start Here|Plugin setup]]
 
-TASKquence has an iOS companion you can use alongside the Obsidian plugin. Plan tasks, track time and review statistics on your computer, and use the companion app for everyday activity on iPhone.
+TaskNotes Time has an iOS companion you can use alongside the Obsidian plugin. Plan tasks, track time and review statistics on your computer, and use the companion app for everyday activity on iPhone.
 
 ## Download
 
-Search for **TASKquence** in the App Store on your iPhone and download the matching app. Availability, system requirements and features are listed on its App Store page.
+Search for **TaskNotes Time** in the App Store on your iPhone and download the matching app. Availability, system requirements and features are listed on its App Store page.
 
 ## Use both together
 

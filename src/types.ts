@@ -8,6 +8,7 @@ export const AGENDA_VIEW_TYPE = "tasknotes-agenda-view";
 export const POMODORO_VIEW_TYPE = "tasknotes-pomodoro-view";
 export const POMODORO_STATS_VIEW_TYPE = "tasknotes-pomodoro-stats-view";
 export const STATS_VIEW_TYPE = "tasknotes-stats-view";
+export const GOALS_VIEW_TYPE = "tasknotes-goals-view";
 export const KANBAN_VIEW_TYPE = "tasknotes-kanban-view";
 export const SUBTASK_WIDGET_VIEW_TYPE = "tasknotes-subtask-widget-view";
 
@@ -464,7 +465,7 @@ export interface TaskInfo {
 	contexts?: string[];
 	projects?: string[];
 	recurrence?: string; // RFC 5545 recurrence rule string
-	recurrence_anchor?: 'scheduled' | 'completion'; // Determines if recurrence is from scheduled date (fixed) or completion date (flexible). Defaults to 'scheduled'
+	recurrence_anchor?: "scheduled" | "completion"; // Determines if recurrence is from scheduled date (fixed) or completion date (flexible). Defaults to 'scheduled'
 	complete_instances?: string[]; // Array of dates (YYYY-MM-DD) when recurring task was completed
 	skipped_instances?: string[]; // Array of dates (YYYY-MM-DD) when recurring task was skipped
 	recurrence_parent?: string; // Link/path to the parent recurring task when this is a materialized occurrence
@@ -500,7 +501,13 @@ export interface TaskInfo {
 export interface TaskCreationData extends Partial<TaskInfo> {
 	details?: string; // Optional details/description for file content
 	parentNote?: string; // Optional parent note name/path for template variable
-	creationContext?: "inline-conversion" | "manual-creation" | "modal-inline-creation" | "api" | "import" | "ics-event"; // Context for folder determination
+	creationContext?:
+		| "inline-conversion"
+		| "manual-creation"
+		| "modal-inline-creation"
+		| "api"
+		| "import"
+		| "ics-event"; // Context for folder determination
 	customFrontmatter?: Record<string, unknown>; // Custom frontmatter properties (including user fields)
 }
 

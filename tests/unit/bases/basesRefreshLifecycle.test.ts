@@ -95,6 +95,28 @@ describe("Bases refresh lifecycle helpers", () => {
 		expect(refresh).not.toHaveBeenCalled();
 	});
 
+	it("observes rejected presentation saves without scheduling a full refresh or changing the returned promise", async () => {
+		const view = {};
+		const failedSave = Promise.reject(new Error("Read-only base"));
+		const original = jest.fn(() => failedSave);
+		const controller = { view, onConfigChanged: original };
+		const refresh = jest.fn();
+		const scheduleTimeout = jest.fn();
+		installBasesConfigRefreshHook({
+			controller,
+			view,
+			isConnected: () => true,
+			refresh,
+			shouldRefresh: () => false,
+			scheduleTimeout,
+		});
+		const result = controller.onConfigChanged();
+		expect(result).toBe(failedSave);
+		await expect(result).rejects.toThrow("Read-only base");
+		expect(refresh).not.toHaveBeenCalled();
+		expect(scheduleTimeout).not.toHaveBeenCalled();
+	});
+
 	it("debounces data update renders and reports synchronous render errors", () => {
 		const beforeRender = jest.fn();
 		const render = jest.fn();

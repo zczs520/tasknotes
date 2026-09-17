@@ -2,7 +2,7 @@ import { TranslationTree } from "../types";
 
 export const pt: TranslationTree = {
 	common: {
-		appName: "Dayquence",
+		appName: "TaskNotes Time",
 		new: "Novo",
 		cancel: "Cancelar",
 		confirm: "Confirmar",
@@ -515,8 +515,8 @@ export const pt: TranslationTree = {
 			loading: "Carregando...",
 		},
 		releaseNotes: {
-			title: "O que há de novo no TaskNotes {version}",
-			header: "O que há de novo no TaskNotes {version}",
+			title: "O que há de novo no TaskNotes Time {version}",
+			header: "O que há de novo no TaskNotes Time {version}",
 			viewAllLink: "Ver todas as notas de lançamento no GitHub →",
 			starMessage:
 				"Agradecemos muito todo feedback. Se algo não parecer certo, conte para nós no GitHub. Se você acha o TaskNotes útil, considere dar uma estrela.",
@@ -658,10 +658,10 @@ export const pt: TranslationTree = {
 			},
 			uiLanguage: {
 				header: "Idioma da Interface",
-				description: "Altere o idioma dos menus, avisos e visualizações do TaskNotes.",
+				description: "Altere o idioma dos menus, avisos e visualizações do TaskNotes Time.",
 				dropdown: {
 					name: "Idioma da UI",
-					description: "Selecione o idioma usado para o texto da interface do TaskNotes",
+					description: "Selecione o idioma usado para o texto da interface do TaskNotes Time",
 				},
 			},
 			pomodoroSound: {
@@ -2449,7 +2449,7 @@ export const pt: TranslationTree = {
 	notices: {
 		languageChanged: "Idioma alterado para {language}.",
 		releaseAvailable: {
-			message: "TaskNotes {version} está disponível.",
+			message: "TaskNotes Time {version} está disponível.",
 			action: "Abrir nos plugins da comunidade",
 		},
 		exportTasksFailed: "Falha ao exportar tarefas como arquivo ICS",
@@ -2486,7 +2486,8 @@ export const pt: TranslationTree = {
 		openKanbanView: "Abrir quadro kanban",
 		updateDefaultBaseFiles: "Atualizar arquivos Base padrão",
 		openPomodoroStats: "Abrir estatísticas pomodoro",
-		openStatisticsView: "Abrir estatísticas de tarefas e projetos",
+		openStatisticsView: "Abrir estatísticas de tempo",
+		openGoalsView: "Abrir gestão de objetivos",
 		createNewTask: "Criar nova tarefa",
 		convertCurrentNoteToTask: {
 			name: "Converter nota atual em tarefa",
@@ -2829,8 +2830,8 @@ export const pt: TranslationTree = {
 			title: "Criar tarefa",
 			actions: {
 				fillFromNaturalLanguage: "Preencher formulário a partir de linguagem natural",
-				hideDetailedOptions: "Ocultar opções detalhadas",
-				showDetailedOptions: "Mostrar opções detalhadas",
+				hideDetailedOptions: "Ocultar propriedades adicionais",
+				showDetailedOptions: "Mostrar todas as propriedades",
 			},
 			nlPlaceholder: "Comprar mantimentos amanhã às 15h @casa #tarefas",
 			notices: {

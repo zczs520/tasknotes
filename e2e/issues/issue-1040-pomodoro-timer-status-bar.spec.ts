@@ -272,7 +272,7 @@ test.describe('Issue #1040: Pomodoro timer in status bar', () => {
     await page.waitForTimeout(1500);
 
     // Navigate to TaskNotes settings
-    const tasknotesSettings = page.locator('[data-tab="taskquence"], .vertical-tab-nav-item:has-text("TASKquence")');
+    const tasknotesSettings = page.locator('[data-tab="taskquence"], .vertical-tab-nav-item:has-text("TaskNotes Time")');
     if (await tasknotesSettings.isVisible({ timeout: 2000 }).catch(() => false)) {
       await tasknotesSettings.click();
       await page.waitForTimeout(1000);

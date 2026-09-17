@@ -81,6 +81,9 @@ import {
 	shouldRenderKanbanColumn,
 } from "./kanbanGrouping";
 import { createTaskNotesLogger } from "../utils/tasknotesLogger";
+import { renderGoalProgressPanel, type GoalStripState } from "../ui/goals/GoalProgressPanel";
+import { findGoalForTags, parseGoalTarget } from "../goals/goalCalculations";
+import { buildTimeStatisticsSegments, getTimeStatisticsRange } from "../utils/timeStatistics";
 import { filterVisibleSwimLanes, syncAvailableSwimLanes } from "./kanbanSwimLaneVisibility";
 import {
 	filterKanbanTasksByTime,
@@ -232,6 +235,10 @@ export class KanbanView extends BasesViewBase {
 	private boardEl: HTMLElement | null = null;
 	private basesController: KanbanController; // Store controller for accessing query.views
 	private currentTaskElements = new Map<string, HTMLElement>();
+	private goalAttributionByTaskPath = new Map<
+		string,
+		{ goalName: string; hours: number; target: number | null; active: boolean }
+	>();
 	private draggedTaskPath: string | null = null;
 	private draggedTaskPaths: string[] = []; // For batch drag operations
 	private draggedFromColumn: string | null = null; // Track source column for list property handling
@@ -315,6 +322,7 @@ export class KanbanView extends BasesViewBase {
 	private timeFilterStart = "";
 	private timeFilterEnd = "";
 	private timeFilterControls: KanbanTimeFilterControls | null = null;
+	private goalPanelState: GoalStripState = "bar";
 	private configLoaded = false; // Track if we've successfully loaded config
 	/**
 	 * Threshold for enabling virtual scrolling in kanban columns/swimlane cells.
@@ -350,6 +358,7 @@ export class KanbanView extends BasesViewBase {
 	 * Override to preserve scroll position during re-renders.
 	 */
 	onDataUpdated(): void {
+		if (this.presentationConfigWriteDepth > 0) return;
 		// During drag: defer render (destroying DOM kills drop events)
 		if (this.draggedTaskPath) {
 			this.debugLog("ON-DATA-UPDATED: deferred (drag active)", {
@@ -467,6 +476,9 @@ export class KanbanView extends BasesViewBase {
 				expandedRelationshipFilterModeValue
 			);
 			this.hideTopLevelSubtasks = this.config.get("hideTopLevelSubtasks") === true;
+			const goalPanelState = this.config.get("goalPanelState");
+			this.goalPanelState =
+				goalPanelState === "open" || goalPanelState === "off" ? goalPanelState : "bar";
 
 			// Mark config as successfully loaded
 			this.configLoaded = true;
@@ -790,6 +802,52 @@ export class KanbanView extends BasesViewBase {
 		}
 	}
 
+	private placeGoalPanel(host: HTMLElement, state: GoalStripState): void {
+		host.classList.toggle("is-open", state === "open");
+		host.classList.toggle("tn-goal-panel-host--badge", state === "off");
+		if (state === "off" && this.searchContainerEl) this.searchContainerEl.appendChild(host);
+		else if (this.rootElement && this.boardEl)
+			this.rootElement.insertBefore(host, this.boardEl);
+	}
+
+	private setGoalPanelState(host: HTMLElement, state: GoalStripState): void {
+		this.goalPanelState = state;
+		this.placeGoalPanel(host, state);
+		// Presentation-only changes must not empty/remount task columns or reset their scroll.
+		this.setPresentationConfig("goalPanelState", state);
+	}
+
+	private mountGoalPanel(host: HTMLElement): void {
+		const previous = this.rootElement?.querySelector<HTMLElement>(".tn-goal-panel-host");
+		const previousOverlay = previous?.querySelector<HTMLElement>(".tn-goal-strip__overlay");
+		const active = this.containerEl.ownerDocument.activeElement;
+		const input =
+			active &&
+			previous?.contains(active) &&
+			active.matches("input.tn-goal-pending__input:not(:disabled)")
+				? (active as HTMLInputElement)
+				: null;
+		// Keep the old surface visible throughout async progress loading, then commit
+		// once. Live time updates must also preserve an in-progress milestone edit.
+		this.placeGoalPanel(host, this.goalPanelState);
+		previous?.remove();
+		const overlay = host.querySelector<HTMLElement>(".tn-goal-strip__overlay");
+		if (overlay && previousOverlay) overlay.scrollTop = previousOverlay.scrollTop;
+		if (input) {
+			const replacement = Array.from(
+				host.querySelectorAll<HTMLInputElement>(".tn-goal-pending__input")
+			).find(
+				(candidate) =>
+					candidate.dataset.goalPath === input.dataset.goalPath &&
+					candidate.dataset.milestoneIndex === input.dataset.milestoneIndex
+			);
+			if (replacement) {
+				replacement.value = input.value;
+				replacement.focus({ preventScroll: true });
+			}
+		}
+	}
+
 	async render(): Promise<void> {
 		if (!this.boardEl || !this.rootElement) return;
 		if (!this.data?.data) return;
@@ -820,6 +878,47 @@ export class KanbanView extends BasesViewBase {
 			computeBasesFormulas(this.data, dataItems);
 
 			const taskNotes = await identifyTaskNotesFromBasesData(dataItems, this.plugin);
+			const goals = await this.plugin.goalService.listGoals();
+			const weekRange = getTimeStatisticsRange(
+				new Date(),
+				"week",
+				this.plugin.settings.calendarViewSettings.firstDay ?? 0
+			);
+			const weekSegments = buildTimeStatisticsSegments(taskNotes, weekRange, new Date());
+			const taskHours = new Map<string, number>();
+			for (const segment of weekSegments) {
+				taskHours.set(
+					segment.taskPath,
+					(taskHours.get(segment.taskPath) ?? 0) + segment.durationMs / 3_600_000
+				);
+			}
+			this.goalAttributionByTaskPath.clear();
+			for (const task of taskNotes) {
+				const goal = findGoalForTags(goals, task.tags ?? []);
+				if (!goal) continue;
+				this.goalAttributionByTaskPath.set(task.path, {
+					goalName: goal.name,
+					hours: taskHours.get(task.path) ?? 0,
+					target: parseGoalTarget(goal),
+					active: Boolean(task.timeEntries?.some((entry) => !entry.endTime)),
+				});
+			}
+			const goalPanelHost = this.containerEl.ownerDocument.createElement("div");
+			goalPanelHost.className = "tn-goal-panel-host";
+			const currentGoalPanelState = () => this.goalPanelState;
+			await renderGoalProgressPanel(goalPanelHost, this.plugin, taskNotes, {
+				variant: "strip",
+				period: "week",
+				get stripState() {
+					return currentGoalPanelState();
+				},
+				onStripStateChange: (state) => this.setGoalPanelState(goalPanelHost, state),
+				onRefresh: () => this.render(),
+				onOpenGoal: async (path) => {
+					await this.plugin.activateGoalsView(path);
+				},
+			});
+			this.mountGoalPanel(goalPanelHost);
 
 			const timeFilteredTasks = filterKanbanTasksByTime(
 				taskNotes,
@@ -1313,8 +1412,30 @@ export class KanbanView extends BasesViewBase {
 			this.getCardOptions()
 		);
 		cardWrapper.appendChild(card);
+		this.decorateGoalAttribution(card, task);
 		this.setupCardDragHandlers(cardWrapper, task);
 		return cardWrapper;
+	}
+
+	private decorateGoalAttribution(card: HTMLElement, task: TaskInfo): void {
+		const attribution = this.goalAttributionByTaskPath.get(task.path);
+		if (!attribution) return;
+		const chinese = this.plugin.i18n.getCurrentLocale() === "zh";
+		const detail = card.ownerDocument.createElement("div");
+		detail.className = "tn-goal-task-attribution";
+		if (attribution.active) {
+			detail.textContent = chinese
+				? `计时中 · 正在为「${attribution.goalName}」积累`
+				: `Tracking · building “${attribution.goalName}”`;
+		} else {
+			const share = attribution.target
+				? ` · ${Math.round((attribution.hours / attribution.target) * 100)}%`
+				: "";
+			detail.textContent = chinese
+				? `本周 ${attribution.hours.toFixed(1)}h · 归入「${attribution.goalName}」${share}`
+				: `${attribution.hours.toFixed(1)}h this week · “${attribution.goalName}”${share}`;
+		}
+		card.appendChild(detail);
 	}
 
 	private renderNormalTaskInDropScope(
@@ -2010,6 +2131,7 @@ export class KanbanView extends BasesViewBase {
 						);
 
 						cardWrapper.appendChild(card);
+						this.decorateGoalAttribution(card, task);
 						this.currentTaskElements.set(task.path, cardWrapper);
 						this.taskInfoCache.set(task.path, task);
 
@@ -2269,6 +2391,7 @@ export class KanbanView extends BasesViewBase {
 
 				const card = createTaskCard(task, this.plugin, visibleProperties, cardOptions);
 				cardWrapper.appendChild(card);
+				this.decorateGoalAttribution(card, task);
 
 				this.taskInfoCache.set(task.path, task);
 				this.setupCardDragHandlers(cardWrapper, task);
@@ -2308,6 +2431,7 @@ export class KanbanView extends BasesViewBase {
 				const card = createTaskCard(task, this.plugin, visibleProperties, cardOptions);
 
 				cardWrapper.appendChild(card);
+				this.decorateGoalAttribution(card, task);
 
 				this.taskInfoCache.set(task.path, task);
 				this.setupCardDragHandlers(cardWrapper, task);
@@ -2334,6 +2458,7 @@ export class KanbanView extends BasesViewBase {
 			const card = createTaskCard(task, this.plugin, visibleProperties, cardOptions);
 
 			cardWrapper.appendChild(card);
+			this.decorateGoalAttribution(card, task);
 			this.currentTaskElements.set(task.path, cardWrapper);
 			this.taskInfoCache.set(task.path, task);
 
@@ -4581,7 +4706,8 @@ export class KanbanView extends BasesViewBase {
 						attr: {
 							type: "button",
 							"aria-label":
-								this.plugin.i18n?.translate("onboarding.editStatus") ?? "Edit status",
+								this.plugin.i18n?.translate("onboarding.editStatus") ??
+								"Edit status",
 						},
 					});
 					setIcon(button, "ellipsis");

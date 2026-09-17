@@ -131,6 +131,7 @@ export abstract class BasesViewBase extends Component {
 	protected updateDebounceTimer: number | null = null;
 	protected dataUpdateDebounceTimer: number | null = null;
 	private restoreConfigChangeHook: (() => void) | null = null;
+	protected presentationConfigWriteDepth = 0;
 	protected relevantPathsCache: Set<string> = new Set();
 
 	// Search functionality (opt-in via enableSearch flag)
@@ -171,6 +172,7 @@ export abstract class BasesViewBase extends Component {
 			view: this,
 			isConnected: () => Boolean(this.rootElement?.isConnected),
 			refresh: () => this.debouncedRefresh(),
+			shouldRefresh: () => this.presentationConfigWriteDepth === 0,
 			scheduleTimeout: (callback, delayMs) => {
 				const scheduler = this.getTimeoutScheduler();
 				scheduler.setTimeout(callback, delayMs);
@@ -195,6 +197,16 @@ export abstract class BasesViewBase extends Component {
 		};
 	}
 
+	/** Persist locally rendered UI state without scheduling an additional full render. */
+	protected setPresentationConfig(key: string, value: unknown): void {
+		this.presentationConfigWriteDepth += 1;
+		try {
+			this.config.set(key, value);
+		} finally {
+			this.presentationConfigWriteDepth -= 1;
+		}
+	}
+
 	/**
 	 * Component lifecycle: Called when view is first loaded.
 	 * Override from Component base class.
@@ -213,6 +225,7 @@ export abstract class BasesViewBase extends Component {
 	 * Debounced to prevent excessive re-renders during rapid file saves.
 	 */
 	onDataUpdated(): void {
+		if (this.presentationConfigWriteDepth > 0) return;
 		// Skip if view is not visible
 		if (!this.rootElement?.isConnected) {
 			return;

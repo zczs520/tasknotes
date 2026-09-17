@@ -8,7 +8,7 @@ import {
 import { ensureProductGuides, PRODUCT_GUIDES } from "../../../src/bootstrap/productGuides";
 import { hasFixedTaskIdentity } from "../../../src/bases/helpers";
 
-describe("TASKquence product defaults", () => {
+describe("TaskNotes Time product defaults", () => {
 	it("locks the identity when loading legacy settings and preserves opt-in views and custom folders", () => {
 		const { settings } = buildSettingsFromLoadedData({
 			taskIdentificationMethod: "tag",

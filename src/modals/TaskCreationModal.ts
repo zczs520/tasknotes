@@ -208,13 +208,10 @@ export class TaskCreationModal extends TaskModal {
 	}
 
 	/**
-	 * Keep the task title as the visual anchor and expose NLP as an optional capture aid.
+	 * Keep creation focused on the title and structured properties.
 	 */
 	protected createPrimaryInput(container: HTMLElement): void {
 		this.createTitleInput(container);
-		if (this.plugin.settings.enableNaturalLanguageInput) {
-			this.createNaturalLanguageInput(container);
-		}
 		this.isExpanded = true;
 		this.containerEl.addClass("expanded");
 	}

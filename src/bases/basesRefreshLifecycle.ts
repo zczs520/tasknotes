@@ -13,6 +13,7 @@ type InstallBasesConfigRefreshHookOptions = {
 	view: unknown;
 	isConnected: () => boolean;
 	refresh: () => void;
+	shouldRefresh?: () => boolean;
 	scheduleTimeout: (callback: () => void, delayMs: number) => void;
 };
 
@@ -41,16 +42,18 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function scheduleConfigRefreshAfterResult(
 	result: unknown,
-	refresh: () => void,
+	refresh: (() => void) | null,
 	scheduleTimeout: (callback: () => void, delayMs: number) => void
 ): void {
 	const maybePromise = result as PromiseLike<unknown> | null;
 	if (maybePromise && typeof maybePromise.then === "function") {
-		void maybePromise.then(refresh, refresh);
+		// Keep observing native save failures even when no additional render is needed.
+		const complete = refresh ?? (() => undefined);
+		void maybePromise.then(complete, complete);
 		return;
 	}
 
-	scheduleTimeout(refresh, 0);
+	if (refresh) scheduleTimeout(refresh, 0);
 }
 
 export function installBasesConfigRefreshHook({
@@ -58,6 +61,7 @@ export function installBasesConfigRefreshHook({
 	view,
 	isConnected,
 	refresh,
+	shouldRefresh,
 	scheduleTimeout,
 }: InstallBasesConfigRefreshHookOptions): (() => void) | null {
 	if (!isRecord(controller) || typeof controller.onConfigChanged !== "function") {
@@ -81,8 +85,15 @@ export function installBasesConfigRefreshHook({
 	};
 
 	const wrappedOnConfigChanged = (...args: unknown[]): unknown => {
+		// Decide before invoking the native save: it may complete asynchronously after
+		// the view's presentation-only write scope has ended.
+		const refreshRequired = shouldRefresh?.() ?? true;
 		const result = originalOnConfigChanged.apply(basesController, args);
-		scheduleConfigRefreshAfterResult(result, refreshIfCurrentView, scheduleTimeout);
+		scheduleConfigRefreshAfterResult(
+			result,
+			refreshRequired ? refreshIfCurrentView : null,
+			scheduleTimeout
+		);
 		return result;
 	};
 

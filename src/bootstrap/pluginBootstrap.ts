@@ -7,6 +7,7 @@ import {
 	POMODORO_STATS_VIEW_TYPE,
 	POMODORO_VIEW_TYPE,
 	STATS_VIEW_TYPE,
+	GOALS_VIEW_TYPE,
 	TaskInfo,
 } from "../types";
 import { RequestDeduplicator, PredictivePrefetcher } from "../utils/RequestDeduplicator";
@@ -30,6 +31,7 @@ import { ViewPerformanceService } from "../services/ViewPerformanceService";
 import { PomodoroView } from "../views/PomodoroView";
 import { PomodoroStatsView } from "../views/PomodoroStatsView";
 import { StatsView } from "../views/StatsView";
+import { GoalsView } from "../views/GoalsView";
 import { ReleaseNotesView, RELEASE_NOTES_VIEW_TYPE } from "../views/ReleaseNotesView";
 import { RELEASE_NOTES_BUNDLE, CURRENT_VERSION } from "../releaseNotes";
 import { createTaskLinkOverlay, dispatchTaskUpdate } from "../editor/TaskLinkOverlay";
@@ -137,6 +139,8 @@ export async function initializeCoreServices(plugin: TaskNotesPlugin): Promise<v
 		plugin
 	);
 	plugin.taskStatsService = new TaskStatsService(plugin.cacheManager, plugin.statusManager);
+	const { GoalService } = await import("../services/GoalService");
+	plugin.goalService = new GoalService(plugin);
 	plugin.viewStateManager = new ViewStateManager(plugin.app, plugin);
 	plugin.projectSubtasksService = new ProjectSubtasksService(plugin);
 	plugin.expandedProjectsService = new ExpandedProjectsService(plugin);
@@ -174,6 +178,7 @@ export function registerRibbonIcons(plugin: TaskNotesPlugin): void {
 		["open-pomodoro-view", "timer", "commands.openPomodoroView"],
 		["open-pomodoro-stats", "bar-chart-3", "commands.openPomodoroStats"],
 		["open-statistics", "chart-no-axes-column", "commands.openStatisticsView"],
+		["open-goals-view", "flag", "commands.openGoalsView"],
 		["create-new-task", "square-plus", "commands.createNewTask"],
 	];
 	for (const [id, icon, key] of entries) {
@@ -183,6 +188,7 @@ export function registerRibbonIcons(plugin: TaskNotesPlugin): void {
 				if (id === "create-new-task") plugin.openTaskCreationModal();
 				else if (id === "open-pomodoro-view") await plugin.activatePomodoroView();
 				else if (id === "open-pomodoro-stats") await plugin.activatePomodoroStatsView();
+				else if (id === "open-goals-view") await plugin.activateGoalsView();
 				else await plugin.openBasesFileForCommand(id);
 			})
 		);
@@ -260,6 +266,9 @@ export async function initializeAfterLayoutReady(plugin: TaskNotesPlugin): Promi
 
 		plugin.injectCustomStyles();
 		registerActiveViews(plugin);
+		for (const leaf of plugin.app.workspace.getLeavesOfType("tasknotes-goal-board-view")) {
+			leaf.detach();
+		}
 		registerEditorIntegrations(plugin);
 
 		plugin.cacheManager.initialize();
@@ -288,6 +297,7 @@ function registerActiveViews(plugin: TaskNotesPlugin): void {
 	plugin.registerView(POMODORO_VIEW_TYPE, (leaf) => new PomodoroView(leaf, plugin));
 	plugin.registerView(POMODORO_STATS_VIEW_TYPE, (leaf) => new PomodoroStatsView(leaf, plugin));
 	plugin.registerView(STATS_VIEW_TYPE, (leaf) => new StatsView(leaf, plugin));
+	plugin.registerView(GOALS_VIEW_TYPE, (leaf) => new GoalsView(leaf, plugin));
 	plugin.registerView(
 		RELEASE_NOTES_VIEW_TYPE,
 		(leaf) => new ReleaseNotesView(leaf, plugin, RELEASE_NOTES_BUNDLE, CURRENT_VERSION)
