@@ -4,6 +4,148 @@
 
 ![TaskNotes Time](media/readme/tasknotes-time-banner.webp)
 
+## English
+
+TaskNotes Time is a goal, task, and time management plugin for Obsidian.
+
+It brings goal management, task planning, Kanban, time tracking, and visual reviews into one workflow. Every task remains a normal Markdown note in your vault, so you can freely edit, search, link, and back it up.
+
+TaskNotes Time also offers an iOS companion app for recording everyday activities and life events away from your computer, giving you a clearer picture of where your time goes.
+
+---
+
+### Why TaskNotes Time?
+
+A normal to-do list tells you what is left to do. TaskNotes Time also helps you answer:
+
+- What goals matter most right now?
+- Are my current tasks moving those goals forward?
+- Where did my time go today?
+- Does my actual time investment match my priorities?
+- How much time and progress has each goal accumulated?
+
+TaskNotes Time connects goals, tasks, and real time records in one system. Plan milestones and tasks from your goals, record the effort behind your work, and review whether your daily activity is moving your long-term priorities forward.
+
+---
+
+### Core features
+
+#### 1. Goal management
+
+![Goal management](media/readme/goal-management.webp)
+
+Break long-term goals into clear milestones, then connect tasks to goals with tags. TaskNotes Time brings the tracked time together so you can see whether your effort is focused on what matters.
+
+- Create goals and milestones
+- Connect goals and tasks through tags
+- Measure cumulative time invested in each goal
+- Compare goal priorities with actual time allocation
+- Review progress through completed tasks and milestones
+
+#### 2. Markdown task notes
+
+![Markdown task notes](media/readme/task-notes.webp)
+
+Every task in TaskNotes Time is a normal Markdown note.
+
+- Set status, priority, dates, tags, and projects
+- Track estimated and actual time
+- Keep task data readable and portable inside your own vault
+
+#### 3. Kanban board
+
+![Kanban board](media/readme/kanban-view.webp)
+
+Manage tasks visually with a Notion-style Kanban experience.
+
+- Organize tasks by status and tag swimlanes
+- Drag cards to update task status
+- Search, filter by date, and customize board appearance
+
+#### 4. Time tracking
+
+![Time tracking](media/readme/time-tracking.webp)
+
+Start tracking from a task card or task note.
+
+- Record the actual time spent on each task
+- Add a description to every time entry
+- Link task status changes with time tracking
+
+TaskNotes Time records not only whether a task was completed, but also the real effort behind it.
+
+#### 5. Time statistics
+
+![Time statistics](media/readme/time-statistics.webp)
+
+Review your time by day, week, month, or year.
+
+- See daily activities on a timeline
+- Analyze time by goal, tag, and project
+- Review task rankings and long-term trends
+
+Use tags such as work, study, creativity, exercise, and life to build your own personal time ledger.
+
+#### 6. iOS companion
+
+<p align="center">
+  <img src="media/readme/ios-app.webp" width="452" alt="TaskNotes Time iOS time statistics">
+</p>
+
+The TaskNotes Time iOS app helps you continue recording when you are away from your computer.
+
+- Create everyday activities and life events on iPhone
+- Record when an activity starts, ends, and how long it lasts
+- Use your Obsidian sync service across devices
+
+Installing the Obsidian plugin and iOS app alone does not automatically connect your vault. Follow the connection instructions in the iOS app and verify the setup with a test task first.
+
+Search for `TaskNotes Time` in the App Store to download the iOS app.
+
+### Installation
+
+#### Option 1: Obsidian community plugins
+
+This is the easiest and recommended installation method.
+
+1. Open Obsidian.
+2. Go to **Settings → Community plugins**.
+3. Open **Browse** and search for `TaskNotes Time`.
+4. Select **Install**, then enable the plugin.
+
+Make sure the Obsidian **Bases** core plugin is also enabled.
+
+#### Option 2: GitHub Releases
+
+If you cannot install from the community plugin browser, install the release manually.
+
+1. Open [GitHub Releases](https://github.com/zczs520/tasknotes/releases).
+2. Download `main.js`, `manifest.json`, and `styles.css`.
+3. Create `.obsidian/plugins/taskquence` inside your vault.
+4. Copy the three files into that folder.
+5. Restart Obsidian and enable TaskNotes Time under **Community plugins**.
+
+### Project origin
+
+TaskNotes Time is based on the open-source [TaskNotes](https://github.com/callumalpass/tasknotes) project and adds its own product design and feature improvements.
+
+Its main areas of focus are:
+
+- Connecting goals, tasks, and real time investment
+- A task capture workflow designed for Chinese users
+- Redesigned Kanban and time-statistics experiences
+- Companion use between Obsidian and TaskNotes Time for iOS
+
+### Feedback
+
+Please report problems or feature suggestions through [GitHub Issues](https://github.com/zczs520/tasknotes/issues). Include your Obsidian version, TaskNotes Time version, reproduction steps, and screenshots when possible.
+
+### License
+
+TaskNotes Time is released under the [MIT License](LICENSE). You may use, modify, and distribute it under the terms of the license.
+
+---
+
 ## 中文
 
 TaskNotes Time 是一款面向 Obsidian 的目标、任务与时间管理插件。
@@ -145,143 +287,3 @@ TaskNotes Time 主要强化了：
 TaskNotes Time 使用 [MIT License](LICENSE) 开源。你可以在遵守许可证要求的前提下使用、修改和分发本项目。
 
 ---
-
-## English
-
-TaskNotes Time is a goal, task, and time management plugin for Obsidian.
-
-It brings goal management, task planning, Kanban, time tracking, and visual reviews into one workflow. Every task remains a normal Markdown note in your vault, so you can freely edit, search, link, and back it up.
-
-TaskNotes Time also offers an iOS companion app for recording everyday activities and life events away from your computer, giving you a clearer picture of where your time goes.
-
----
-
-### Why TaskNotes Time?
-
-A normal to-do list tells you what is left to do. TaskNotes Time also helps you answer:
-
-- What goals matter most right now?
-- Are my current tasks moving those goals forward?
-- Where did my time go today?
-- Does my actual time investment match my priorities?
-- How much time and progress has each goal accumulated?
-
-TaskNotes Time connects goals, tasks, and real time records in one system. Plan milestones and tasks from your goals, record the effort behind your work, and review whether your daily activity is moving your long-term priorities forward.
-
----
-
-### Core features
-
-#### 1. Goal management
-
-![Goal management](media/readme/goal-management.webp)
-
-Break long-term goals into clear milestones, then connect tasks to goals with tags. TaskNotes Time brings the tracked time together so you can see whether your effort is focused on what matters.
-
-- Create goals and milestones
-- Connect goals and tasks through tags
-- Measure cumulative time invested in each goal
-- Compare goal priorities with actual time allocation
-- Review progress through completed tasks and milestones
-
-#### 2. Markdown task notes
-
-![Markdown task notes](media/readme/task-notes.webp)
-
-Every task in TaskNotes Time is a normal Markdown note.
-
-- Set status, priority, dates, tags, and projects
-- Track estimated and actual time
-- Keep task data readable and portable inside your own vault
-
-#### 3. Kanban board
-
-![Kanban board](media/readme/kanban-view.webp)
-
-Manage tasks visually with a Notion-style Kanban experience.
-
-- Organize tasks by status and tag swimlanes
-- Drag cards to update task status
-- Search, filter by date, and customize board appearance
-
-#### 4. Time tracking
-
-![Time tracking](media/readme/time-tracking.webp)
-
-Start tracking from a task card or task note.
-
-- Record the actual time spent on each task
-- Add a description to every time entry
-- Link task status changes with time tracking
-
-TaskNotes Time records not only whether a task was completed, but also the real effort behind it.
-
-#### 5. Time statistics
-
-![Time statistics](media/readme/time-statistics.webp)
-
-Review your time by day, week, month, or year.
-
-- See daily activities on a timeline
-- Analyze time by goal, tag, and project
-- Review task rankings and long-term trends
-
-Use tags such as work, study, creativity, exercise, and life to build your own personal time ledger.
-
-#### 6. iOS companion
-
-<p align="center">
-  <img src="media/readme/ios-app.webp" width="452" alt="TaskNotes Time iOS time statistics">
-</p>
-
-The TaskNotes Time iOS app helps you continue recording when you are away from your computer.
-
-- Create everyday activities and life events on iPhone
-- Record when an activity starts, ends, and how long it lasts
-- Use your Obsidian sync service across devices
-
-Installing the Obsidian plugin and iOS app alone does not automatically connect your vault. Follow the connection instructions in the iOS app and verify the setup with a test task first.
-
-Search for `TaskNotes Time` in the App Store to download the iOS app.
-
-### Installation
-
-#### Option 1: Obsidian community plugins
-
-This is the easiest and recommended installation method.
-
-1. Open Obsidian.
-2. Go to **Settings → Community plugins**.
-3. Open **Browse** and search for `TaskNotes Time`.
-4. Select **Install**, then enable the plugin.
-
-Make sure the Obsidian **Bases** core plugin is also enabled.
-
-#### Option 2: GitHub Releases
-
-If you cannot install from the community plugin browser, install the release manually.
-
-1. Open [GitHub Releases](https://github.com/zczs520/tasknotes/releases).
-2. Download `main.js`, `manifest.json`, and `styles.css`.
-3. Create `.obsidian/plugins/taskquence` inside your vault.
-4. Copy the three files into that folder.
-5. Restart Obsidian and enable TaskNotes Time under **Community plugins**.
-
-### Project origin
-
-TaskNotes Time is based on the open-source [TaskNotes](https://github.com/callumalpass/tasknotes) project and adds its own product design and feature improvements.
-
-Its main areas of focus are:
-
-- Connecting goals, tasks, and real time investment
-- A task capture workflow designed for Chinese users
-- Redesigned Kanban and time-statistics experiences
-- Companion use between Obsidian and TaskNotes Time for iOS
-
-### Feedback
-
-Please report problems or feature suggestions through [GitHub Issues](https://github.com/zczs520/tasknotes/issues). Include your Obsidian version, TaskNotes Time version, reproduction steps, and screenshots when possible.
-
-### License
-
-TaskNotes Time is released under the [MIT License](LICENSE). You may use, modify, and distribute it under the terms of the license.
