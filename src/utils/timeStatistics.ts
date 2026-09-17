@@ -288,11 +288,7 @@ export function buildTagTimeStatistics(
 			durationMs: aggregate.durationMs,
 			taskPaths: [...aggregate.taskPaths],
 		}))
-		.sort(
-			(left, right) =>
-				right.durationMs - left.durationMs ||
-				(left.tag ?? "").localeCompare(right.tag ?? "")
-		);
+		.sort((left, right) => right.durationMs - left.durationMs);
 }
 
 export function buildTaskTimeStatistics(
