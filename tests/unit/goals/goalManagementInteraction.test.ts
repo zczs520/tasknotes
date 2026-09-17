@@ -64,13 +64,119 @@ describe("reference goal management interactions", () => {
 			expect(Number.parseFloat(dot.style.left)).toBeCloseTo(((index + 1) / 3) * 100)
 		);
 		expect(dots[0].className).toContain("is-achieved");
+		expect(
+			dots.map((dot) => dot.querySelector(".tn-goal-stock__tier-value")?.textContent)
+		).toEqual(["$100", "$1000", "$5000"]);
 		expect(card.querySelector<HTMLInputElement>("input")!.value).toBe("");
 		expect(card.textContent).toContain("103h");
 	});
-	it("keeps current milestone stock editable when the historical table has no goals", async () => {
-		const { service, renderView, view, contentEl } = managementSetup();
+	it("places word-like milestone units after the value on every progress node", () => {
+		const { plugin } = managementSetup();
+		const revenue = managementGoal("赚钱", {
+			milestones: [
+				{
+					name: "收入",
+					kind: "number",
+					unit: "美元",
+					current: 0,
+					tiers: [10, 100],
+					achieved: {},
+					hours_at: {},
+				},
+			],
+		});
+		const card = renderGoalMilestoneCard(document.createElement("div"), plugin, revenue, 0, {
+			onChanged: jest.fn(),
+		});
+		expect(
+			Array.from(
+				card.querySelectorAll(".tn-goal-stock__tier-value"),
+				(node) => node.textContent
+			)
+		).toEqual(["10美元", "100美元"]);
+	});
+	it("lets existing numeric milestones set their display unit from goal details", async () => {
+		const { renderDetail, modal, service } = managementSetup();
+		await renderDetail();
+		const input = modal.contentEl.querySelector<HTMLInputElement>(
+			'input[aria-label="设置副业月收入单位"]'
+		)!;
+		change(input, "美元");
+		await flush();
+		expect(service.updateMilestoneUnit).toHaveBeenCalledWith("造船.md", 0, "美元");
+	});
+	it("filters the loaded goal snapshot without rescanning tasks or goal files", async () => {
+		const { renderView, contentEl, service } = managementSetup();
+		await renderView();
+		const active = Array.from(
+			contentEl.querySelectorAll<HTMLButtonElement>(".tn-goals-view__toolbar button")
+		).find((button) => button.textContent === "进行中")!;
+		active.click();
+		expect(service.getProgress).toHaveBeenCalledTimes(1);
+		expect(service.listGoals).not.toHaveBeenCalled();
+	});
+	it("keeps the existing surface visible while a slower refresh is loading", async () => {
+		const { renderView, contentEl, service } = managementSetup();
+		await renderView();
+		const previous = contentEl.firstElementChild;
+		let finish!: () => void;
+		const result = await service.getProgress.mock.results[0].value;
+		service.getProgress.mockImplementationOnce(
+			() =>
+				new Promise((resolve) => {
+					finish = () => resolve(result);
+				})
+		);
+		const pending = renderView();
+		await flush();
+		expect(contentEl.firstElementChild).toBe(previous);
+		finish();
+		await pending;
+		expect(contentEl.firstElementChild).not.toBe(previous);
+	});
+	it("coalesces repeated refresh requests during an in-flight scan", async () => {
+		const { renderView, service } = managementSetup();
+		const result = await service.getProgress();
+		service.getProgress.mockClear();
+		let finish!: () => void;
+		service.getProgress.mockImplementationOnce(
+			() =>
+				new Promise((resolve) => {
+					finish = () => resolve(result);
+				})
+		);
+		const pending = renderView();
+		await flush();
+		for (let index = 0; index < 10; index += 1) await renderView();
+		expect(service.getProgress).toHaveBeenCalledTimes(1);
+		finish();
+		await pending;
+		expect(service.getProgress).toHaveBeenCalledTimes(2);
+	});
+	it("debounces file-event bursts and cancels a scheduled refresh on close", async () => {
+		jest.useFakeTimers();
+		try {
+			const { view, renderView, service } = managementSetup();
+			await renderView();
+			const schedule = () =>
+				(view as unknown as { scheduleRender: () => void }).scheduleRender();
+			for (let index = 0; index < 10; index += 1) schedule();
+			jest.advanceTimersByTime(120);
+			await flush();
+			expect(service.getProgress).toHaveBeenCalledTimes(2);
+			schedule();
+			await view.onClose();
+			jest.advanceTimersByTime(120);
+			await flush();
+			expect(service.getProgress).toHaveBeenCalledTimes(2);
+		} finally {
+			jest.useRealTimers();
+		}
+	});
+	it("keeps current milestone stock editable when the historical table has no progress rows", async () => {
+		const { service, goals, renderView, view, contentEl } = managementSetup();
 		service.getProgress.mockResolvedValue({
-			goals: [],
+			goals,
 			progress: [],
 			range: { start: new Date("2025-01-01"), end: new Date("2025-01-08") },
 		});

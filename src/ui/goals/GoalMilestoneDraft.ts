@@ -4,6 +4,7 @@ export interface MilestoneDraftState {
 	name: string;
 	kind: "number" | "boolean";
 	tiers: string[];
+	unit?: string;
 }
 
 export function parseMilestoneDraft(state: MilestoneDraftState): GoalDraftMilestone | null {
@@ -21,7 +22,11 @@ export function parseMilestoneDraft(state: MilestoneDraftState): GoalDraftMilest
 			))
 	)
 		return null;
-	return { name: state.name.trim(), tiers };
+	return {
+		name: state.name.trim(),
+		tiers,
+		...(state.kind === "number" && state.unit?.trim() ? { unit: state.unit.trim() } : {}),
+	};
 }
 
 /** One draft editor for both creation and instant-edit details; typing never rebuilds the row. */
@@ -77,6 +82,20 @@ export function renderMilestoneDraft(
 			return;
 		}
 		const tiers = row.createDiv({ cls: "tn-goal-modal__tier-row" });
+		const unit = tiers.createEl("input", {
+			cls: "tn-goal-modal__milestone-unit",
+			attr: {
+				type: "text",
+				value: state.unit ?? "",
+				placeholder: "单位（可选）",
+				"aria-label": "里程碑单位",
+				title: "例如：美元、人、个",
+			},
+		});
+		unit.addEventListener("input", () => {
+			state.unit = unit.value;
+			update();
+		});
 		tiers.createSpan({ cls: "tn-goal-modal__hint", text: "档位" });
 		for (const [index, value] of state.tiers.entries()) {
 			const chip = tiers.createSpan({ cls: "tn-goal-modal__tier-chip" });

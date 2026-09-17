@@ -1,7 +1,14 @@
 import { Modal, Notice } from "obsidian";
 import type TaskNotesPlugin from "../main";
-import type { GoalDefinition, GoalGroupDraft, GoalMode, GoalPeriod } from "../goals/goalTypes";
+import type {
+	GoalDefinition,
+	GoalDraftMilestone,
+	GoalGroupDraft,
+	GoalMode,
+	GoalPeriod,
+} from "../goals/goalTypes";
 import { goalCopy } from "../goals/goalCopy";
+import { normalizeGoalTag } from "../goals/goalCalculations";
 import { renderMilestoneDraft } from "../ui/goals/GoalMilestoneDraft";
 
 type DraftItemState = {
@@ -10,6 +17,7 @@ type DraftItemState = {
 	targetEdited?: boolean;
 	milestoneName: string;
 	milestoneTiers: string;
+	milestoneUnit?: string;
 	milestoneKind?: "number" | "boolean";
 	milestoneVisible?: boolean;
 	baseline?: number;
@@ -38,6 +46,7 @@ export class GoalCreationModal extends Modal {
 	private itemStates = new Map<string, DraftItemState>();
 	private parentMilestoneName = "";
 	private parentMilestoneTiers = "";
+	private parentMilestoneUnit = "";
 	private parentMilestoneKind: "number" | "boolean" = "number";
 	private parentMilestoneVisible = false;
 	private parentExtraMilestones: DraftItemState[] = [];
@@ -45,6 +54,9 @@ export class GoalCreationModal extends Modal {
 	private saving = false;
 	private feedback: HTMLElement | null = null;
 	private createButton: HTMLButtonElement | null = null;
+	private baselines: Map<string, { hours: number; count: number }> | undefined = undefined;
+	private closed = false;
+	private tags: string[] | undefined = undefined;
 
 	constructor(
 		private plugin: TaskNotesPlugin,
@@ -58,20 +70,61 @@ export class GoalCreationModal extends Modal {
 	}
 
 	async onOpen(): Promise<void> {
+		this.closed = false;
 		this.modalEl.addClass("tn-goal-modal");
 		this.goals = await this.plugin.goalService.listGoals();
+		if (this.closed) return;
 		this.render();
+		void this.plugin.goalService
+			.getFourWeekBaselines()
+			.then((baselines) => {
+				if (this.closed) return;
+				this.baselines = baselines;
+				for (const [tag, state] of this.itemStates) this.applyBaseline(tag, state);
+				for (const item of this.contentEl.querySelectorAll<HTMLElement>(
+					"[data-baseline-tag]"
+				)) {
+					const baseline =
+						this.itemStates.get(item.dataset.baselineTag ?? "")?.baseline ?? 0;
+					item.setText(`${baseline.toFixed(1)} ${this.mode === "count" ? "次" : "h"}/周`);
+				}
+				for (const input of this.contentEl.querySelectorAll<HTMLInputElement>(
+					"[data-target-tag]"
+				)) {
+					const state = this.itemStates.get(input.dataset.targetTag ?? "");
+					if (
+						state &&
+						!input.value &&
+						this.contentEl.ownerDocument.activeElement !== input
+					)
+						input.value = state.target;
+				}
+				this.updateCreateButton();
+			})
+			.catch((error) => {
+				if (!this.closed) new Notice(`无法读取近四周投入：${String(error)}`, 8000);
+			});
 	}
 
 	onClose(): void {
+		this.closed = true;
 		this.contentEl.empty();
 	}
 
 	private getTags(): string[] {
-		return [...this.plugin.cacheManager.getAllTags()]
+		this.tags ??= [...this.plugin.cacheManager.getAllTags()]
 			.map((tag) => tag.replace(/^#/u, ""))
 			.filter(Boolean)
 			.sort((left, right) => left.localeCompare(right));
+		return this.tags;
+	}
+
+	private applyBaseline(tag: string, state: DraftItemState): void {
+		if (!this.baselines) return;
+		const baseline = this.baselines.get(normalizeGoalTag(tag));
+		state.baseline = (this.mode === "count" ? baseline?.count : baseline?.hours) ?? 0;
+		if (!state.target && !state.targetEdited)
+			state.target = String(Math.max(1, Math.round(state.baseline || 1)));
 	}
 
 	private getItemState(tag: string): DraftItemState {
@@ -86,32 +139,7 @@ export class GoalCreationModal extends Modal {
 				milestoneVisible: false,
 			};
 			this.itemStates.set(tag, state);
-			void this.plugin.goalService.getFourWeekBaseline(tag, this.mode).then((baseline) => {
-				const latest = this.itemStates.get(tag);
-				if (!latest || latest !== state) return;
-				latest.baseline = baseline;
-				if (!latest.target && !latest.targetEdited)
-					latest.target = String(Math.max(1, Math.round(baseline || 1)));
-				for (const item of this.contentEl.querySelectorAll<HTMLElement>(
-					"[data-baseline-tag]"
-				)) {
-					if (item.dataset.baselineTag === tag)
-						item.setText(
-							`${baseline.toFixed(1)} ${this.mode === "count" ? "次" : "h"}/周`
-						);
-				}
-				for (const input of this.contentEl.querySelectorAll<HTMLInputElement>(
-					"[data-target-tag]"
-				)) {
-					if (
-						input.dataset.targetTag === tag &&
-						!input.value &&
-						this.contentEl.ownerDocument.activeElement !== input
-					)
-						input.value = latest.target;
-				}
-				this.updateCreateButton();
-			});
+			this.applyBaseline(tag, state);
 		}
 		return state;
 	}
@@ -148,6 +176,7 @@ export class GoalCreationModal extends Modal {
 					next.name = old.name;
 					next.milestoneName = old.milestoneName;
 					next.milestoneTiers = old.milestoneTiers;
+					next.milestoneUnit = old.milestoneUnit;
 					next.milestoneKind = old.milestoneKind;
 					next.milestoneVisible = old.milestoneVisible;
 					next.extraMilestones = old.extraMilestones;
@@ -332,6 +361,7 @@ export class GoalCreationModal extends Modal {
 			name: state?.milestoneName ?? this.parentMilestoneName,
 			kind: state?.milestoneKind ?? this.parentMilestoneKind,
 			tiers: (state?.milestoneTiers ?? this.parentMilestoneTiers).split(/[,，]/u),
+			unit: state?.milestoneUnit ?? this.parentMilestoneUnit,
 		};
 		renderMilestoneDraft(
 			parent,
@@ -341,10 +371,12 @@ export class GoalCreationModal extends Modal {
 					state.milestoneName = draft.name;
 					state.milestoneKind = draft.kind;
 					state.milestoneTiers = draft.tiers.join(",");
+					state.milestoneUnit = draft.unit;
 				} else {
 					this.parentMilestoneName = draft.name;
 					this.parentMilestoneKind = draft.kind;
 					this.parentMilestoneTiers = draft.tiers.join(",");
+					this.parentMilestoneUnit = draft.unit;
 				}
 				this.updateCreateButton();
 			},
@@ -414,9 +446,13 @@ export class GoalCreationModal extends Modal {
 	private milestoneDraft(
 		state: Pick<
 			DraftItemState,
-			"milestoneKind" | "milestoneName" | "milestoneTiers" | "milestoneVisible"
+			| "milestoneKind"
+			| "milestoneName"
+			| "milestoneTiers"
+			| "milestoneVisible"
+			| "milestoneUnit"
 		>
-	): { name: string; tiers: number[] } | null | undefined {
+	): GoalDraftMilestone | null | undefined {
 		if (!state.milestoneVisible) return undefined;
 		if (!state.milestoneName.trim()) return null;
 		if (state.milestoneKind === "boolean") {
@@ -424,11 +460,15 @@ export class GoalCreationModal extends Modal {
 		}
 		const tiers = parseTiers(state.milestoneTiers);
 		if (!tiers?.length) return null;
-		return { name: state.milestoneName.trim(), tiers };
+		return {
+			name: state.milestoneName.trim(),
+			tiers,
+			...(state.milestoneUnit?.trim() ? { unit: state.milestoneUnit.trim() } : {}),
+		};
 	}
 
-	private extraDrafts(states: DraftItemState[]): Array<{ name: string; tiers: number[] }> | null {
-		const results: Array<{ name: string; tiers: number[] }> = [];
+	private extraDrafts(states: DraftItemState[]): GoalDraftMilestone[] | null {
+		const results: GoalDraftMilestone[] = [];
 		for (const state of states) {
 			const draft = this.milestoneDraft(state);
 			if (draft === null) return null;
@@ -459,6 +499,7 @@ export class GoalCreationModal extends Modal {
 		const parentMilestone = this.milestoneDraft({
 			milestoneName: this.parentMilestoneName,
 			milestoneTiers: this.parentMilestoneTiers,
+			milestoneUnit: this.parentMilestoneUnit,
 			milestoneKind: this.parentMilestoneKind,
 			milestoneVisible: this.parentMilestoneVisible,
 		});

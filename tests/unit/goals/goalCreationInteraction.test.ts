@@ -3,10 +3,14 @@ import { GoalCreationModal } from "../../../src/modals/GoalCreationModal";
 import { MockObsidian } from "../../helpers/obsidian-runtime";
 
 function setup(tags = ["工作", "创作"]) {
-	let resolveBaseline!: (value: number) => void;
-	const baseline = new Promise<number>((resolve) => {
-		resolveBaseline = resolve;
+	let resolveBaselines!: (value: Map<string, { hours: number; count: number }>) => void;
+	const baseline = new Promise<Map<string, { hours: number; count: number }>>((resolve) => {
+		resolveBaselines = resolve;
 	});
+	const resolveBaseline = (value: number) =>
+		resolveBaselines(
+			new Map([...tags, "工作"].map((tag) => [tag, { hours: value, count: value }]))
+		);
 	const plugin = {
 		app: MockObsidian.createMockApp(),
 		i18n: { getCurrentLocale: () => "zh", translate: (key: string) => key },
@@ -14,13 +18,13 @@ function setup(tags = ["工作", "创作"]) {
 		goalService: {
 			listGoals: async () => [],
 			findScopeOwner: () => null,
-			getFourWeekBaseline: () => baseline,
+			getFourWeekBaselines: jest.fn(() => baseline),
 			createGoalGroup: jest.fn(),
 		},
 	} as unknown as TaskNotesPlugin;
 	const modal = new GoalCreationModal(plugin, () => {}, ["工作"]);
 	document.body.appendChild(modal.modalEl);
-	return { modal, resolveBaseline };
+	return { modal, plugin, resolveBaseline };
 }
 
 describe("goal creation interaction", () => {
@@ -39,7 +43,7 @@ describe("goal creation interaction", () => {
 		expect(input.value).toBe("12");
 	});
 	it("searches tags beyond the former 100-tag limit", async () => {
-		const { modal } = setup(
+		const { modal, plugin } = setup(
 			Array.from({ length: 150 }, (_, i) => `tag-${i.toString().padStart(3, "0")}`)
 		);
 		await modal.onOpen();
@@ -49,6 +53,7 @@ describe("goal creation interaction", () => {
 		search.value = "tag-149";
 		search.dispatchEvent(new Event("input"));
 		expect(modal.contentEl.querySelector('[data-goal-tag="tag-149"]')).not.toBeNull();
+		expect(plugin.goalService.getFourWeekBaselines).toHaveBeenCalledTimes(1);
 	});
 	it("does not refill a target the user deliberately cleared", async () => {
 		const { modal, resolveBaseline } = setup();
@@ -75,6 +80,36 @@ describe("goal creation interaction", () => {
 			modal.contentEl.querySelector<HTMLInputElement>(".tn-goal-modal__milestone-row input")!
 				.value
 		).toBe("发布作品");
+	});
+	it("persists an optional milestone unit through type switches and creation", async () => {
+		const { modal, plugin, resolveBaseline } = setup();
+		await modal.onOpen();
+		resolveBaseline(4);
+		await Promise.resolve();
+		modal.contentEl.querySelector<HTMLButtonElement>(".tn-goal-modal__add-milestone")!.click();
+		const enter = (selector: string, value: string) => {
+			const input = modal.contentEl.querySelector<HTMLInputElement>(selector)!;
+			input.value = value;
+			input.dispatchEvent(new Event("input"));
+		};
+		enter('input[aria-label="里程碑名称"]', "赚钱");
+		enter('input[aria-label="里程碑单位"]', "美元");
+		enter(".tn-goal-modal__tier-chip input", "10");
+		modal.contentEl.querySelectorAll<HTMLButtonElement>(".tn-goal-modal__mode")[1].click();
+		expect(
+			modal.contentEl.querySelector<HTMLInputElement>('input[aria-label="里程碑单位"]')!.value
+		).toBe("美元");
+		modal.contentEl.querySelector<HTMLButtonElement>(".mod-cta")!.click();
+		await Promise.resolve();
+		expect(plugin.goalService.createGoalGroup).toHaveBeenCalledWith(
+			expect.objectContaining({
+				items: [
+					expect.objectContaining({
+						milestones: [{ name: "赚钱", tiers: [10], unit: "美元" }],
+					}),
+				],
+			})
+		);
 	});
 	it("requires milestone tiers to increase", async () => {
 		const { modal, resolveBaseline } = setup();

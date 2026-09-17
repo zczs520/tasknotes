@@ -1,8 +1,10 @@
 import {
 	attributeGoalSegments,
+	buildFourWeekGoalBaselines,
 	buildGoalProgress,
 	countZeroGoalPeriods,
 	getGoalSettingsAt,
+	getGoalHistoryStart,
 	goalInvestedHours,
 	goalTagMatchesScope,
 	milestoneNeedsUpdate,
@@ -43,6 +45,23 @@ function segment(tags: string[], durationMs = 60 * 60 * 1000): TimeStatisticsSeg
 }
 
 describe("goal calculations", () => {
+	it("starts cumulative statistics at existing tagged history instead of the new goal creation date", () => {
+		expect(
+			getGoalHistoryStart(
+				[goal({ created: "2026-09-17" })],
+				[{ timeEntries: [{ startTime: "2026-08-01T09:00:00" }] }],
+				new Date("2026-09-17T12:00:00")
+			)
+		).toEqual(new Date("2026-08-01T09:00:00"));
+	});
+	it("builds all four-week baselines once without double counting shared tag ancestors or split sessions", () => {
+		const first = segment(["#life/fitness", "life/fitness/run", "life/reading"]);
+		const second = { ...first, durationMs: 3_600_000 };
+		const baselines = buildFourWeekGoalBaselines([first, second]);
+		expect(baselines.get("life")).toEqual({ hours: 0.5, count: 0.25 });
+		expect(baselines.get("life/fitness")).toEqual({ hours: 0.5, count: 0.25 });
+		expect(baselines.has("life/fit")).toBe(false);
+	});
 	it("counts zero weeks from the last attributed investment rather than displaying a fixed note", () => {
 		const trackedGoal = goal({ created: "2026-07-01" });
 		const last = {

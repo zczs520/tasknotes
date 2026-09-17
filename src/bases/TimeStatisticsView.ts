@@ -718,6 +718,7 @@ export class TimeStatisticsView extends BasesViewBase {
 	): void {
 		const chinese = this.plugin.i18n.getCurrentLocale() === "zh";
 		const hasGoals = goals.length > 0;
+		const visibleTags = tags.filter((tag) => tag.durationMs > 0);
 		const section = parent.createDiv({
 			cls: `tn-time-statistics__side-section tn-time-statistics__tags${hasGoals ? "" : " tn-time-statistics__tags--classic"}`,
 		});
@@ -728,11 +729,11 @@ export class TimeStatisticsView extends BasesViewBase {
 		});
 		heading.createSpan({
 			cls: "tn-time-statistics__panel-hint",
-			text: `${this.translate("summary.tagCount", { count: tags.filter((tag) => tag.tag !== null).length })}${hasGoals ? ` · ${chinese ? "每行标明算给了哪个目标" : "Goal attribution per tag"}` : ""}`,
+			text: `${this.translate("summary.tagCount", { count: visibleTags.filter((tag) => tag.tag !== null).length })}${hasGoals ? ` · ${chinese ? "每行标明算给了哪个目标" : "Goal attribution per tag"}` : ""}`,
 		});
-		const attributedTotal = tags.reduce((total, tag) => total + tag.durationMs, 0);
-		const maxDuration = Math.max(1, ...tags.map((tag) => tag.durationMs));
-		if (!tags.length) {
+		const attributedTotal = visibleTags.reduce((total, tag) => total + tag.durationMs, 0);
+		const maxDuration = Math.max(1, ...visibleTags.map((tag) => tag.durationMs));
+		if (!visibleTags.length) {
 			section.createDiv({
 				cls: "tn-time-statistics__tag-empty",
 				text: chinese ? "本期暂无标签计时记录" : "No tracked tags in this period",
@@ -743,13 +744,13 @@ export class TimeStatisticsView extends BasesViewBase {
 		if (!hasGoals) {
 			const strip = section.createDiv({ cls: "tn-time-statistics__distribution-strip" });
 			list.before(strip);
-			for (const tag of tags.filter((item) => item.durationMs > 0)) {
+			for (const tag of visibleTags) {
 				const segment = strip.createSpan();
 				applyStatisticsTagColor(segment, tag.tag);
 				segment.style.width = `${(tag.durationMs / attributedTotal) * 100}%`;
 			}
 		}
-		for (const tag of tags) {
+		for (const tag of visibleTags) {
 			const owner = tag.tag ? findGoalForTags(goals, [tag.tag]) : null;
 			const percentage =
 				attributedTotal > 0 ? Math.round((tag.durationMs / attributedTotal) * 100) : 0;

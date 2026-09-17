@@ -6,6 +6,17 @@ function readRepoFile(relativePath: string): string {
 }
 
 describe("TaskNotes Kanban Notion-style layout", () => {
+	it("centers column groups without hiding the start of overflowing boards", () => {
+		const css = readRepoFile("styles/kanban-notion.css");
+		const board = css.match(/\.kanban-view__board \{([^}]+)\}/)?.[1];
+		const swimlanes = css.match(/\.kanban-view__board--swimlanes \{([^}]+)\}/)?.[1];
+
+		expect(board).toContain("justify-content: safe center;");
+		expect(board).toContain("overflow: auto;");
+		expect(swimlanes).toContain("align-items: safe center;");
+		expect(swimlanes).toContain("justify-content: flex-start;");
+	});
+
 	it("loads its scoped skin after the shared Bases styles", () => {
 		const buildManifest = readRepoFile("build-css.mjs");
 		const sharedStyles = buildManifest.indexOf("styles/bases-views.css");

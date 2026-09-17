@@ -90,7 +90,7 @@ describe("reference goal and tag presentation", () => {
 		expect(insights.children).toHaveLength(2);
 		expect(insights.firstElementChild?.className).toContain("goal-section");
 		expect(insights.lastElementChild?.className).toContain("__tags");
-		expect(parent.querySelectorAll(".tn-time-statistics__tag-row")).toHaveLength(2);
+		expect(parent.querySelectorAll(".tn-time-statistics__tag-row")).toHaveLength(1);
 		expect(
 			parent.querySelector(
 				".tn-time-statistics__tag-row.is-goal-floor .tn-time-statistics__tag-chip"
@@ -118,6 +118,22 @@ describe("reference goal and tag presentation", () => {
 			parent.querySelector(".tn-goal-strip__pill.is-floor .tn-goal-strip__value")?.textContent
 		).toBe("4/8h");
 		expect(parent.querySelector(".tn-goal-strip__all")).toBeNull();
+	});
+	it("shows the combined child time budget beside a parent in the rail and overlay", async () => {
+		const { plugin, parent } = setup([
+			goal("不上班", { children: ["开发", "自媒体"] }),
+			goal("开发", { mode: "floor", parent: "不上班" }),
+			goal("自媒体", { mode: "floor", parent: "不上班" }),
+		]);
+		await renderGoalProgressPanel(parent, plugin, [], { ...options, stripState: "open" });
+		expect(
+			parent.querySelector(".tn-goal-strip__pill.is-aggregate .tn-goal-strip__value")
+				?.textContent
+		).toBe("4/16h");
+		expect(
+			parent.querySelector(".tn-goal-strip__overlay-row.is-aggregate .tn-goal-strip__value")
+				?.textContent
+		).toBe("4 / 16h");
 	});
 	it("supports closing an expanded overlay with Escape", async () => {
 		const { plugin, parent } = setup([goal("设计", { mode: "floor" })]);
@@ -240,6 +256,36 @@ describe("reference goal and tag presentation", () => {
 			readOnly: true,
 		});
 		expect(parent.querySelector(".tn-goal-pending__input")).toBeNull();
+	});
+	it("shows editable pending milestones in current-day statistics", async () => {
+		const { plugin, parent } = setup([
+			goal("副业", {
+				mode: "floor",
+				milestones: [
+					{
+						name: "收入",
+						kind: "number",
+						unit: "美元",
+						current: 0,
+						tiers: [10],
+						achieved: {},
+						hours_at: {},
+					},
+				],
+			}),
+		]);
+		await renderGoalProgressPanel(parent, plugin, [], {
+			...options,
+			variant: "statistics",
+			period: "day",
+		});
+		expect(parent.querySelector(".tn-goal-ledger__milestone-heading")?.textContent).toBe(
+			"待更新的里程碑"
+		);
+		expect(parent.querySelector<HTMLInputElement>(".tn-goal-pending__input")).not.toBeNull();
+		expect(parent.querySelector(".tn-goal-pending__metrics")?.textContent).toContain(
+			"阶段目标10美元"
+		);
 	});
 	it("rejects blank inline milestone updates and submits explicit values", async () => {
 		const { plugin, parent } = setup([
@@ -467,6 +513,7 @@ describe("reference goal and tag presentation", () => {
 		expect(
 			parent.querySelectorAll(".tn-time-statistics__distribution-strip > span")
 		).toHaveLength(1);
+		expect(parent.querySelectorAll(".tn-time-statistics__tag-row")).toHaveLength(1);
 		expect(parent.querySelectorAll(".tn-time-statistics__rank-row")).toHaveLength(8);
 		const tag = parent.querySelector<HTMLElement>(".tn-time-statistics__tag-row")!;
 		const rank = parent.querySelector<HTMLElement>(".tn-time-statistics__rank-row")!;

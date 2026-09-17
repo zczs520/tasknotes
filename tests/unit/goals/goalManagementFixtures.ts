@@ -81,6 +81,7 @@ export function managementSetup(
 		findScopeOwner: (items: readonly GoalDefinition[], tag: string) =>
 			items.find((goal) => goal.scope.includes(tag)) ?? null,
 		updateMilestone: jest.fn().mockResolvedValue({ crossedTiers: [] }),
+		updateMilestoneUnit: jest.fn().mockResolvedValue(undefined),
 		undoMilestoneAchievement: jest.fn().mockResolvedValue(undefined),
 		removeMilestone: jest.fn().mockResolvedValue(undefined),
 		addMilestone: jest.fn().mockResolvedValue(undefined),

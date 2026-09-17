@@ -1,6 +1,7 @@
-import { ItemView, Platform, setIcon, type WorkspaceLeaf } from "obsidian";
+import { ItemView, Notice, Platform, setIcon, type WorkspaceLeaf } from "obsidian";
 import type TaskNotesPlugin from "../main";
-import { GOALS_VIEW_TYPE } from "../types";
+import { EVENT_TASK_DELETED, EVENT_TASK_UPDATED, GOALS_VIEW_TYPE } from "../types";
+import { GOALS_FOLDER } from "../services/GoalService";
 import { goalCopy } from "../goals/goalCopy";
 import type { GoalDefinition, GoalProgress } from "../goals/goalTypes";
 import type { TimeStatisticsPeriod } from "../utils/timeStatistics";
@@ -8,19 +9,36 @@ import {
 	buildTimeStatisticsSegments,
 	isCurrentTimeStatisticsPeriod,
 	shiftTimeStatisticsReference,
+	type TimeStatisticsRange,
 } from "../utils/timeStatistics";
 import { GoalCreationModal } from "../modals/GoalCreationModal";
 import { GoalDetailModal } from "../modals/GoalDetailModal";
 import {
 	attributeGoalSegments,
+	getGoalHistoryStart,
 	goalInvestedHours,
 	milestoneNeedsUpdate,
 } from "../goals/goalCalculations";
 import { isMilestoneComplete, renderGoalMilestoneCard } from "../ui/goals/GoalMilestoneCard";
 import { getStatisticsColor } from "../utils/statisticsColors";
+import { createTaskNotesLogger } from "../utils/tasknotesLogger";
+
+const logger = createTaskNotesLogger({ tag: "Views/GoalsView" });
 
 type GoalFilter = "all" | "active" | "paused" | "done";
 type GoalRange = TimeStatisticsPeriod;
+
+interface GoalsViewSnapshot {
+	period: GoalRange;
+	referenceTime: number;
+	result: {
+		goals: GoalDefinition[];
+		progress: GoalProgress[];
+		range: TimeStatisticsRange;
+	};
+	liveGoals: GoalDefinition[];
+	invested: ReadonlyMap<string, number>;
+}
 
 function modeLabel(plugin: TaskNotesPlugin, goal: GoalDefinition): string {
 	return goal.mode ? goalCopy(plugin, goal.mode) : goalCopy(plugin, "aggregate");
@@ -31,6 +49,12 @@ export class GoalsView extends ItemView {
 	private range: GoalRange = "week";
 	private referenceDate = new Date();
 	private renderVersion = 0;
+	private refreshTimer: number | undefined;
+	private rendering = false;
+	private renderQueued = false;
+	private closed = false;
+	private snapshot: GoalsViewSnapshot | undefined;
+	private taskPaths = new Set<string>();
 
 	constructor(
 		leaf: WorkspaceLeaf,
@@ -55,18 +79,50 @@ export class GoalsView extends ItemView {
 
 	async onOpen(): Promise<void> {
 		await this.plugin.onReady();
-		this.registerEvent(this.app.vault.on("modify", () => void this.render()));
-		this.registerEvent(this.app.vault.on("create", () => void this.render()));
-		this.registerEvent(this.app.vault.on("delete", () => void this.render()));
+		this.closed = false;
+		const scheduleForRelevantFile = (path: string): void => {
+			if (path.startsWith(`${GOALS_FOLDER}/`) || this.taskPaths.has(path))
+				this.scheduleRender();
+		};
+		this.registerEvent(
+			this.app.vault.on("modify", (file) => scheduleForRelevantFile(file.path))
+		);
+		this.registerEvent(
+			this.app.vault.on("create", (file) => scheduleForRelevantFile(file.path))
+		);
+		this.registerEvent(
+			this.app.vault.on("delete", (file) => scheduleForRelevantFile(file.path))
+		);
+		this.registerEvent(
+			this.app.vault.on("rename", (file, oldPath) => {
+				scheduleForRelevantFile(file.path);
+				scheduleForRelevantFile(oldPath);
+			})
+		);
+		// New tasks and metadata reconciliation arrive after the task cache is updated.
+		this.registerEvent(this.plugin.emitter.on(EVENT_TASK_UPDATED, () => this.scheduleRender()));
+		this.registerEvent(this.plugin.emitter.on(EVENT_TASK_DELETED, () => this.scheduleRender()));
 		await this.render();
 	}
 
 	async onClose(): Promise<void> {
+		this.closed = true;
+		this.renderVersion += 1;
+		if (this.refreshTimer !== undefined) window.clearTimeout(this.refreshTimer);
 		this.contentEl.empty();
 	}
 
+	private scheduleRender(delay = 120): void {
+		if (this.closed) return;
+		if (this.refreshTimer !== undefined) window.clearTimeout(this.refreshTimer);
+		this.refreshTimer = window.setTimeout(() => {
+			this.refreshTimer = undefined;
+			void this.render();
+		}, delay);
+	}
+
 	private openDetail(path: string): void {
-		new GoalDetailModal(this.plugin, path, () => this.render()).open();
+		new GoalDetailModal(this.plugin, path, () => this.scheduleRender(0)).open();
 	}
 
 	private translate(key: string, vars?: Record<string, string | number>): string {
@@ -86,7 +142,7 @@ export class GoalsView extends ItemView {
 	}
 
 	openCreation(): GoalCreationModal {
-		const modal = new GoalCreationModal(this.plugin, () => this.render());
+		const modal = new GoalCreationModal(this.plugin, () => this.scheduleRender(0));
 		modal.open();
 		return modal;
 	}
@@ -252,30 +308,95 @@ export class GoalsView extends ItemView {
 		]) {
 			renderGoalMilestoneCard(section, this.plugin, item.goal, item.index, {
 				investedHours: invested.get(item.goal.path) ?? 0,
-				onChanged: () => this.render(),
+				onChanged: () => this.scheduleRender(0),
 				onOpenGoal: (path) => this.openDetail(path),
 			});
 		}
 	}
 
 	private async render(): Promise<void> {
+		if (this.closed) return;
+		if (this.rendering) {
+			this.renderQueued = true;
+			return;
+		}
+		this.rendering = true;
+		try {
+			do {
+				this.renderQueued = false;
+				await this.loadSnapshot();
+			} while (this.renderQueued && !this.closed);
+		} catch (error) {
+			logger.error("Failed to refresh goals", {
+				category: "internal",
+				operation: "refresh-goals",
+				error,
+			});
+			if (!this.closed) new Notice(String(error), 8000);
+		} finally {
+			this.rendering = false;
+		}
+	}
+
+	private async loadSnapshot(): Promise<void> {
 		const version = ++this.renderVersion;
-		this.contentEl.empty();
-		const root = this.contentEl.createDiv({ cls: "tasknotes-plugin tn-goals-view" });
 		if (Platform.isMobile) {
+			const root = this.contentEl.ownerDocument.createElement("div");
+			root.className = "tasknotes-plugin tn-goals-view";
 			root.createDiv({
 				cls: "tn-goals-view__desktop-only",
 				text: goalCopy(this.plugin, "notDesktop"),
 			});
+			this.contentEl.replaceChildren(root);
 			return;
 		}
+		const requestedRange = this.range;
+		const requestedReference = new Date(this.referenceDate);
 		const tasks = await this.plugin.cacheManager.getAllTasks();
+		this.taskPaths = new Set(tasks.map((task) => task.path));
 		const result = await this.plugin.goalService.getProgress(
 			tasks,
-			this.range,
-			this.referenceDate
+			requestedRange,
+			requestedReference
 		);
-		if (version !== this.renderVersion) return;
+		if (
+			version !== this.renderVersion ||
+			requestedRange !== this.range ||
+			requestedReference.getTime() !== this.referenceDate.getTime()
+		) {
+			this.renderQueued = true;
+			return;
+		}
+		const liveGoals = result.goals;
+		const now = new Date();
+		const segments = buildTimeStatisticsSegments(
+			tasks,
+			{ start: getGoalHistoryStart(liveGoals, tasks, now), end: now },
+			now
+		);
+		const attributed = attributeGoalSegments(liveGoals, segments);
+		this.snapshot = {
+			period: requestedRange,
+			referenceTime: requestedReference.getTime(),
+			result,
+			liveGoals,
+			invested: new Map(
+				liveGoals.map((goal) => [goal.path, goalInvestedHours(goal, liveGoals, attributed)])
+			),
+		};
+		if (!this.closed) this.renderSnapshot();
+	}
+
+	private renderSnapshot(): void {
+		if (!this.snapshot || this.closed) return;
+		if (
+			this.snapshot.period !== this.range ||
+			this.snapshot.referenceTime !== this.referenceDate.getTime()
+		)
+			return;
+		const { result, liveGoals, invested } = this.snapshot;
+		const root = this.contentEl.ownerDocument.createElement("div");
+		root.className = "tasknotes-plugin tn-goals-view";
 		const visible = result.progress.filter((progress) => this.matches(progress));
 		const readOnly = !isCurrentTimeStatisticsPeriod(
 			this.referenceDate,
@@ -299,7 +420,7 @@ export class GoalsView extends ItemView {
 			(value) => this.translate(`filters.${value}`),
 			(value) => {
 				this.filter = value;
-				void this.render();
+				this.renderSnapshot();
 			}
 		);
 		const add = top.createEl("button", {
@@ -380,24 +501,7 @@ export class GoalsView extends ItemView {
 				rendered.add(child.goal.path);
 			}
 		}
-		const liveGoals = await this.plugin.goalService.listGoals();
-		if (version !== this.renderVersion) return;
-		const now = new Date();
-		const created = liveGoals
-			.map((goal) => new Date(`${goal.created}T00:00:00`).getTime())
-			.filter(Number.isFinite);
-		const segments = buildTimeStatisticsSegments(
-			tasks,
-			{ start: new Date(Math.min(now.getTime(), ...created)), end: now },
-			now
-		);
-		const attributed = attributeGoalSegments(liveGoals, segments);
-		this.renderMilestones(
-			shell,
-			liveGoals,
-			new Map(
-				liveGoals.map((goal) => [goal.path, goalInvestedHours(goal, liveGoals, attributed)])
-			)
-		);
+		this.renderMilestones(shell, liveGoals, invested);
+		this.contentEl.replaceChildren(root);
 	}
 }

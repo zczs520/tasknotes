@@ -6,8 +6,25 @@ import {
 	type TimeStatisticsSegment,
 } from "../utils/timeStatistics";
 import type { GoalDefinition, GoalPeriod, GoalProgress, GoalSettingsSnapshot } from "./goalTypes";
+import type { TaskInfo } from "../types";
 
 const HOUR_MS = 60 * 60 * 1000;
+
+export function getGoalHistoryStart(
+	goals: readonly GoalDefinition[],
+	tasks: readonly Pick<TaskInfo, "timeEntries">[],
+	fallback: Date
+): Date {
+	let earliest = fallback.getTime();
+	const include = (time: number): void => {
+		if (Number.isFinite(time)) earliest = Math.min(earliest, time);
+	};
+	for (const goal of goals) include(new Date(`${goal.created}T00:00:00`).getTime());
+	for (const task of tasks) {
+		for (const entry of task.timeEntries ?? []) include(new Date(entry.startTime).getTime());
+	}
+	return new Date(earliest);
+}
 
 export function getGoalPeriodRange(
 	goal: GoalDefinition,
@@ -39,6 +56,35 @@ export function goalTagMatchesScope(tagValue: string, scopeValue: string): boole
 	const tag = normalizeGoalTag(tagValue);
 	const scope = normalizeGoalTag(scopeValue);
 	return Boolean(scope) && (tag === scope || tag.startsWith(`${scope}/`));
+}
+
+/** Summarize all tag scopes in one pass; shared ancestors count each segment/session only once. */
+export function buildFourWeekGoalBaselines(
+	segments: readonly TimeStatisticsSegment[]
+): Map<string, { hours: number; count: number }> {
+	const totals = new Map<string, { duration: number; sessions: Set<string> }>();
+	for (const segment of segments) {
+		const scopes = new Set<string>();
+		for (const tag of segment.tags) {
+			const parts = normalizeGoalTag(tag).split("/");
+			for (let depth = 1; depth <= parts.length; depth += 1) {
+				const scope = parts.slice(0, depth).join("/");
+				if (scope) scopes.add(scope);
+			}
+		}
+		for (const scope of scopes) {
+			const total = totals.get(scope) ?? { duration: 0, sessions: new Set<string>() };
+			total.duration += segment.durationMs;
+			total.sessions.add(segment.sessionKey);
+			totals.set(scope, total);
+		}
+	}
+	return new Map(
+		[...totals].map(([scope, total]) => [
+			scope,
+			{ hours: total.duration / HOUR_MS / 4, count: total.sessions.size / 4 },
+		])
+	);
 }
 
 function scopeDepth(value: string): number {

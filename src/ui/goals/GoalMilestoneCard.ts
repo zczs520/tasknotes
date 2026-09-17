@@ -11,6 +11,13 @@ export function isMilestoneComplete(milestone: GoalMilestone): boolean {
 	return tiers.length > 0 && tiers.every((tier) => Boolean(achievementDate(milestone, tier)));
 }
 
+export function formatMilestoneValue(value: number, unit?: string): string {
+	const normalizedUnit = unit?.trim() ?? "";
+	return /^[¥￥$€£₩₹₽]$/u.test(normalizedUnit)
+		? `${normalizedUnit}${value}`
+		: `${value}${normalizedUnit}`;
+}
+
 function achievementDate(milestone: GoalMilestone, tier?: number): string | undefined {
 	return typeof milestone.achieved === "string"
 		? milestone.achieved
@@ -110,7 +117,7 @@ export function renderGoalMilestoneCard(
 		const unit = milestone.unit ?? "";
 		action.createSpan({
 			cls: "tn-goal-stock__value",
-			text: `${unit}${current} → ${next === undefined ? "全部达成" : `${unit}${next}`}`,
+			text: `${formatMilestoneValue(current, unit)} → ${next === undefined ? "全部达成" : formatMilestoneValue(next, unit)}`,
 		});
 		const entry = options.detail ? card.createDiv({ cls: "tn-goal-stock__entry" }) : action;
 		const input = entry.createEl("input", {
@@ -146,6 +153,23 @@ export function renderGoalMilestoneCard(
 				update();
 			}
 		});
+		if (options.detail) {
+			const unitInput = entry.createEl("input", {
+				attr: {
+					type: "text",
+					value: unit,
+					placeholder: "单位（可选）",
+					"aria-label": `设置${milestone.name}单位`,
+					title: "例如：美元、人、个",
+				},
+			});
+			unitInput.addEventListener("change", () => {
+				if (unitInput.value.trim() !== unit)
+					void run(() =>
+						plugin.goalService.updateMilestoneUnit(goal.path, index, unitInput.value)
+					);
+			});
+		}
 		const bar = card.createDiv({
 			cls: "tn-goal-stock__bar",
 			attr: {
@@ -163,16 +187,20 @@ export function renderGoalMilestoneCard(
 			const dot = bar.createSpan({
 				cls: `tn-goal-stock__tier${date ? " is-achieved" : ""}`,
 				attr: {
-					title: `第 ${tierIndex + 1} 档 ${unit}${tier}${date ? ` · ${date} 达成` : " · 未达成"}`,
+					title: `第 ${tierIndex + 1} 档 ${formatMilestoneValue(tier, unit)}${date ? ` · ${date} 达成` : " · 未达成"}`,
 				},
 			});
 			dot.style.left = `${((tierIndex + 1) / tiers.length) * 100}%`;
+			dot.createSpan({
+				cls: "tn-goal-stock__tier-value",
+				text: formatMilestoneValue(tier, unit),
+			});
 		}
 		if (options.detail) {
 			const labels = card.createDiv({ cls: "tn-goal-stock__tier-labels" });
 			for (const tier of tiers) {
 				labels.createSpan({
-					text: `${unit}${tier}${achievementDate(milestone, tier) ? ` · ${achievementDate(milestone, tier)}` : ""}`,
+					text: `${formatMilestoneValue(tier, unit)}${achievementDate(milestone, tier) ? ` · ${achievementDate(milestone, tier)}` : ""}`,
 				});
 			}
 		}
@@ -184,13 +212,14 @@ export function renderGoalMilestoneCard(
 					? milestone.hours_at?.[String(achievedTier)]
 					: undefined;
 			notes.push(
-				`第 ${tiers.indexOf(achievedTier) + 1} 档 ${unit}${achievedTier} 于 ${achievementDate(milestone, achievedTier)} 达成${hoursAt !== undefined ? `，为此投入 ${hours(hoursAt)}` : ""}`
+				`第 ${tiers.indexOf(achievedTier) + 1} 档 ${formatMilestoneValue(achievedTier, unit)} 于 ${achievementDate(milestone, achievedTier)} 达成${hoursAt !== undefined ? `，为此投入 ${hours(hoursAt)}` : ""}`
 			);
 		} else
 			notes.push(
-				`${tiers.length > 1 ? "多档" : "一档"} ${tiers.map((tier) => `${unit}${tier}`).join(" / ")}`
+				`${tiers.length > 1 ? "多档" : "一档"} ${tiers.map((tier) => formatMilestoneValue(tier, unit)).join(" / ")}`
 			);
-		if (next !== undefined) notes.push(`距下一档 ${unit}${Math.max(0, next - current)}`);
+		if (next !== undefined)
+			notes.push(`距下一档 ${formatMilestoneValue(Math.max(0, next - current), unit)}`);
 		if (stale && !complete) notes.push(stale);
 		if (invested === 0 && !complete && achievedTier === undefined)
 			notes.push("还没有时间投入，先看目标那行");

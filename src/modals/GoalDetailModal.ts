@@ -6,6 +6,7 @@ import {
 	buildGoalProgress,
 	calculateGoalPace,
 	getGoalPeriodRange,
+	getGoalHistoryStart,
 	goalInvestedHours,
 	parseGoalTarget,
 } from "../goals/goalCalculations";
@@ -361,12 +362,9 @@ export class GoalDetailModal extends Modal {
 				calculateGoalPace(range.start, range.end, now)
 			),
 		};
-		const created = liveGoals
-			.map((item) => new Date(`${item.created}T00:00:00`).getTime())
-			.filter(Number.isFinite);
 		const segments = buildTimeStatisticsSegments(
 			tasks,
-			{ start: new Date(Math.min(now.getTime(), ...created)), end: now },
+			{ start: getGoalHistoryStart(liveGoals, tasks, now), end: now },
 			now
 		);
 		const invested = goalInvestedHours(

@@ -5,6 +5,7 @@ import type { GoalDefinition, GoalProgress } from "../../goals/goalTypes";
 import {
 	attributeGoalSegments,
 	countZeroGoalPeriods,
+	getGoalHistoryStart,
 	goalInvestedHours,
 	milestoneNeedsUpdate,
 } from "../../goals/goalCalculations";
@@ -12,7 +13,7 @@ import { goalCopy } from "../../goals/goalCopy";
 import { GoalCreationModal } from "../../modals/GoalCreationModal";
 import { showConfirmationModal } from "../../modals/ConfirmationModal";
 import { getStatisticsColor } from "../../utils/statisticsColors";
-import { isMilestoneComplete } from "./GoalMilestoneCard";
+import { formatMilestoneValue, isMilestoneComplete } from "./GoalMilestoneCard";
 import {
 	buildTimeStatisticsSegments,
 	shiftTimeStatisticsReference,
@@ -67,8 +68,23 @@ function stateCopy(plugin: TaskNotesPlugin, progress: GoalProgress): string {
 	);
 }
 
-function compactProgressValue(progress: GoalProgress, chinese: boolean): string {
-	if (progress.target === null) return formatActual(progress, chinese).replace(/\s+/gu, "");
+function compactProgressValue(
+	progress: GoalProgress,
+	chinese: boolean,
+	children: readonly GoalProgress[] = []
+): string {
+	if (progress.target === null) {
+		const owned = children.filter((child) => child.goal.parent === progress.goal.name);
+		// Do not label a mixture of counts and hours as a total time budget.
+		if (
+			owned.length &&
+			owned.every((child) => child.goal.mode !== "count" && child.target !== null)
+		) {
+			const total = owned.reduce((sum, child) => sum + (child.target ?? 0), 0);
+			return `${Number(progress.actual.toFixed(1))}/${Number(total.toFixed(1))}h`;
+		}
+		return formatActual(progress, chinese).replace(/\s+/gu, "");
+	}
 	const actual =
 		progress.goal.mode === "count"
 			? Math.round(progress.actual)
@@ -208,7 +224,7 @@ async function updateNumberMilestone(
 				plugin,
 				goal,
 				goal.milestones[index].name,
-				`${goal.milestones[index].unit ?? ""}${result.achievedTier}`,
+				formatMilestoneValue(result.achievedTier, goal.milestones[index].unit),
 				Number.isFinite(hours) ? hours : null,
 				result.crossedTiers.length
 			).open();
@@ -318,14 +334,14 @@ function renderPendingMilestone(
 		const metrics = body.createDiv({ cls: "tn-goal-pending__metrics" });
 		const currentMetric = metrics.createDiv({ cls: "tn-goal-pending__metric" });
 		currentMetric.createSpan({ text: chinese ? "当前" : "Current" });
-		currentMetric.createEl("strong", { text: `${unit}${current}` });
+		currentMetric.createEl("strong", { text: formatMilestoneValue(current, unit) });
 		metrics.createSpan({ cls: "tn-goal-pending__arrow", text: "→" });
 		const nextMetric = metrics.createDiv({ cls: "tn-goal-pending__metric" });
 		nextMetric.createSpan({ text: chinese ? "阶段目标" : "Stage goal" });
-		nextMetric.createEl("strong", { text: `${unit}${next}` });
+		nextMetric.createEl("strong", { text: formatMilestoneValue(next, unit) });
 		metrics.createSpan({
 			cls: "tn-goal-pending__remaining",
-			text: `${chinese ? "还差" : "Remaining"} ${unit}${Number((next - current).toFixed(2))}`,
+			text: `${chinese ? "还差" : "Remaining"} ${formatMilestoneValue(Number((next - current).toFixed(2)), unit)}`,
 		});
 		const track = body.createSpan({ cls: "tn-goal-pending__stage-track" });
 		const fill = track.createSpan({ cls: "tn-goal-pending__stage-fill" });
@@ -333,7 +349,7 @@ function renderPendingMilestone(
 	} else {
 		body.createSpan({
 			cls: "tn-goal-pending__value",
-			text: `${unit}${current}${compact ? "" : next === undefined ? " ✓" : ` → ${unit}${next}`}`,
+			text: `${formatMilestoneValue(current, unit)}${compact ? "" : next === undefined ? " ✓" : ` → ${formatMilestoneValue(next, unit)}`}`,
 		});
 		if (milestoneNeedsUpdate(goal, milestone)) {
 			const weeks = Math.max(1, Math.floor(elapsedDays / 7));
@@ -368,14 +384,13 @@ function renderPendingMilestone(
 				title: chinese ? "输入后按 Enter 保存" : "Press Enter to save",
 			},
 		});
-		const update =
-			rail
-				? null
-				: editor.createEl("button", {
-						cls: "tn-goal-pending__update",
-						text: chinese ? "更新" : "Update",
-						attr: { type: "button" },
-					});
+		const update = rail
+			? null
+			: editor.createEl("button", {
+					cls: "tn-goal-pending__update",
+					text: chinese ? "更新" : "Update",
+					attr: { type: "button" },
+				});
 		const submit = async (): Promise<void> => {
 			if (!input.value.trim() || !input.checkValidity()) {
 				input.reportValidity();
@@ -623,7 +638,7 @@ function renderGoalStrip(
 		pill.createSpan({ cls: "tn-goal-strip__name", text: progress.goal.name });
 		pill.createSpan({
 			cls: "tn-goal-strip__value",
-			text: compactProgressValue(progress, chinese),
+			text: compactProgressValue(progress, chinese, progressItems),
 		});
 		renderMicroBar(pill, progress, options.period);
 		pill.addEventListener("click", () => setState(state === "open" ? "bar" : "open"));
@@ -681,12 +696,9 @@ function renderGoalStrip(
 	buttonState(close, () => setState("bar"));
 	const list = overlay.createDiv({ cls: "tn-goal-strip__overlay-list" });
 	const now = new Date();
-	const createdTimes = goals
-		.map((goal) => new Date(`${goal.created}T00:00:00`).getTime())
-		.filter(Number.isFinite);
 	const historySegments = buildTimeStatisticsSegments(
 		tasks,
-		{ start: new Date(Math.min(range.start.getTime(), ...createdTimes)), end: now },
+		{ start: getGoalHistoryStart(goals, tasks, range.start), end: now },
 		now
 	);
 	const history = attributeGoalSegments(goals, historySegments);
@@ -711,7 +723,7 @@ function renderGoalStrip(
 		});
 		header.createSpan({
 			cls: "tn-goal-strip__value",
-			text: compactProgressValue(progress, chinese).replace("/", " / "),
+			text: compactProgressValue(progress, chinese, progressItems).replace("/", " / "),
 		});
 		renderMicroBar(row, progress, options.period);
 		const zeroPeriods =
@@ -850,14 +862,12 @@ export async function renderGoalProgressPanel(
 		)
 	);
 	const previousByPath = new Map(previous.progress.map((item) => [item.goal.path, item]));
-	const recordedTimes = tasks
-		.flatMap((task) => task.timeEntries ?? [])
-		.map((entry) => new Date(entry.startTime).getTime())
-		.filter(Number.isFinite);
-	const historyStart = new Date(Math.min(result.range.start.getTime(), ...recordedTimes));
 	const historySegments = buildTimeStatisticsSegments(
 		tasks,
-		{ start: historyStart, end: result.range.end },
+		{
+			start: getGoalHistoryStart(result.goals, tasks, result.range.start),
+			end: result.range.end,
+		},
 		new Date()
 	);
 	const zeroPeriodsFor = (progress: GoalProgress): number =>
@@ -912,7 +922,7 @@ export async function renderGoalProgressPanel(
 				);
 		}
 	}
-	if (options.period !== "day" && !options.readOnly) {
+	if (!options.readOnly) {
 		const pending = result.goals
 			.flatMap((goal) =>
 				goal.milestones.map((milestone, index) => ({ goal, milestone, index }))

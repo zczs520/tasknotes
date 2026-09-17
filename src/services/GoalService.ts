@@ -3,10 +3,11 @@ import type TaskNotesPlugin from "../main";
 import type { TaskInfo } from "../types";
 import {
 	attributeGoalSegments,
+	buildFourWeekGoalBaselines,
 	buildGoalProgress,
 	calculateGoalPace,
 	getGoalSettingsAt,
-	goalTagMatchesScope,
+	normalizeGoalTag,
 } from "../goals/goalCalculations";
 import type {
 	GoalDefinition,
@@ -168,6 +169,27 @@ function parseGoal(file: TFile, frontmatter: Frontmatter, content = ""): GoalDef
 	};
 }
 
+function cloneGoal(goal: GoalDefinition): GoalDefinition {
+	return {
+		...goal,
+		scope: [...goal.scope],
+		children: [...goal.children],
+		milestones: goal.milestones.map((milestone) => ({
+			...milestone,
+			tiers: milestone.tiers ? [...milestone.tiers] : undefined,
+			achieved:
+				typeof milestone.achieved === "object" && milestone.achieved !== null
+					? { ...milestone.achieved }
+					: milestone.achieved,
+			hours_at:
+				typeof milestone.hours_at === "object" && milestone.hours_at !== null
+					? { ...milestone.hours_at }
+					: milestone.hours_at,
+		})),
+		settingsHistory: goal.settingsHistory.map((snapshot) => ({ ...snapshot })),
+	};
+}
+
 function safeGoalName(value: string): string {
 	return value
 		.trim()
@@ -239,29 +261,53 @@ function replaceSection(content: string, heading: string, value: string): string
 }
 
 export class GoalService {
-	constructor(private plugin: TaskNotesPlugin) {}
+	private goalCache = new Map<
+		string,
+		{ mtime: number; size: number; goal: GoalDefinition | null }
+	>();
 
-	private async readFrontmatter(file: TFile): Promise<Frontmatter> {
-		const cached = this.plugin.app.metadataCache.getFileCache(file)?.frontmatter;
-		if (cached) return cached;
+	constructor(private plugin: TaskNotesPlugin) {
+		plugin.registerEvent(
+			plugin.app.vault.on("modify", (file) => this.goalCache.delete(file.path))
+		);
+		plugin.registerEvent(
+			plugin.app.vault.on("delete", (file) => this.goalCache.delete(file.path))
+		);
+		plugin.registerEvent(
+			plugin.app.vault.on("rename", (file, oldPath) => {
+				this.goalCache.delete(oldPath);
+				this.goalCache.delete(file.path);
+			})
+		);
+	}
+
+	private async readGoal(file: TFile): Promise<GoalDefinition | null> {
+		const cached = this.goalCache.get(file.path);
+		if (cached?.mtime === file.stat.mtime && cached.size === file.stat.size) {
+			return cached.goal ? cloneGoal(cached.goal) : null;
+		}
+		const { mtime, size } = file.stat;
 		const content = await this.plugin.app.vault.cachedRead(file);
 		const match = content.match(/^---\s*\n([\s\S]*?)\n---/u);
-		return match ? ((parseYaml(match[1]) as Frontmatter | null) ?? {}) : {};
+		const frontmatter = match ? ((parseYaml(match[1]) as Frontmatter | null) ?? {}) : {};
+		const goal = parseGoal(file, frontmatter, content);
+		this.goalCache.set(file.path, {
+			mtime,
+			size,
+			goal: goal ? cloneGoal(goal) : null,
+		});
+		return goal;
 	}
 
 	async listGoals(): Promise<GoalDefinition[]> {
 		const files = this.plugin.app.vault
 			.getMarkdownFiles()
 			.filter((file) => file.path.startsWith(`${GOALS_FOLDER}/`));
-		const goals = await Promise.all(
-			files.map(async (file) =>
-				parseGoal(
-					file,
-					await this.readFrontmatter(file),
-					await this.plugin.app.vault.cachedRead(file)
-				)
-			)
-		);
+		const currentPaths = new Set(files.map((file) => file.path));
+		for (const path of this.goalCache.keys()) {
+			if (!currentPaths.has(path)) this.goalCache.delete(path);
+		}
+		const goals = await Promise.all(files.map((file) => this.readGoal(file)));
 		return goals
 			.filter((goal): goal is GoalDefinition => Boolean(goal))
 			.sort((left, right) => {
@@ -272,13 +318,7 @@ export class GoalService {
 
 	async getGoal(path: string): Promise<GoalDefinition | null> {
 		const file = this.plugin.app.vault.getAbstractFileByPath(normalizePath(path));
-		return file instanceof TFile
-			? parseGoal(
-					file,
-					await this.readFrontmatter(file),
-					await this.plugin.app.vault.cachedRead(file)
-				)
-			: null;
+		return file instanceof TFile ? this.readGoal(file) : null;
 	}
 
 	async getAdjustmentHistory(path: string): Promise<string[]> {
@@ -423,10 +463,9 @@ export class GoalService {
 		const segments = buildTimeStatisticsSegments(tasks, range, now);
 		const durationDays = (range.end.getTime() - range.start.getTime()) / 86_400_000;
 		const settingsDate = new Date(Math.min(now.getTime(), range.end.getTime() - 1));
-		const periodGoals = goals.filter(
-			(goal) => new Date(`${goal.created}T00:00:00`).getTime() < range.end.getTime()
-		);
-		const budgetGoals = periodGoals.map((goal) => {
+		// Goal scopes describe attribution rules, not the date from which a tag starts to count.
+		// A newly created goal therefore still owns matching time in historical ranges.
+		const budgetGoals = goals.map((goal) => {
 			const settings = getGoalSettingsAt(goal, settingsDate);
 			const target = settings.target;
 			const resolved = { ...goal, period: settings.period, target: target ?? undefined };
@@ -443,7 +482,7 @@ export class GoalService {
 			};
 		});
 		return {
-			goals: periodGoals,
+			goals,
 			progress: buildGoalProgress(
 				budgetGoals,
 				segments,
@@ -617,6 +656,32 @@ export class GoalService {
 		});
 	}
 
+	async updateMilestoneUnit(
+		goalPath: string,
+		milestoneIndex: number,
+		unit: string
+	): Promise<void> {
+		const goal = await this.getGoal(goalPath);
+		const milestone = goal?.milestones[milestoneIndex];
+		if (!goal || milestone?.kind !== "number") throw new Error("Numeric milestone not found.");
+		const file = this.plugin.app.vault.getAbstractFileByPath(goal.path);
+		if (!(file instanceof TFile)) throw new Error("Goal file not found.");
+		await processVaultFrontMatter(this.plugin.app, file, (frontmatter) => {
+			const milestones = Array.isArray(frontmatter.milestones)
+				? [...frontmatter.milestones]
+				: [];
+			const raw = milestones[milestoneIndex];
+			if (!raw || typeof raw !== "object" || Array.isArray(raw))
+				throw new Error("Milestone not found.");
+			const updated = { ...(raw as Frontmatter) };
+			if (unit.trim()) updated.unit = unit.trim();
+			else delete updated.unit;
+			milestones[milestoneIndex] = updated;
+			frontmatter.milestones = milestones;
+		});
+		this.goalCache.delete(goal.path);
+	}
+
 	async updateGoalScope(goalPath: string, scope: readonly string[]): Promise<void> {
 		const goal = await this.getGoal(goalPath);
 		if (!goal?.mode) throw new Error("Only single and child goals can own tags.");
@@ -657,16 +722,17 @@ export class GoalService {
 	}
 
 	async getFourWeekBaseline(scope: string, mode: "floor" | "ceiling" | "count"): Promise<number> {
+		const baselines = await this.getFourWeekBaselines();
+		const baseline = baselines.get(normalizeGoalTag(scope));
+		return (mode === "count" ? baseline?.count : baseline?.hours) ?? 0;
+	}
+
+	async getFourWeekBaselines(): Promise<Map<string, { hours: number; count: number }>> {
 		const tasks = await this.plugin.cacheManager.getAllTasks();
 		const end = new Date();
 		const start = new Date(end);
 		start.setDate(start.getDate() - 28);
-		const segments = buildTimeStatisticsSegments(tasks, { start, end }, end).filter((segment) =>
-			segment.tags.some((tag) => goalTagMatchesScope(tag, scope))
-		);
-		if (mode === "count")
-			return new Set(segments.map((segment) => segment.sessionKey)).size / 4;
-		return segments.reduce((sum, segment) => sum + segment.durationMs, 0) / 3_600_000 / 4;
+		return buildFourWeekGoalBaselines(buildTimeStatisticsSegments(tasks, { start, end }, end));
 	}
 
 	private async getMilestoneHours(

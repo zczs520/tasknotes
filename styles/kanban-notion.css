@@ -47,6 +47,8 @@ body.theme-dark .tasknotes-plugin.tn-tasknotesKanban {
 
 .tasknotes-plugin.tn-tasknotesKanban .kanban-view__board {
     align-items: flex-start;
+    /* Keep overflowing columns reachable from the start on narrow boards. */
+    justify-content: safe center;
     gap: 16px;
     margin: 8px 14px 0;
     padding: 16px 18px 22px;
@@ -189,7 +191,8 @@ body.theme-dark .tasknotes-plugin.tn-tasknotesKanban [data-status-tone="complete
 /* Swimlanes become stacked Notion-style groups instead of bordered table rows. */
 .tasknotes-plugin.tn-tasknotesKanban .kanban-view__board--swimlanes {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: safe center;
+    justify-content: flex-start;
     gap: 20px;
     min-height: 0;
     padding: 16px 18px 22px;

@@ -1628,6 +1628,11 @@ body.theme-dark :is(.tn-goal-modal, .tn-goal-detail-modal, .tn-goals-view, .tn-g
 	flex-wrap: wrap;
 }
 
+:is(.tn-goal-modal, .tn-goal-detail-modal) input.tn-goal-modal__milestone-unit {
+	width: 110px;
+	flex: 0 0 110px;
+}
+
 .tn-goal-modal__tier-chip {
 	display: flex;
 	align-items: center;
@@ -1916,7 +1921,7 @@ body.theme-dark :is(.tn-goal-modal, .tn-goal-detail-modal, .tn-goals-view, .tn-g
 .tn-goal-stock__bar {
 	position: relative;
 	height: 6px;
-	margin-right: 4px;
+	margin: 0 4px 16px 0;
 	border-radius: 3px;
 	background: var(--tn-goal-sunk);
 }
@@ -1941,6 +1946,23 @@ body.theme-dark :is(.tn-goal-modal, .tn-goal-detail-modal, .tn-goals-view, .tn-g
 .tn-goal-stock__tier.is-achieved {
 	border-color: var(--tn-goal-violet);
 	background: var(--tn-goal-violet);
+}
+
+.tn-goal-stock__tier-value {
+	position: absolute;
+	top: 14px;
+	left: 50%;
+	transform: translateX(-50%);
+	color: var(--tn-goal-faint);
+	font: 10px "TaskNotes Time Statistics Mono", monospace;
+	font-weight: 400;
+	line-height: 1;
+	pointer-events: none;
+	white-space: nowrap;
+}
+
+.tn-goal-stock__tier:last-child .tn-goal-stock__tier-value {
+	transform: translateX(-100%);
 }
 
 .tn-goal-stock__note,
