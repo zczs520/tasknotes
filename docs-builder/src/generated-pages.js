@@ -1,9 +1,10 @@
 import fs from "fs/promises";
 import path from "path";
+import { fileURLToPath } from "node:url";
 import { build as bundle } from "esbuild";
 import ts from "typescript";
 
-const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../..");
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 function frontmatter(title, description, sourceFiles) {
 	return [

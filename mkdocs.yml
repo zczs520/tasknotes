@@ -107,6 +107,8 @@ redirects:
 # Redirected legacy pages remain here so their old Markdown can still support
 # maintainers without becoming a second public source of truth.
 drafts:
+    - development/agent-local-validation.md
+    - development/agent-release-workflow.md
     - development/architecture.md
     - development/data-flow.md
     - development/refactor-smoke-checks.md
