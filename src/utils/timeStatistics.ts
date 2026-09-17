@@ -288,7 +288,16 @@ export function buildTagTimeStatistics(
 			durationMs: aggregate.durationMs,
 			taskPaths: [...aggregate.taskPaths],
 		}))
-		.sort((left, right) => right.durationMs - left.durationMs);
+		.sort((left, right) => {
+			const durationDifference = right.durationMs - left.durationMs;
+			if (durationDifference !== 0 || left.durationMs === 0) {
+				return durationDifference;
+			}
+
+			const leftTag = left.tag ?? "";
+			const rightTag = right.tag ?? "";
+			return leftTag < rightTag ? -1 : leftTag > rightTag ? 1 : 0;
+		});
 }
 
 export function buildTaskTimeStatistics(
