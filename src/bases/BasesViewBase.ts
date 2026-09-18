@@ -133,6 +133,7 @@ export abstract class BasesViewBase extends Component {
 	private restoreConfigChangeHook: (() => void) | null = null;
 	protected presentationConfigWriteDepth = 0;
 	protected relevantPathsCache: Set<string> = new Set();
+	protected enableGoalUpdates = false;
 
 	// Search functionality (opt-in via enableSearch flag)
 	protected enableSearch = false;
@@ -214,6 +215,7 @@ export abstract class BasesViewBase extends Component {
 	onload(): void {
 		this.setupContainer();
 		this.setupTaskUpdateListener();
+		if (this.enableGoalUpdates) this.setupGoalUpdateListener();
 		this.setupSelectionHandling();
 		this.updateRelevantPathsCache();
 		void this.render();
@@ -481,6 +483,30 @@ export abstract class BasesViewBase extends Component {
 				this.taskUpdateListener = null;
 			}
 		});
+	}
+
+	private setupGoalUpdateListener(): void {
+		const refresh = (): void => {
+			if (this.rootElement?.isConnected) this.debouncedRefresh();
+		};
+		const refreshForPaths = (...paths: string[]): void => {
+			const folder = this.plugin.goalService.folder;
+			if (paths.some((path) =>
+				path === folder || path.startsWith(`${folder}/`) || folder.startsWith(`${path}/`)
+			)) refresh();
+		};
+		const vault = this.plugin.app.vault;
+		this.registerEvent(vault.on("create", (file) => refreshForPaths(file.path)));
+		this.registerEvent(vault.on("modify", (file) => refreshForPaths(file.path)));
+		this.registerEvent(vault.on("delete", (file) => refreshForPaths(file.path)));
+		this.registerEvent(vault.on("rename", (file, oldPath) => refreshForPaths(file.path, oldPath)));
+		let previousFolder = this.plugin.goalService.folder;
+		this.registerEvent(this.plugin.emitter.on("settings-changed", () => {
+			const folder = this.plugin.goalService.folder;
+			if (folder === previousFolder) return;
+			previousFolder = folder;
+			refresh();
+		}));
 	}
 
 	private handleTaskDeletedEvent(eventData: unknown): void {

@@ -347,6 +347,7 @@ export class KanbanView extends BasesViewBase {
 	 * Override from Component base class.
 	 */
 	onload(): void {
+		this.enableGoalUpdates = true;
 		// Read view options now that config is available
 		this.readViewOptions();
 		// Call parent onload which sets up container and listeners

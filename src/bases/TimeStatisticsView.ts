@@ -97,6 +97,7 @@ export class TimeStatisticsView extends BasesViewBase {
 	private renderVersion = 0;
 
 	onload(): void {
+		this.enableGoalUpdates = true;
 		super.onload();
 		const win = this.containerEl.ownerDocument.defaultView ?? window;
 		this.registerInterval(

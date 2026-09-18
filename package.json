@@ -1,6 +1,6 @@
 {
 	"name": "taskquence",
-	"version": "5.2.0",
+	"version": "5.2.1",
 	"description": "Connect goals, Markdown tasks, Kanban planning, time tracking, and reviews in one workflow.",
 	"main": "main.js",
 	"scripts": {
