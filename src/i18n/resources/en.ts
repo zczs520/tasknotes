@@ -710,6 +710,15 @@ export const en: TranslationTree = {
 			appearance: "Appearance & UI",
 			features: "Features",
 			integrations: "Integrations",
+			goals: "Goals",
+		},
+		goals: {
+			heading: "Goals",
+			folder: {
+				name: "Goal folder",
+				description:
+					"Vault-relative folder for reading and creating goal notes. Leave empty to use {defaultFolder}. Changing this setting does not move existing notes. Move old goal notes into this folder, or enter {legacyFolder} to keep using them.",
+			},
 		},
 		modalFields: {
 			heading: "Task modal fields configuration",

@@ -1590,6 +1590,22 @@
       "source": "a7881cac6e64abca5eafd172df6eb31fe0b84c88",
       "translation": "a5126e7c9412cef1a03d744ebed395eb7214db26"
     },
+    "settings.tabs.goals": {
+      "source": "48d8c627be3c12fac8a0a9ddb9ceaa5e126cf358",
+      "translation": "1e0f31aa4e7abb5390df54f6a63b5504993e719a"
+    },
+    "settings.goals.heading": {
+      "source": "48d8c627be3c12fac8a0a9ddb9ceaa5e126cf358",
+      "translation": "1e0f31aa4e7abb5390df54f6a63b5504993e719a"
+    },
+    "settings.goals.folder.name": {
+      "source": "a0551f8a4419096187e392d2e571a492d488a9eb",
+      "translation": "8036bfe39833b99d24ea56ed2409cf2f211c3f27"
+    },
+    "settings.goals.folder.description": {
+      "source": "41becda9b284dc81944a840a4dd86e93a47d3025",
+      "translation": "c06eec33d868c362de881eb74c920695d328c444"
+    },
     "settings.modalFields.heading": null,
     "settings.modalFields.description": null,
     "settings.modalFields.splitLayout.name": null,
@@ -10861,6 +10877,22 @@
     "settings.tabs.integrations": {
       "source": "a7881cac6e64abca5eafd172df6eb31fe0b84c88",
       "translation": "6082310864faed1ba917afb4164aae29fb80803a"
+    },
+    "settings.tabs.goals": {
+      "source": "48d8c627be3c12fac8a0a9ddb9ceaa5e126cf358",
+      "translation": "3d1464d245b655717995dad1af472cd49247837a"
+    },
+    "settings.goals.heading": {
+      "source": "48d8c627be3c12fac8a0a9ddb9ceaa5e126cf358",
+      "translation": "3d1464d245b655717995dad1af472cd49247837a"
+    },
+    "settings.goals.folder.name": {
+      "source": "a0551f8a4419096187e392d2e571a492d488a9eb",
+      "translation": "605fc87cd2982e27710524b3a0ecf3f7f011f40c"
+    },
+    "settings.goals.folder.description": {
+      "source": "41becda9b284dc81944a840a4dd86e93a47d3025",
+      "translation": "679f40a86665f6859999cf6c5a2d110939ab36a5"
     },
     "settings.modalFields.heading": null,
     "settings.modalFields.description": null,
@@ -20134,6 +20166,22 @@
       "source": "a7881cac6e64abca5eafd172df6eb31fe0b84c88",
       "translation": "4f90e5966c8332bc8de5124dbb9ca107372bb513"
     },
+    "settings.tabs.goals": {
+      "source": "48d8c627be3c12fac8a0a9ddb9ceaa5e126cf358",
+      "translation": "5702830759b3461fc7db6359856c7e79203108d6"
+    },
+    "settings.goals.heading": {
+      "source": "48d8c627be3c12fac8a0a9ddb9ceaa5e126cf358",
+      "translation": "5702830759b3461fc7db6359856c7e79203108d6"
+    },
+    "settings.goals.folder.name": {
+      "source": "a0551f8a4419096187e392d2e571a492d488a9eb",
+      "translation": "2cd30a40cb0a878b2124bee64e20247d19b9a6e5"
+    },
+    "settings.goals.folder.description": {
+      "source": "41becda9b284dc81944a840a4dd86e93a47d3025",
+      "translation": "ad346b467ec40f075cf394970571de3b3a30805a"
+    },
     "settings.modalFields.heading": null,
     "settings.modalFields.description": null,
     "settings.modalFields.splitLayout.name": null,
@@ -29405,6 +29453,22 @@
     "settings.tabs.integrations": {
       "source": "a7881cac6e64abca5eafd172df6eb31fe0b84c88",
       "translation": "3fdb3a4c402e9c819b75361b4849b530f25dfb41"
+    },
+    "settings.tabs.goals": {
+      "source": "48d8c627be3c12fac8a0a9ddb9ceaa5e126cf358",
+      "translation": "01839d074d02871047ba603a169a5cb49cc2ece4"
+    },
+    "settings.goals.heading": {
+      "source": "48d8c627be3c12fac8a0a9ddb9ceaa5e126cf358",
+      "translation": "01839d074d02871047ba603a169a5cb49cc2ece4"
+    },
+    "settings.goals.folder.name": {
+      "source": "a0551f8a4419096187e392d2e571a492d488a9eb",
+      "translation": "7acb7411075c3946609a76f6b5d3c06dcde44a06"
+    },
+    "settings.goals.folder.description": {
+      "source": "41becda9b284dc81944a840a4dd86e93a47d3025",
+      "translation": "91cf1df0cd36d700e49a52afa0ef3d168f2c6b51"
     },
     "settings.modalFields.heading": null,
     "settings.modalFields.description": null,
@@ -38678,6 +38742,22 @@
       "source": "a7881cac6e64abca5eafd172df6eb31fe0b84c88",
       "translation": "892f1c0be159b891166ca6b5d3ad9923e0888b10"
     },
+    "settings.tabs.goals": {
+      "source": "48d8c627be3c12fac8a0a9ddb9ceaa5e126cf358",
+      "translation": "2fbea43b0bd94ff1cef308acbaccc9062ee15c55"
+    },
+    "settings.goals.heading": {
+      "source": "48d8c627be3c12fac8a0a9ddb9ceaa5e126cf358",
+      "translation": "2fbea43b0bd94ff1cef308acbaccc9062ee15c55"
+    },
+    "settings.goals.folder.name": {
+      "source": "a0551f8a4419096187e392d2e571a492d488a9eb",
+      "translation": "bc0161057a2c9c66a51bd52cdba35caa55f084e2"
+    },
+    "settings.goals.folder.description": {
+      "source": "41becda9b284dc81944a840a4dd86e93a47d3025",
+      "translation": "cdb5eedcbcf86d3c62095824390ef1e1ea831cce"
+    },
     "settings.modalFields.heading": null,
     "settings.modalFields.description": null,
     "settings.modalFields.splitLayout.name": null,
@@ -47950,6 +48030,22 @@
       "source": "a7881cac6e64abca5eafd172df6eb31fe0b84c88",
       "translation": "935a73f2095899b2cc1730e3257e5c96e4e35b5c"
     },
+    "settings.tabs.goals": {
+      "source": "48d8c627be3c12fac8a0a9ddb9ceaa5e126cf358",
+      "translation": "3d1464d245b655717995dad1af472cd49247837a"
+    },
+    "settings.goals.heading": {
+      "source": "48d8c627be3c12fac8a0a9ddb9ceaa5e126cf358",
+      "translation": "3d1464d245b655717995dad1af472cd49247837a"
+    },
+    "settings.goals.folder.name": {
+      "source": "a0551f8a4419096187e392d2e571a492d488a9eb",
+      "translation": "7d59aca70bd8264f0936a3322486b9ffc96f1811"
+    },
+    "settings.goals.folder.description": {
+      "source": "41becda9b284dc81944a840a4dd86e93a47d3025",
+      "translation": "e979a985cbfcc7aa097b37c892e93f4382e325aa"
+    },
     "settings.modalFields.heading": null,
     "settings.modalFields.description": null,
     "settings.modalFields.splitLayout.name": null,
@@ -57221,6 +57317,22 @@
     "settings.tabs.integrations": {
       "source": "a7881cac6e64abca5eafd172df6eb31fe0b84c88",
       "translation": "55ca8fac219f5e28fd59d8bb5fbf076eb08046d3"
+    },
+    "settings.tabs.goals": {
+      "source": "48d8c627be3c12fac8a0a9ddb9ceaa5e126cf358",
+      "translation": "be78106ef16c2888a5fcc043697ed6fa696072ea"
+    },
+    "settings.goals.heading": {
+      "source": "48d8c627be3c12fac8a0a9ddb9ceaa5e126cf358",
+      "translation": "be78106ef16c2888a5fcc043697ed6fa696072ea"
+    },
+    "settings.goals.folder.name": {
+      "source": "a0551f8a4419096187e392d2e571a492d488a9eb",
+      "translation": "6737fe8e6b11a6c8c801a3012954f51c2d28a620"
+    },
+    "settings.goals.folder.description": {
+      "source": "41becda9b284dc81944a840a4dd86e93a47d3025",
+      "translation": "033c16c4bebf2185a0677ca51b6102d7b3fc60d7"
     },
     "settings.modalFields.heading": null,
     "settings.modalFields.description": null,
@@ -66847,6 +66959,22 @@
     "settings.tabs.integrations": {
       "source": "a7881cac6e64abca5eafd172df6eb31fe0b84c88",
       "translation": "2a213ace35b25b9171b9198828a4d3151a85f77f"
+    },
+    "settings.tabs.goals": {
+      "source": "48d8c627be3c12fac8a0a9ddb9ceaa5e126cf358",
+      "translation": "941f08313a1de5727de3a52c539294df542056d5"
+    },
+    "settings.goals.heading": {
+      "source": "48d8c627be3c12fac8a0a9ddb9ceaa5e126cf358",
+      "translation": "941f08313a1de5727de3a52c539294df542056d5"
+    },
+    "settings.goals.folder.name": {
+      "source": "a0551f8a4419096187e392d2e571a492d488a9eb",
+      "translation": "a2abdae32c22c44f7c08e02d33b23dd339ef3200"
+    },
+    "settings.goals.folder.description": {
+      "source": "41becda9b284dc81944a840a4dd86e93a47d3025",
+      "translation": "b7de3ccef578b36ac3c82b90dfcc347354f30b27"
     },
     "settings.modalFields.heading": {
       "source": "463769fb01686447dfedbb494aa058ba8f025686",

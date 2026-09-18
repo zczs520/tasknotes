@@ -535,6 +535,15 @@ export const ko: TranslationTree = {
 			appearance: "외관 및 UI",
 			features: "기능",
 			integrations: "통합",
+			goals: "목표",
+		},
+		goals: {
+			heading: "목표",
+			folder: {
+				name: "목표 폴더",
+				description:
+					"목표 노트를 읽고 생성할 폴더의 보관함 기준 상대 경로입니다. 비워 두면 {defaultFolder}를 사용합니다. 설정을 변경해도 기존 노트는 이동하지 않습니다. 지정한 폴더로 이동하거나 {legacyFolder}를 입력하여 기존 위치를 사용하세요.",
+			},
 		},
 		features: {
 			inlineTasks: {

@@ -1,4 +1,5 @@
 import { normalizePath } from "obsidian";
+import { normalizeGoalsFolder } from "../goals/goalFolder";
 import { DEFAULT_NLP_TRIGGERS, DEFAULT_SETTINGS } from "./defaults";
 import { hasMissingMigratedSettings } from "./settingsMigration";
 import type { TaskCreationDefaults, TaskNotesSettings } from "../types/settings";
@@ -205,6 +206,7 @@ export function buildSettingsFromLoadedData(data: LoadedSettingsData | null): Se
 	const settings: TaskNotesSettings = {
 		...DEFAULT_SETTINGS,
 		...loadedData,
+		goalsFolder: normalizeGoalsFolder(loadedData?.goalsFolder),
 		taskIdentificationMethod: "property",
 		taskPropertyName: "taskType",
 		taskPropertyValue: "task",

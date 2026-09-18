@@ -542,6 +542,15 @@ export const fr: TranslationTree = {
 			appearance: "Apparence et interface",
 			features: "Fonctionnalités",
 			integrations: "Intégrations",
+			goals: "Objectifs",
+		},
+		goals: {
+			heading: "Objectifs",
+			folder: {
+				name: "Dossier des objectifs",
+				description:
+					"Dossier relatif au coffre pour lire et créer les notes d’objectifs. Laissez vide pour utiliser {defaultFolder}. Ce réglage ne déplace pas les notes existantes. Déplacez-les dans ce dossier ou saisissez {legacyFolder} pour conserver l’ancien emplacement.",
+			},
 		},
 		features: {
 			inlineTasks: {

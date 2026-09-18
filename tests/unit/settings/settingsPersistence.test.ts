@@ -35,6 +35,18 @@ function createHost(options: {
 }
 
 describe("settings persistence helpers", () => {
+	it("defaults new and existing installations to the nested goal folder", () => {
+		expect(buildSettingsFromLoadedData(null).settings.goalsFolder).toBe("TASKquence/Tasks/Goals");
+		expect(buildSettingsFromLoadedData({ tasksFolder: "Tasks" }).settings.goalsFolder).toBe("TASKquence/Tasks/Goals");
+	});
+
+	it("preserves and normalizes a custom goal folder through saving and reloading", () => {
+		const { settings } = buildSettingsFromLoadedData({ goalsFolder: " Personal\\Goals/ " });
+		expect(settings.goalsFolder).toBe("Personal/Goals");
+		const saved = buildSettingsDataForSave({}, settings);
+		expect(buildSettingsFromLoadedData(saved).settings.goalsFolder).toBe("Personal/Goals");
+	});
+
 	afterEach(() => {
 		jest.restoreAllMocks();
 	});

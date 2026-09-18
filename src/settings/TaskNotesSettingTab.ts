@@ -7,6 +7,7 @@ import { renderModalFieldsTab } from "./tabs/modalFieldsTab";
 import { renderAppearanceTab } from "./tabs/appearanceTab";
 import { renderFeaturesTab } from "./tabs/featuresTab";
 import { renderIntegrationsTab } from "./tabs/integrationsTab";
+import { renderGoalsTab } from "./tabs/goalsTab";
 import type { TranslationKey } from "../i18n";
 
 interface TabConfig {
@@ -54,39 +55,7 @@ export class TaskNotesSettingTab extends PluginSettingTab {
 		const settingsToolbar = containerEl.createDiv("settings-view__toolbar");
 		const tabNav = settingsToolbar.createDiv("settings-tab-nav settings-view__tab-nav");
 
-		// Define the 6-tab structure (defaults merged into task-properties)
-		const allTabs: TabConfig[] = [
-			{
-				id: "general",
-				nameKey: "settings.tabs.general",
-				renderFn: renderGeneralTab,
-			},
-			{
-				id: "task-properties",
-				nameKey: "settings.tabs.taskProperties",
-				renderFn: renderTaskPropertiesTab,
-			},
-			{
-				id: "modal-fields",
-				nameKey: "settings.tabs.modalFields",
-				renderFn: renderModalFieldsTab,
-			},
-			{
-				id: "appearance",
-				nameKey: "settings.tabs.appearance",
-				renderFn: renderAppearanceTab,
-			},
-			{
-				id: "features",
-				nameKey: "settings.tabs.features",
-				renderFn: renderFeaturesTab,
-			},
-			{
-				id: "integrations",
-				nameKey: "settings.tabs.integrations",
-				renderFn: renderIntegrationsTab,
-			},
-		];
+		const allTabs = this.getTabConfigurations();
 
 		// Filter out integrations tab on mobile if it only contains API settings
 		const tabs = Platform.isMobile
@@ -246,6 +215,11 @@ export class TaskNotesSettingTab extends PluginSettingTab {
 				id: "integrations",
 				nameKey: "settings.tabs.integrations",
 				renderFn: renderIntegrationsTab,
+			},
+			{
+				id: "goals",
+				nameKey: "settings.tabs.goals",
+				renderFn: renderGoalsTab,
 			},
 		];
 	}

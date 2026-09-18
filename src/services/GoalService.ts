@@ -1,5 +1,6 @@
 import { normalizePath, parseYaml, stringifyYaml, TFile } from "obsidian";
 import type TaskNotesPlugin from "../main";
+import { normalizeGoalsFolder } from "../goals/goalFolder";
 import type { TaskInfo } from "../types";
 import {
 	attributeGoalSegments,
@@ -34,7 +35,6 @@ import {
 } from "./VaultMutationService";
 
 const logger = createTaskNotesLogger({ tag: "Services/GoalService" });
-export const GOALS_FOLDER = "Goals";
 
 type Frontmatter = Record<string, unknown>;
 
@@ -261,6 +261,14 @@ function replaceSection(content: string, heading: string, value: string): string
 }
 
 export class GoalService {
+	get folder(): string {
+		return normalizeGoalsFolder(this.plugin.settings.goalsFolder);
+	}
+
+	isGoalPath(path: string): boolean {
+		return path.startsWith(`${this.folder}/`);
+	}
+
 	private goalCache = new Map<
 		string,
 		{ mtime: number; size: number; goal: GoalDefinition | null }
@@ -302,7 +310,7 @@ export class GoalService {
 	async listGoals(): Promise<GoalDefinition[]> {
 		const files = this.plugin.app.vault
 			.getMarkdownFiles()
-			.filter((file) => file.path.startsWith(`${GOALS_FOLDER}/`));
+			.filter((file) => this.isGoalPath(file.path));
 		const currentPaths = new Set(files.map((file) => file.path));
 		for (const path of this.goalCache.keys()) {
 			if (!currentPaths.has(path)) this.goalCache.delete(path);
@@ -317,6 +325,7 @@ export class GoalService {
 	}
 
 	async getGoal(path: string): Promise<GoalDefinition | null> {
+		if (!this.isGoalPath(normalizePath(path))) return null;
 		const file = this.plugin.app.vault.getAbstractFileByPath(normalizePath(path));
 		return file instanceof TFile ? this.readGoal(file) : null;
 	}
@@ -339,6 +348,7 @@ export class GoalService {
 	}
 
 	async createGoalGroup(draft: GoalGroupDraft): Promise<GoalDefinition[]> {
+		const folder = this.folder;
 		const existing = await this.listGoals();
 		const names = draft.split
 			? [draft.name, ...draft.items.map((item) => item.name)]
@@ -357,8 +367,12 @@ export class GoalService {
 
 		const createdFiles: TFile[] = [];
 		try {
-			if (!(await this.plugin.app.vault.adapter.exists(GOALS_FOLDER))) {
-				await createVaultFolder(this.plugin.app, GOALS_FOLDER);
+			const parts = folder.split("/");
+			for (let depth = 1; depth <= parts.length; depth += 1) {
+				const path = parts.slice(0, depth).join("/");
+				if (!(await this.plugin.app.vault.adapter.exists(path))) {
+					await createVaultFolder(this.plugin.app, path);
+				}
 			}
 			const created = new Date().toISOString().slice(0, 10);
 			const fileDrafts: Array<{ name: string; frontmatter: Frontmatter }> = [];
@@ -420,7 +434,7 @@ export class GoalService {
 			for (const item of fileDrafts) {
 				const file = await createVaultFile(
 					this.plugin.app,
-					normalizePath(`${GOALS_FOLDER}/${item.name}.md`),
+					normalizePath(`${folder}/${item.name}.md`),
 					formatGoalFile(item.frontmatter, draft.why)
 				);
 				createdFiles.push(file);

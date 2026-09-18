@@ -1,7 +1,6 @@
 import { ItemView, Notice, Platform, setIcon, type WorkspaceLeaf } from "obsidian";
 import type TaskNotesPlugin from "../main";
 import { EVENT_TASK_DELETED, EVENT_TASK_UPDATED, GOALS_VIEW_TYPE } from "../types";
-import { GOALS_FOLDER } from "../services/GoalService";
 import { goalCopy } from "../goals/goalCopy";
 import type { GoalDefinition, GoalProgress } from "../goals/goalTypes";
 import type { TimeStatisticsPeriod } from "../utils/timeStatistics";
@@ -81,7 +80,7 @@ export class GoalsView extends ItemView {
 		await this.plugin.onReady();
 		this.closed = false;
 		const scheduleForRelevantFile = (path: string): void => {
-			if (path.startsWith(`${GOALS_FOLDER}/`) || this.taskPaths.has(path))
+			if (this.plugin.goalService.isGoalPath(path) || this.taskPaths.has(path))
 				this.scheduleRender();
 		};
 		this.registerEvent(
@@ -102,6 +101,7 @@ export class GoalsView extends ItemView {
 		// New tasks and metadata reconciliation arrive after the task cache is updated.
 		this.registerEvent(this.plugin.emitter.on(EVENT_TASK_UPDATED, () => this.scheduleRender()));
 		this.registerEvent(this.plugin.emitter.on(EVENT_TASK_DELETED, () => this.scheduleRender()));
+		this.registerEvent(this.plugin.emitter.on("settings-changed", () => this.scheduleRender()));
 		await this.render();
 	}
 

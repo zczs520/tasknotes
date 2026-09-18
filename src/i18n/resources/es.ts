@@ -537,6 +537,15 @@ export const es: TranslationTree = {
 			appearance: "Apariencia e interfaz",
 			features: "Características",
 			integrations: "Integraciones",
+			goals: "Objetivos",
+		},
+		goals: {
+			heading: "Objetivos",
+			folder: {
+				name: "Carpeta de objetivos",
+				description:
+					"Carpeta relativa a la bóveda para leer y crear notas de objetivos. Déjela vacía para usar {defaultFolder}. Cambiar este ajuste no mueve las notas existentes. Muévalas a esta carpeta o escriba {legacyFolder} para conservar la ubicación anterior.",
+			},
 		},
 		features: {
 			inlineTasks: {

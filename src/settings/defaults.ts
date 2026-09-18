@@ -1,4 +1,5 @@
 import { DEFAULT_ENABLED_VIEWS } from "./viewFeatures";
+import { DEFAULT_GOALS_FOLDER } from "../goals/goalFolder";
 import { FieldMapping, StatusConfig, PriorityConfig } from "../types";
 import {
 	TaskNotesSettings,
@@ -250,6 +251,7 @@ export const DEFAULT_NLP_TRIGGERS: NLPTriggersConfig = {
 
 export const DEFAULT_SETTINGS: TaskNotesSettings = {
 	tasksFolder: "TASKquence/Tasks",
+	goalsFolder: DEFAULT_GOALS_FOLDER,
 	moveArchivedTasks: false,
 	archiveFolder: "TASKquence/Archive",
 	taskTag: "task",

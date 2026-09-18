@@ -36,13 +36,50 @@ function setup() {
 	const plugin = {
 		app,
 		registerEvent: jest.fn(),
-		settings: { calendarViewSettings: { firstDay: 1 } },
+		settings: { goalsFolder: "Goals", calendarViewSettings: { firstDay: 1 } },
 		cacheManager: { getAllTasks },
 	} as unknown as TaskNotesPlugin;
-	return { app, service: new GoalService(plugin), getAllTasks };
+	return { app, plugin, service: new GoalService(plugin), getAllTasks };
 }
 
 describe("goal service historical attribution and cached reads", () => {
+	it("reads only the configured folder and switches away from cached old goals", async () => {
+		const { app, plugin, service } = setup();
+		await service.listGoals();
+		await app.vault.create("Custom/Goals/New.md", content.replace("name: Developer", "name: New"));
+		await app.vault.create("Custom/Goals-extra/Other.md", content);
+		plugin.settings.goalsFolder = " Custom\\Goals/ ";
+		expect((await service.listGoals()).map((goal) => goal.name)).toEqual(["New"]);
+		expect(await service.getGoal("Goals/Developer.md")).toBeNull();
+		expect(service.isGoalPath("Custom/Goals-extra/Other.md")).toBe(false);
+	});
+
+	it.each([undefined, "", "Custom/Nested/Goals/"])(
+		"creates parent and child goal files in the selected folder: %s",
+		async (folder) => {
+			const { app, plugin, service } = setup();
+			plugin.settings.goalsFolder = folder as string;
+			const createFolder = jest.spyOn(app.vault, "createFolder");
+			const goals = await service.createGoalGroup({
+				name: "Parent",
+				mode: "floor",
+				period: "weekly",
+				split: true,
+				why: "Practice",
+				items: [{ name: "Child", target: 5, scope: ["practice"], milestones: [] }],
+				parentMilestones: [],
+			});
+			const expected = folder ? "Custom/Nested/Goals" : "TASKquence/Tasks/Goals";
+			expect(goals.map((goal) => goal.path)).toEqual([
+				`${expected}/Parent.md`, `${expected}/Child.md`,
+			]);
+			expect(createFolder.mock.calls.map(([path]) => path)).toEqual(
+				expected.split("/").map((_, index, parts) => parts.slice(0, index + 1).join("/"))
+			);
+			expect(await service.listGoals()).toHaveLength(2);
+		}
+	);
+
 	it("includes time and target settings from before the goal was created", async () => {
 		const { service } = setup();
 		const tasks = [

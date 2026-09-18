@@ -2,6 +2,7 @@ import TaskNotesPlugin from '../../../src/main';
 import { TaskNotesSettingTab } from '../../../src/settings/TaskNotesSettingTab';
 import { DEFAULT_SETTINGS } from '../../../src/settings/defaults';
 import { createI18nService } from '../../../src/i18n';
+import { TextComponent } from 'obsidian';
 
 // Obsidian's HTMLElement shim exposes appendText and setAttr; add minimal polyfill for jsdom
 (HTMLElement.prototype as any).appendText ??= function (text: string) {
@@ -119,5 +120,22 @@ describe('Settings UI - Tab Button CSS Classes', () => {
     allButtons.forEach(button => {
       expect(button.classList.contains('vertical-tab-nav-item')).toBe(true);
     });
+  });
+
+  test('goals tab shows the default folder and saves a custom folder', async () => {
+    const save = jest.spyOn(plugin, 'saveSettings').mockResolvedValue(undefined);
+    const changes = jest.spyOn(TextComponent.prototype, 'onChange');
+    tab.display();
+    const button = tab.containerEl.querySelector('#tab-button-goals') as HTMLButtonElement;
+    expect(button).toBeTruthy();
+    button.click();
+    const input = tab.containerEl.querySelector('#settings-tab-goals input') as HTMLInputElement;
+    expect(input.value).toBe('TASKquence/Tasks/Goals');
+    changes.mock.instances[changes.mock.instances.length - 1].setValue('Personal/Goals/');
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(plugin.settings.goalsFolder).toBe('Personal/Goals');
+    tab.hide();
+    expect(save).toHaveBeenCalled();
   });
 });

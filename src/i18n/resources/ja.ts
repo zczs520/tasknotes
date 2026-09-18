@@ -536,6 +536,15 @@ export const ja: TranslationTree = {
 			appearance: "外観とUI",
 			features: "機能",
 			integrations: "統合",
+			goals: "目標",
+		},
+		goals: {
+			heading: "目標",
+			folder: {
+				name: "目標フォルダー",
+				description:
+					"目標ノートの読み込みと作成に使用する、保管庫ルートからの相対パスです。空欄の場合は {defaultFolder} を使用します。変更しても既存のノートは移動しません。指定フォルダーに移動するか、{legacyFolder} を入力して以前の場所を使用してください。",
+			},
 		},
 		features: {
 			inlineTasks: {

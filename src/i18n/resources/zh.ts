@@ -697,6 +697,15 @@ export const zh: TranslationTree = {
 			appearance: "外观和界面",
 			features: "功能",
 			integrations: "集成",
+			goals: "目标",
+		},
+		goals: {
+			heading: "目标",
+			folder: {
+				name: "目标文件夹",
+				description:
+					"读取和创建目标笔记的文件夹路径，相对于仓库根目录。留空使用 {defaultFolder}。修改设置不会移动已有文件；请将原目标移到指定目录，或填写 {legacyFolder} 继续读取原目标。",
+			},
 		},
 		modalFields: {
 			heading: "任务弹窗字段配置",

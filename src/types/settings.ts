@@ -93,6 +93,7 @@ export interface ProjectAutosuggestSettings {
 
 export interface TaskNotesSettings {
 	tasksFolder: string; // Now just a default location for new tasks
+	goalsFolder: string; // Vault-relative folder used to read and create goals
 	moveArchivedTasks: boolean; // Whether to move tasks to archive folder when archived
 	archiveFolder: string; // Folder to move archived tasks to, supports template variables
 	taskTag: string; // The tag that identifies tasks

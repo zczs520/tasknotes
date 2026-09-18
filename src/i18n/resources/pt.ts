@@ -537,6 +537,15 @@ export const pt: TranslationTree = {
 			appearance: "Aparência e UI",
 			features: "Recursos",
 			integrations: "Integrações",
+			goals: "Objetivos",
+		},
+		goals: {
+			heading: "Objetivos",
+			folder: {
+				name: "Pasta de objetivos",
+				description:
+					"Pasta relativa ao cofre para ler e criar notas de objetivos. Deixe em branco para usar {defaultFolder}. Alterar esta configuração não move as notas existentes. Mova-as para esta pasta ou informe {legacyFolder} para continuar usando o local anterior.",
+			},
 		},
 		features: {
 			inlineTasks: {

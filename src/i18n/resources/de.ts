@@ -538,6 +538,15 @@ export const de: TranslationTree = {
 			appearance: "Erscheinungsbild & UI",
 			features: "Funktionen",
 			integrations: "Integrationen",
+			goals: "Ziele",
+		},
+		goals: {
+			heading: "Ziele",
+			folder: {
+				name: "Zielordner",
+				description:
+					"Ordner relativ zum Tresor zum Lesen und Erstellen von Zielnotizen. Leer lassen, um {defaultFolder} zu verwenden. Diese Einstellung verschiebt keine vorhandenen Notizen. Verschieben Sie diese in den gewählten Ordner oder geben Sie {legacyFolder} ein, um den bisherigen Ordner weiterzuverwenden.",
+			},
 		},
 		features: {
 			inlineTasks: {
