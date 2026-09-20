@@ -43,6 +43,24 @@ describe("settings persistence helpers", () => {
 		).toBe(true);
 	});
 
+	it("splits note-footer visibility into relationships off and time entries on", () => {
+		const defaults = buildSettingsFromLoadedData(null);
+		expect(defaults.settings.showRelationships).toBe(false);
+		expect(defaults.settings.showTimeEntriesInNote).toBe(true);
+
+		const migrated = buildSettingsFromLoadedData({ showRelationships: true });
+		expect(migrated.settings.showRelationships).toBe(false);
+		expect(migrated.settings.showTimeEntriesInNote).toBe(true);
+		expect(migrated.shouldPersistMigratedSettings).toBe(true);
+
+		const saved = buildSettingsFromLoadedData({
+			showRelationships: true,
+			showTimeEntriesInNote: false,
+		});
+		expect(saved.settings.showRelationships).toBe(true);
+		expect(saved.settings.showTimeEntriesInNote).toBe(false);
+	});
+
 	it("defaults new and existing installations to the nested goal folder", () => {
 		expect(buildSettingsFromLoadedData(null).settings.goalsFolder).toBe("TASKquence/Tasks/Goals");
 		expect(buildSettingsFromLoadedData({ tasksFolder: "Tasks" }).settings.goalsFolder).toBe("TASKquence/Tasks/Goals");

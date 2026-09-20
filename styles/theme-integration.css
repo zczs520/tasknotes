@@ -35,6 +35,45 @@ body.tasknotes-use-obsidian-theme-colors .tasknotes-plugin {
 	--tn-shadow-hover: var(--shadow-l, 0 10px 30px rgb(0 0 0 / 18%));
 }
 
+/* Task note header card, time records, and embedded relationships */
+body.tasknotes-use-obsidian-theme-colors .task-card-note-widget {
+	--tn-note-card-surface: var(--background-primary);
+	--tn-note-card-soft: var(--background-secondary);
+	--tn-note-card-line: var(--background-modifier-border);
+	--tn-note-card-line-strong: var(
+		--background-modifier-border-hover,
+		var(--background-modifier-border)
+	);
+	--tn-note-card-text: var(--text-normal);
+	--tn-note-card-muted: var(--text-muted);
+	--tn-note-card-green: var(--color-green, var(--interactive-accent));
+	--tn-note-card-green-soft: color-mix(
+		in srgb,
+		var(--color-green, var(--interactive-accent)) 12%,
+		var(--background-primary)
+	);
+}
+
+body.tasknotes-use-obsidian-theme-colors .tasknotes-relationships-widget {
+	--tn-note-footer-surface: var(--background-primary);
+	--tn-note-footer-soft: var(--background-secondary);
+	--tn-note-footer-line: var(--background-modifier-border);
+	--tn-note-footer-line-strong: var(
+		--background-modifier-border-hover,
+		var(--background-modifier-border)
+	);
+	--tn-note-footer-text: var(--text-normal);
+	--tn-note-footer-muted: var(--text-muted);
+	--tn-note-footer-faint: var(--text-faint);
+	--tn-note-footer-coral: var(--interactive-accent);
+	--tn-note-footer-green: var(--color-green, var(--interactive-accent));
+	--tn-note-footer-green-soft: color-mix(
+		in srgb,
+		var(--color-green, var(--interactive-accent)) 12%,
+		var(--background-primary)
+	);
+}
+
 /* Task board */
 body.tasknotes-use-obsidian-theme-colors .tasknotes-plugin.tn-tasknotesKanban {
 	--tn-kanban-page: var(--background-primary);
@@ -368,5 +407,5 @@ body.tasknotes-use-obsidian-theme-colors
 body.tasknotes-use-obsidian-theme-colors
 	.tasknotes-plugin.tasknotes-active-task-control
 	.tasknotes-active-task-control__complete:hover {
-	color: var(--text-on-accent);
+	color: var(--tn-active-green);
 }

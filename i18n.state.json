@@ -3951,12 +3951,20 @@
       "translation": "454708d2cf2104916402f60c898892b691ee5a0a"
     },
     "settings.appearance.uiElements.showRelationshipsWidget.name": {
-      "source": "373168057ec5af76c7146540ea6f2e4768830b8d",
-      "translation": "867c4765bef9d7a2640ffe5ff29c3214f85ac0d7"
+      "source": "c81bb8cc90ec8acd5baa2155d02080b5df8692b0",
+      "translation": "ee5ea24a1a9b379ab3c536e1d1f841511982732f"
     },
     "settings.appearance.uiElements.showRelationshipsWidget.description": {
-      "source": "cf898d08fa90011bc68f275590dbee92575869e2",
-      "translation": "929e9c5d0639c9de6bd8fb08312f58303601dea7"
+      "source": "f2c59f485622cd2493376a32d29b8399ad766d02",
+      "translation": "0bdc47d6a50e42b44d45b26a0d1130038effb4ec"
+    },
+    "settings.appearance.uiElements.showTimeEntriesInNote.name": {
+      "source": "2367ebf083af8b709878dfb6b2603726d99f1860",
+      "translation": "7e060ab1403fd3b2b6e67284008a536881a92fce"
+    },
+    "settings.appearance.uiElements.showTimeEntriesInNote.description": {
+      "source": "14631f1aaffe018c331c4d8b5e387d9d4040838c",
+      "translation": "bc307994e4db566117b29441704ac91bd64567ac"
     },
     "settings.appearance.uiElements.relationshipsPosition.name": {
       "source": "dbf4d888e5e162c65f934783bcf532b46e91a7bb",
@@ -13255,12 +13263,20 @@
       "translation": "77b39b5564bf4d86b0eeb9b26cebb13bb94cb45b"
     },
     "settings.appearance.uiElements.showRelationshipsWidget.name": {
-      "source": "373168057ec5af76c7146540ea6f2e4768830b8d",
-      "translation": "bfc75d2afb34faa53bf9bca0c6645586124edb5c"
+      "source": "c81bb8cc90ec8acd5baa2155d02080b5df8692b0",
+      "translation": "15ec966253868d3bcfc4976f946f5f3a9b8e30ab"
     },
     "settings.appearance.uiElements.showRelationshipsWidget.description": {
-      "source": "cf898d08fa90011bc68f275590dbee92575869e2",
-      "translation": "5833a5b0df2e733ca227f60155536fadce7153a1"
+      "source": "f2c59f485622cd2493376a32d29b8399ad766d02",
+      "translation": "1ff0bc9ef56accd09f854c140d58cfc2d799d292"
+    },
+    "settings.appearance.uiElements.showTimeEntriesInNote.name": {
+      "source": "2367ebf083af8b709878dfb6b2603726d99f1860",
+      "translation": "4637ced3bea5c424a06bea21646003af9bfcc883"
+    },
+    "settings.appearance.uiElements.showTimeEntriesInNote.description": {
+      "source": "14631f1aaffe018c331c4d8b5e387d9d4040838c",
+      "translation": "1e7ebfd57dab68e80945b9e554c94f887d3ea46b"
     },
     "settings.appearance.uiElements.relationshipsPosition.name": {
       "source": "dbf4d888e5e162c65f934783bcf532b46e91a7bb",
@@ -22559,12 +22575,20 @@
       "translation": "9e57750af66623d8a94a56a14efcddf58c55d8ec"
     },
     "settings.appearance.uiElements.showRelationshipsWidget.name": {
-      "source": "373168057ec5af76c7146540ea6f2e4768830b8d",
-      "translation": "b0e96dcd2dc6f8c650c2cba154829cbe534e515f"
+      "source": "c81bb8cc90ec8acd5baa2155d02080b5df8692b0",
+      "translation": "9b0b7920d5feba586d6a6d6d38937f57d7290b18"
     },
     "settings.appearance.uiElements.showRelationshipsWidget.description": {
-      "source": "cf898d08fa90011bc68f275590dbee92575869e2",
-      "translation": "1bfc4a909a642c2d32cc888d93f286348c6c68d6"
+      "source": "f2c59f485622cd2493376a32d29b8399ad766d02",
+      "translation": "4cf66ce06a65ac42c1b08dc49de2381ca2451a24"
+    },
+    "settings.appearance.uiElements.showTimeEntriesInNote.name": {
+      "source": "2367ebf083af8b709878dfb6b2603726d99f1860",
+      "translation": "abc93b428d68c113d4dc64427cd4027e270a9425"
+    },
+    "settings.appearance.uiElements.showTimeEntriesInNote.description": {
+      "source": "14631f1aaffe018c331c4d8b5e387d9d4040838c",
+      "translation": "472291b8369d5e9ef5bc61145fe660a6d1f388a9"
     },
     "settings.appearance.uiElements.relationshipsPosition.name": {
       "source": "dbf4d888e5e162c65f934783bcf532b46e91a7bb",
@@ -31863,12 +31887,20 @@
       "translation": "c452141de881eeeb24830d5521f86c8e3c83b0b1"
     },
     "settings.appearance.uiElements.showRelationshipsWidget.name": {
-      "source": "373168057ec5af76c7146540ea6f2e4768830b8d",
-      "translation": "69d263d681692c60c3829cd14d9f60a0fb8ca108"
+      "source": "c81bb8cc90ec8acd5baa2155d02080b5df8692b0",
+      "translation": "fc58a0873250cb9dcf160df78a21a1526671a71d"
     },
     "settings.appearance.uiElements.showRelationshipsWidget.description": {
-      "source": "cf898d08fa90011bc68f275590dbee92575869e2",
-      "translation": "7e30056f107520b3e7504044d17fb677f89593e1"
+      "source": "f2c59f485622cd2493376a32d29b8399ad766d02",
+      "translation": "a6e67057aed46240a9546a07782e55ff02c0bb38"
+    },
+    "settings.appearance.uiElements.showTimeEntriesInNote.name": {
+      "source": "2367ebf083af8b709878dfb6b2603726d99f1860",
+      "translation": "0b5daf9717e42307856e709c90505198794abe3b"
+    },
+    "settings.appearance.uiElements.showTimeEntriesInNote.description": {
+      "source": "14631f1aaffe018c331c4d8b5e387d9d4040838c",
+      "translation": "0fa09fe395a5e075d93c96e76f777d787452cbaf"
     },
     "settings.appearance.uiElements.relationshipsPosition.name": {
       "source": "dbf4d888e5e162c65f934783bcf532b46e91a7bb",
@@ -41167,12 +41199,20 @@
       "translation": "a25739c789017526079bbe0fd5b264c3cedd8052"
     },
     "settings.appearance.uiElements.showRelationshipsWidget.name": {
-      "source": "373168057ec5af76c7146540ea6f2e4768830b8d",
-      "translation": "febf0ae126f3453b61f8fa980776ccb677270aa2"
+      "source": "c81bb8cc90ec8acd5baa2155d02080b5df8692b0",
+      "translation": "a48823d77c5601e31e3f325d980958b91fb9db4f"
     },
     "settings.appearance.uiElements.showRelationshipsWidget.description": {
-      "source": "cf898d08fa90011bc68f275590dbee92575869e2",
-      "translation": "32cf8daa7ccc71b3be5b4caff1c92d9d3de16b13"
+      "source": "f2c59f485622cd2493376a32d29b8399ad766d02",
+      "translation": "35af9cee118c977336bb9f6920259687fa269a6e"
+    },
+    "settings.appearance.uiElements.showTimeEntriesInNote.name": {
+      "source": "2367ebf083af8b709878dfb6b2603726d99f1860",
+      "translation": "628fd7d600de2e1d61c841f86c41476c1d2d7d03"
+    },
+    "settings.appearance.uiElements.showTimeEntriesInNote.description": {
+      "source": "14631f1aaffe018c331c4d8b5e387d9d4040838c",
+      "translation": "2971f61c9af8b79184db6395081b60536abcee9d"
     },
     "settings.appearance.uiElements.relationshipsPosition.name": {
       "source": "dbf4d888e5e162c65f934783bcf532b46e91a7bb",
@@ -50471,12 +50511,20 @@
       "translation": "254488397ba42345ebe682c0dbff8156beea318d"
     },
     "settings.appearance.uiElements.showRelationshipsWidget.name": {
-      "source": "373168057ec5af76c7146540ea6f2e4768830b8d",
-      "translation": "8854a4f3a77b5ef8821ab5645f1e781667152c18"
+      "source": "c81bb8cc90ec8acd5baa2155d02080b5df8692b0",
+      "translation": "2ffab9a0fb1795e657c2aecdaf0266c41247bfe6"
     },
     "settings.appearance.uiElements.showRelationshipsWidget.description": {
-      "source": "cf898d08fa90011bc68f275590dbee92575869e2",
-      "translation": "164416998ec0262fb2225686a2788b9acb37d260"
+      "source": "f2c59f485622cd2493376a32d29b8399ad766d02",
+      "translation": "752754b85822d48e9cc27b1b55e9e8ddcb116f8b"
+    },
+    "settings.appearance.uiElements.showTimeEntriesInNote.name": {
+      "source": "2367ebf083af8b709878dfb6b2603726d99f1860",
+      "translation": "9a493e3e6d0ca47f9b9e5150d98eef066364e2ef"
+    },
+    "settings.appearance.uiElements.showTimeEntriesInNote.description": {
+      "source": "14631f1aaffe018c331c4d8b5e387d9d4040838c",
+      "translation": "c0871aed5730eab3946de6674fa58160b91f6863"
     },
     "settings.appearance.uiElements.relationshipsPosition.name": {
       "source": "dbf4d888e5e162c65f934783bcf532b46e91a7bb",
@@ -59775,12 +59823,20 @@
       "translation": "cb7c369338450cada345b9e534579fb61fb8b540"
     },
     "settings.appearance.uiElements.showRelationshipsWidget.name": {
-      "source": "373168057ec5af76c7146540ea6f2e4768830b8d",
-      "translation": "b1a51afb775b20de8b3fb2789a1a940d4eca56cc"
+      "source": "c81bb8cc90ec8acd5baa2155d02080b5df8692b0",
+      "translation": "7e363143f10b459e354d20fba0245ba135229fa4"
     },
     "settings.appearance.uiElements.showRelationshipsWidget.description": {
-      "source": "cf898d08fa90011bc68f275590dbee92575869e2",
-      "translation": "026b792cf628ab250b5f02f4fc791bad9418cc3a"
+      "source": "f2c59f485622cd2493376a32d29b8399ad766d02",
+      "translation": "8e1647289a24932c8981fc3782eee4772bcbdb06"
+    },
+    "settings.appearance.uiElements.showTimeEntriesInNote.name": {
+      "source": "2367ebf083af8b709878dfb6b2603726d99f1860",
+      "translation": "0ce8c9d9de31e4f068bc8abc9cdc66232c462f79"
+    },
+    "settings.appearance.uiElements.showTimeEntriesInNote.description": {
+      "source": "14631f1aaffe018c331c4d8b5e387d9d4040838c",
+      "translation": "a328a36e3d8e155822f68a94e0bdeab19bd48543"
     },
     "settings.appearance.uiElements.relationshipsPosition.name": {
       "source": "dbf4d888e5e162c65f934783bcf532b46e91a7bb",
@@ -69589,12 +69645,20 @@
       "translation": "b1e3ef3e504c0d50fa5536da342be22ae1817d90"
     },
     "settings.appearance.uiElements.showRelationshipsWidget.name": {
-      "source": "373168057ec5af76c7146540ea6f2e4768830b8d",
-      "translation": "10c667fb3b1d999525ac919b1179bc33bbe7e046"
+      "source": "c81bb8cc90ec8acd5baa2155d02080b5df8692b0",
+      "translation": "ba487f0a76ea3abf9c90403bdc938fba043fd6b5"
     },
     "settings.appearance.uiElements.showRelationshipsWidget.description": {
-      "source": "cf898d08fa90011bc68f275590dbee92575869e2",
-      "translation": "53038718729ae08d24263fe8f05f52145b5d2018"
+      "source": "f2c59f485622cd2493376a32d29b8399ad766d02",
+      "translation": "1e101be19cb19879482d1f24adc5e2fec9c1ebee"
+    },
+    "settings.appearance.uiElements.showTimeEntriesInNote.name": {
+      "source": "2367ebf083af8b709878dfb6b2603726d99f1860",
+      "translation": "b3aebf09f62dfdd64333d951199165db6bf801cb"
+    },
+    "settings.appearance.uiElements.showTimeEntriesInNote.description": {
+      "source": "14631f1aaffe018c331c4d8b5e387d9d4040838c",
+      "translation": "1e1d4875d9b95e199f8c969a5556683bee1f51c1"
     },
     "settings.appearance.uiElements.relationshipsPosition.name": {
       "source": "dbf4d888e5e162c65f934783bcf532b46e91a7bb",

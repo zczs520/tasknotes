@@ -196,6 +196,9 @@ function buildTaskCreationDefaults(
 
 export function buildSettingsFromLoadedData(data: LoadedSettingsData | null): SettingsBuildResult {
 	const loadedData = migrateLoadedSettingsData(data);
+	const migratedNoteFooterVisibility = Boolean(
+		data && !hasOwnSetting(data, "showTimeEntriesInNote")
+	);
 	const migratedLegacyCustomFilenameTemplate =
 		data?.taskFilenameFormat !== "custom" &&
 		data?.customFilenameTemplate === "{title}" &&
@@ -206,6 +209,12 @@ export function buildSettingsFromLoadedData(data: LoadedSettingsData | null): Se
 	const settings: TaskNotesSettings = {
 		...DEFAULT_SETTINGS,
 		...loadedData,
+		showRelationships: migratedNoteFooterVisibility
+			? false
+			: (loadedData?.showRelationships ?? DEFAULT_SETTINGS.showRelationships),
+		showTimeEntriesInNote: migratedNoteFooterVisibility
+			? true
+			: (loadedData?.showTimeEntriesInNote ?? DEFAULT_SETTINGS.showTimeEntriesInNote),
 		goalsFolder: normalizeGoalsFolder(loadedData?.goalsFolder),
 		taskIdentificationMethod: "property",
 		taskPropertyName: "taskType",
@@ -259,6 +268,7 @@ export function buildSettingsFromLoadedData(data: LoadedSettingsData | null): Se
 			hasMissingMigratedSettings(loadedData) ||
 			migratedLegacyCustomFilenameTemplate ||
 			migratedParentNoteTaskCreationDefault ||
+			migratedNoteFooterVisibility ||
 			modalFieldsNeedMigration,
 	};
 }

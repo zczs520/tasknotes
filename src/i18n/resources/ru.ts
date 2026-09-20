@@ -1652,9 +1652,12 @@ export const ru: TranslationTree = {
 					},
 				},
 				showRelationshipsWidget: {
-					name: "Показать виджет связей",
-					description:
-						"Отображать виджет, показывающий все связи текущей заметки (подзадачи, проекты, зависимости)",
+					name: "Подзадачи и связи",
+					description: "Показывать подзадачи, проекты и зависимости в заметке",
+				},
+				showTimeEntriesInNote: {
+					name: "Записи времени",
+					description: "Показывать записи времени внизу заметок задач",
 				},
 				relationshipsPosition: {
 					name: "Позиция связей",

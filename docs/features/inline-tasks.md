@@ -174,7 +174,9 @@ Additional behavior:
 
 ### Configuration
 
-Enable or disable the widget in `Settings -> TaskNotes -> Appearance` (`Show relationships widget`).
+Enable or disable the widget in `Settings -> TaskNotes -> Appearance` (`Subtasks & relationships`). This setting controls only the relationships section and is off by default.
+
+The separate **Time entries** setting controls the time-entry card at the bottom of task notes and is on by default.
 
 Position the widget at the top (after frontmatter) or bottom of the note using the **Relationships Position** setting.
 

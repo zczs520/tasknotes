@@ -1662,9 +1662,12 @@ export const pt: TranslationTree = {
 					},
 				},
 				showRelationshipsWidget: {
-					name: "Mostrar widget de relacionamentos",
-					description:
-						"Exibir um widget mostrando todos os relacionamentos da nota atual (subtarefas, projetos, dependências)",
+					name: "Subtarefas e relacionamentos",
+					description: "Exibir subtarefas, projetos e dependências na nota",
+				},
+				showTimeEntriesInNote: {
+					name: "Registros de tempo",
+					description: "Exibir registros de tempo no final das notas de tarefas",
 				},
 				relationshipsPosition: {
 					name: "Posição dos relacionamentos",

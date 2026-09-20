@@ -181,6 +181,8 @@ export interface TaskNotesSettings {
 	// Relationships widget settings (unified subtasks, projects, and dependencies)
 	showRelationships: boolean;
 	relationshipsPosition: "top" | "bottom";
+	// Time entries card at the bottom of task notes
+	showTimeEntriesInNote: boolean;
 	// Task card in note settings
 	showTaskCardInNote: boolean;
 	showCompletedTaskStrikethrough: boolean;

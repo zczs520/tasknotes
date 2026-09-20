@@ -315,13 +315,27 @@
 .tasknotes-plugin.tasknotes-active-task-control .tasknotes-active-task-control__stop {
     border-color: var(--tn-active-line-strong);
     background: var(--tn-active-surface);
+    color: var(--tn-color-info);
 }
 
-.tasknotes-plugin.tasknotes-active-task-control .tasknotes-active-task-control__complete,
+.tasknotes-plugin.tasknotes-active-task-control .tasknotes-active-task-control__stop:hover {
+    border-color: var(--tn-color-info);
+    background: color-mix(in srgb, var(--tn-color-info) 24%, var(--tn-active-surface));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tn-color-info) 18%, transparent);
+    color: var(--tn-color-info);
+}
+
+.tasknotes-plugin.tasknotes-active-task-control .tasknotes-active-task-control__complete {
+    border-color: color-mix(in srgb, var(--tn-active-green) 48%, var(--tn-active-line));
+    background: color-mix(in srgb, var(--tn-active-green) 14%, var(--tn-active-surface));
+    color: var(--tn-active-green);
+}
+
 .tasknotes-plugin.tasknotes-active-task-control .tasknotes-active-task-control__complete:hover {
     border-color: var(--tn-active-green);
-    background: var(--tn-active-green);
-    color: #ffffff;
+    background: color-mix(in srgb, var(--tn-active-green) 26%, var(--tn-active-surface));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tn-active-green) 18%, transparent);
+    color: var(--tn-active-green);
 }
 
 @keyframes tn-active-task-breathe {

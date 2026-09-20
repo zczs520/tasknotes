@@ -19,7 +19,7 @@ Use this when you want active timer visibility without opening a task view.
 
 ## Relationships Widget
 
-Shows or hides the inline relationships widget in notes.
+Shows or hides the inline relationships widget in notes. It is off by default and controls only the subtasks and relationships section.
 
 The widget surfaces:
 
@@ -27,6 +27,10 @@ The widget surfaces:
 - Materialized occurrences
 - Parent project links
 - Blocking and blocked-by relationships
+
+## Time Entries in Task Notes
+
+Shows or hides the time-entry card at the bottom of task notes. It is on by default and is independent of the relationships widget.
 
 ## Hide Completed from Overdue
 

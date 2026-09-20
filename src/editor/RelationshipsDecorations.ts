@@ -178,6 +178,19 @@ function createTimeEntriesCard(plugin: TaskNotesPlugin, task: TaskInfo): HTMLEle
 		attr: { "data-tasknotes-time-total": "true" },
 		text: formatTimeStatisticsDuration(getTaskNoteTotalTrackedDurationMs(entries), isChinese),
 	});
+	const editButton = header.createEl("button", {
+		cls: "tasknotes-note-footer__edit-time",
+		text: isChinese ? "编辑时间记录" : "Edit time entries",
+		attr: {
+			type: "button",
+			"aria-label": isChinese ? "编辑时间记录" : "Edit time entries",
+		},
+	});
+	editButton.addEventListener("click", (event) => {
+		event.preventDefault();
+		event.stopPropagation();
+		plugin.openTimeEntryEditor(task);
+	});
 
 	if (entries.length === 0) {
 		card.createDiv({
@@ -401,6 +414,8 @@ function getRelationshipsRenderKey(plugin: TaskNotesPlugin, notePath: string): s
 		notePath,
 		plugin.i18n.getCurrentLocale(),
 		plugin.settings.commandFileMapping["relationships"],
+		plugin.settings.showRelationships,
+		plugin.settings.showTimeEntriesInNote,
 		Boolean(plugin.cacheManager.getCachedTaskInfoSync(notePath)),
 	]);
 }
@@ -424,7 +439,11 @@ export function refreshRelationshipsWidget(
 		return false;
 	}
 	const task = plugin.cacheManager.getCachedTaskInfoSync(notePath);
-	if (task && widget.dataset.timeEntriesRenderKey !== getTimeEntriesRenderKey(task)) {
+	if (
+		task &&
+		plugin.settings.showTimeEntriesInNote &&
+		widget.dataset.timeEntriesRenderKey !== getTimeEntriesRenderKey(task)
+	) {
 		const card = widget.querySelector(".tasknotes-note-footer__time-card");
 		if (!card) return false;
 		card.replaceWith(createTimeEntriesCard(plugin, task));
@@ -457,9 +476,15 @@ export async function createRelationshipsWidget(
 	const task = plugin.cacheManager.getCachedTaskInfoSync(notePath);
 	const footerGrid = container.createDiv({ cls: "tasknotes-note-footer" });
 	if (task) {
-		container.dataset.timeEntriesRenderKey = getTimeEntriesRenderKey(task);
 		container.addClass("tasknotes-relationships-widget--task-note");
+	}
+	if (task && plugin.settings.showTimeEntriesInNote) {
+		container.dataset.timeEntriesRenderKey = getTimeEntriesRenderKey(task);
 		footerGrid.appendChild(createTimeEntriesCard(plugin, task));
+	}
+
+	if (!plugin.settings.showRelationships) {
+		return container;
 	}
 
 	const relationshipsCard = footerGrid.createEl("section", {
@@ -835,8 +860,11 @@ class RelationshipsDecorationsPlugin implements PluginValue {
 		}
 
 		try {
-			// Check if relationships widget is enabled
-			if (!this.plugin.settings.showRelationships) {
+			// The footer exists when either relationships or task-note time entries are enabled.
+			if (
+				!this.plugin.settings.showRelationships &&
+				!this.plugin.settings.showTimeEntriesInNote
+			) {
 				this.removeWidget();
 				return;
 			}
@@ -861,15 +889,21 @@ class RelationshipsDecorationsPlugin implements PluginValue {
 				isProjectNote = isProjectNoteForRelationships(this.plugin, file, metadata);
 			}
 
-			// Only show widget if it's either a task note or a project note
-			if (!isTaskNote && !isProjectNote) {
+			const shouldShowRelationships =
+				this.plugin.settings.showRelationships && (isTaskNote || isProjectNote);
+			const shouldShowTimeEntries =
+				this.plugin.settings.showTimeEntriesInNote && isTaskNote;
+
+			if (!shouldShowRelationships && !shouldShowTimeEntries) {
 				// Not a task or project note - don't show relationships widget
 				this.removeWidget();
 				return;
 			}
 
 			const notePath = file.path;
-			const position = this.plugin.settings.relationshipsPosition || "bottom";
+			const position = shouldShowRelationships
+				? this.plugin.settings.relationshipsPosition || "bottom"
+				: "bottom";
 
 			// Find .cm-sizer which contains the scrollable content area
 			// RISK: This relies on CodeMirror's internal DOM structure
@@ -980,11 +1014,6 @@ async function injectReadingModeWidget(
 		return;
 	}
 
-	// Check if relationships widget is enabled
-	if (!plugin.settings.showRelationships) {
-		return;
-	}
-
 	// Show widget in task notes OR project notes.
 	// Get the file's frontmatter to check if it's a task or project
 	let isTaskNote = false;
@@ -998,7 +1027,11 @@ async function injectReadingModeWidget(
 		isProjectNote = isProjectNoteForRelationships(plugin, file, metadata);
 	}
 
-	if (!isTaskNote && !isProjectNote) {
+	const shouldShowRelationships =
+		plugin.settings.showRelationships && (isTaskNote || isProjectNote);
+	const shouldShowTimeEntries = plugin.settings.showTimeEntriesInNote && isTaskNote;
+
+	if (!shouldShowRelationships && !shouldShowTimeEntries) {
 		// Remove any existing widgets if conditions no longer met
 		try {
 			const previewView = view.previewMode;
@@ -1028,7 +1061,9 @@ async function injectReadingModeWidget(
 			`.${CSS_RELATIONSHIPS_WIDGET}`
 		);
 
-		const position = plugin.settings.relationshipsPosition || "bottom";
+		const position = shouldShowRelationships
+			? plugin.settings.relationshipsPosition || "bottom"
+			: "bottom";
 		const notePath = file.path;
 
 		const reusable = existing && refreshRelationshipsWidget(existing, plugin, notePath);
@@ -1156,6 +1191,7 @@ export function setupReadingModeHandlers(plugin: TaskNotesPlugin): () => void {
 	}
 
 	emitterRefs.push(
+		plugin.emitter.on("settings-changed", debouncedRefresh),
 		plugin.emitter.on(EVENT_TASK_UPDATED, debouncedRefresh),
 		plugin.emitter.on(EVENT_TASK_DELETED, debouncedRefresh)
 	);

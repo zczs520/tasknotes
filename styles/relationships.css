@@ -126,6 +126,35 @@
     white-space: nowrap;
 }
 
+.tasknotes-plugin button.tasknotes-note-footer__edit-time {
+    appearance: none;
+    flex: 0 0 auto;
+    height: auto;
+    min-height: 26px;
+    margin: 0;
+    padding: 3px 7px;
+    color: var(--tn-note-footer-muted);
+    background: transparent;
+    border: 0;
+    border-radius: 4px;
+    box-shadow: none;
+    font-family: var(--font-interface);
+    font-size: var(--font-ui-smaller);
+    font-weight: var(--font-medium);
+}
+
+.tasknotes-plugin button.tasknotes-note-footer__edit-time:hover,
+.tasknotes-plugin button.tasknotes-note-footer__edit-time:focus-visible {
+    color: var(--tn-note-footer-text);
+    background: var(--background-modifier-hover);
+    box-shadow: none;
+}
+
+.tasknotes-plugin button.tasknotes-note-footer__edit-time:focus-visible {
+    outline: 2px solid var(--background-modifier-border-focus);
+    outline-offset: 1px;
+}
+
 .tasknotes-plugin .tasknotes-note-footer__hint {
     min-width: 0;
     margin-inline-start: auto;
@@ -269,6 +298,10 @@
         flex-basis: 100%;
         margin-inline-start: 0;
         white-space: normal;
+    }
+
+    .tasknotes-plugin .tasknotes-note-footer__total {
+        margin-inline-start: 0;
     }
 }
 

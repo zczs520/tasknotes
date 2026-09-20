@@ -1674,9 +1674,12 @@ export const fr: TranslationTree = {
 					},
 				},
 				showRelationshipsWidget: {
-					name: "Afficher le widget de relations",
-					description:
-						"Afficher un widget montrant toutes les relations de la note actuelle (sous-tâches, projets, dépendances)",
+					name: "Sous-tâches et relations",
+					description: "Afficher les sous-tâches, les projets et les dépendances dans la note",
+				},
+				showTimeEntriesInNote: {
+					name: "Entrées de temps",
+					description: "Afficher les entrées de temps en bas des notes de tâches",
 				},
 				relationshipsPosition: {
 					name: "Position des relations",

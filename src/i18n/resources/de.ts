@@ -1657,9 +1657,12 @@ export const de: TranslationTree = {
 					},
 				},
 				showRelationshipsWidget: {
-					name: "Beziehungen-Widget anzeigen",
-					description:
-						"Ein Widget anzeigen, das alle Beziehungen für die aktuelle Notiz zeigt (Unteraufgaben, Projekte, Abhängigkeiten)",
+					name: "Unteraufgaben & Beziehungen",
+					description: "Unteraufgaben, Projekte und Abhängigkeiten in der Notiz anzeigen",
+				},
+				showTimeEntriesInNote: {
+					name: "Zeiteinträge",
+					description: "Zeiteinträge am Ende von Aufgabennotizen anzeigen",
 				},
 				relationshipsPosition: {
 					name: "Beziehungen-Position",

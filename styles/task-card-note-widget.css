@@ -115,6 +115,48 @@
 }
 
 .task-card-note-widget__card .task-card__time-tracking-control--active {
-    border-color: color-mix(in srgb, var(--tn-note-card-green) 38%, var(--tn-note-card-line));
-    background: color-mix(in srgb, var(--tn-note-card-surface) 58%, transparent);
+    gap: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+}
+
+.task-card-note-widget__card .task-card__time-tracking-control--active .task-card__time-tracking-status {
+    display: inline-flex;
+    align-items: center;
+    min-height: 26px;
+    padding: 3px 9px 3px 0;
+    color: var(--tn-note-card-green);
+    transition: background-color 120ms ease, color 120ms ease;
+}
+
+.task-card-note-widget__card
+    .task-card__time-tracking-control--active
+    .task-card__time-tracking-status:hover {
+    background: color-mix(in srgb, var(--tn-note-card-green) 14%, transparent);
+}
+
+.task-card-note-widget__card .task-card__time-tracking-control--active .task-card__time-tracking-action {
+    min-height: 26px;
+    padding: 3px 9px;
+    border: 0;
+    border-inline-start: 1px solid var(--tn-note-card-line-strong);
+    border-radius: 0;
+    background: transparent;
+    transition: background-color 120ms ease, color 120ms ease;
+}
+
+.task-card-note-widget__card
+    .task-card__time-tracking-control--active
+    .task-card__time-tracking-action--stop:hover {
+    background: color-mix(in srgb, var(--tn-color-info) 22%, transparent);
+    color: var(--tn-color-info);
+}
+
+.task-card-note-widget__card
+    .task-card__time-tracking-control--active
+    .task-card__time-tracking-action--complete:hover {
+    background: color-mix(in srgb, var(--tn-note-card-green) 20%, transparent);
+    color: var(--tn-note-card-green);
 }

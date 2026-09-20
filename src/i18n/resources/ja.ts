@@ -1625,9 +1625,12 @@ export const ja: TranslationTree = {
 					},
 				},
 				showRelationshipsWidget: {
-					name: "関係ウィジェットを表示",
-					description:
-						"現在のノートのすべての関係（サブタスク、プロジェクト、依存関係）を表示するウィジェットを表示",
+					name: "サブタスクと関係",
+					description: "ノートにサブタスク、プロジェクト、依存関係を表示",
+				},
+				showTimeEntriesInNote: {
+					name: "時間記録",
+					description: "タスクノートの下部に時間記録を表示",
 				},
 				relationshipsPosition: {
 					name: "関係の位置",

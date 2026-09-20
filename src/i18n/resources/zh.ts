@@ -1819,8 +1819,12 @@ export const zh: TranslationTree = {
 					},
 				},
 				showRelationshipsWidget: {
-					name: "显示关系小部件",
-					description: "显示一个小部件，展示当前笔记的所有关系（子任务、项目、依赖项）",
+					name: "子任务与关系",
+					description: "在文档中显示当前笔记的子任务、项目和依赖关系",
+				},
+				showTimeEntriesInNote: {
+					name: "计时记录",
+					description: "在任务文档底部显示计时记录",
 				},
 				relationshipsPosition: {
 					name: "关系位置",

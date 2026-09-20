@@ -29,6 +29,10 @@
     padding-block: 8px 18px;
 }
 
+.tasknotes-plugin.tn-tasknotesKanban > .tn-goal-panel-host:not(.tn-goal-panel-host--badge) {
+    margin: 8px 14px 0;
+}
+
 body.theme-dark .tasknotes-plugin.tn-tasknotesKanban {
     --tn-kanban-page: #262120;
     --tn-kanban-surface: #262120;
@@ -311,6 +315,11 @@ body.theme-dark .tasknotes-plugin.tn-tasknotesKanban [data-status-tone="complete
 
 .tasknotes-plugin.tn-tasknotesKanban .kanban-view__swimlane-section--collapsed .kanban-view__swimlane-row {
     display: none;
+}
+
+.tasknotes-plugin.tn-tasknotesKanban .kanban-view__swimlane-section--collapsed {
+    align-self: flex-start;
+    min-width: 0;
 }
 
 .tasknotes-plugin.tn-tasknotesKanban .kanban-view__swimlane-row {

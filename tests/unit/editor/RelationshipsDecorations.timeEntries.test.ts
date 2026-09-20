@@ -69,20 +69,33 @@ describe("task note footer stability", () => {
 	it("preserves the Base and timer while typing, then updates only the timer when stopped", async () => {
 		jest.useFakeTimers();
 		jest.setSystemTime(new Date("2026-09-04T12:00:00Z"));
+		const openTimeEntryEditor = jest.fn();
 		let task = {
 			path: "task.md",
 			timeEntries: [{ startTime: "2026-09-04T11:59:00Z" }],
 		} as TaskInfo;
 		const plugin = {
 			i18n: { getCurrentLocale: () => "zh" },
-			settings: { commandFileMapping: {} },
+			settings: {
+				commandFileMapping: {},
+				showRelationships: true,
+				showTimeEntriesInNote: true,
+			},
 			cacheManager: { getCachedTaskInfoSync: () => task },
+			openTimeEntryEditor,
 		} as unknown as TaskNotesPlugin;
 		const widget = await createRelationshipsWidget(plugin, task.path);
 		const base = widget.querySelector(".relationships__bases-container");
 		const timer = widget.querySelector(".tasknotes-note-footer__time-card");
 		const initialText = timer?.textContent;
 		try {
+			const editButton = widget.querySelector<HTMLButtonElement>(
+				".tasknotes-note-footer__edit-time"
+			);
+			expect(editButton?.textContent).toBe("编辑时间记录");
+			editButton?.click();
+			expect(openTimeEntryEditor).toHaveBeenCalledWith(task);
+
 			jest.advanceTimersByTime(120_000);
 			task = {
 				...task,
@@ -111,5 +124,37 @@ describe("task note footer stability", () => {
 			widget.component?.unload();
 			jest.useRealTimers();
 		}
+	});
+
+	it("renders time entries and relationships independently", async () => {
+		const task = {
+			path: "task.md",
+			timeEntries: [{ startTime: "2026-09-04T11:59:00Z" }],
+		} as TaskInfo;
+		const settings = {
+			commandFileMapping: {},
+			showRelationships: false,
+			showTimeEntriesInNote: true,
+		};
+		const plugin = {
+			i18n: { getCurrentLocale: () => "zh" },
+			settings,
+			cacheManager: { getCachedTaskInfoSync: () => task },
+			openTimeEntryEditor: jest.fn(),
+		} as unknown as TaskNotesPlugin;
+
+		const timeOnly = await createRelationshipsWidget(plugin, task.path);
+		expect(timeOnly.querySelector(".tasknotes-note-footer__time-card")).not.toBeNull();
+		expect(timeOnly.querySelector(".tasknotes-note-footer__relationships-card")).toBeNull();
+		timeOnly.component?.unload();
+
+		settings.showRelationships = true;
+		settings.showTimeEntriesInNote = false;
+		const relationshipsOnly = await createRelationshipsWidget(plugin, task.path);
+		expect(relationshipsOnly.querySelector(".tasknotes-note-footer__time-card")).toBeNull();
+		expect(
+			relationshipsOnly.querySelector(".tasknotes-note-footer__relationships-card")
+		).not.toBeNull();
+		relationshipsOnly.component?.unload();
 	});
 });

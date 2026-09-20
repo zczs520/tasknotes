@@ -1588,9 +1588,12 @@ export const ko: TranslationTree = {
 					description: "Obsidian 상태 표시줄에 현재 추적 중인 작업 표시",
 				},
 				showRelationshipsWidget: {
-					name: "관계 위젯 표시",
-					description:
-						"현재 노트의 모든 관계 (하위 작업, 프로젝트, 종속성)를 보여주는 위젯 표시",
+					name: "하위 작업 및 관계",
+					description: "노트에 하위 작업, 프로젝트 및 종속성 표시",
+				},
+				showTimeEntriesInNote: {
+					name: "시간 기록",
+					description: "작업 노트 하단에 시간 기록 표시",
 				},
 				relationshipsPosition: {
 					name: "관계 위치",

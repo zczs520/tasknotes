@@ -576,8 +576,8 @@ body.is-mobile .tasknotes-plugin .task-card.task-card--drag-handle-only .task-ca
 
 .tasknotes-plugin .task-card__time-tracking-action--stop:hover {
     border-color: var(--tn-color-info);
-    background: var(--tn-color-info);
-    color: var(--text-on-accent);
+    background: color-mix(in srgb, var(--tn-color-info) 24%, var(--background-primary));
+    color: var(--tn-color-info);
 }
 
 .tasknotes-plugin .task-card__time-tracking-action--complete {
@@ -588,8 +588,8 @@ body.is-mobile .tasknotes-plugin .task-card.task-card--drag-handle-only .task-ca
 
 .tasknotes-plugin .task-card__time-tracking-action--complete:hover {
     border-color: var(--tn-color-success);
-    background: var(--tn-color-success);
-    color: var(--text-on-accent);
+    background: color-mix(in srgb, var(--tn-color-success) 24%, var(--background-primary));
+    color: var(--tn-color-success);
 }
 
 .tasknotes-plugin .task-card__time-tracking-action:disabled {

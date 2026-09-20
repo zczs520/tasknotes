@@ -1252,7 +1252,7 @@ body.theme-dark .tn-time-statistics__day-chart {
 	padding-inline: 12px;
 	background: #e8f7ef;
 	border-bottom-color: transparent;
-	border-radius: 12px;
+	border-radius: 0;
 }
 
 body.theme-dark .tn-time-statistics .tn-time-statistics__record-row.is-active {

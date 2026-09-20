@@ -746,6 +746,20 @@ export function renderAppearanceTab(
 
 			group.addSetting((setting) =>
 				void configureToggleSetting(setting, {
+					name: translate("settings.appearance.uiElements.showTimeEntriesInNote.name"),
+					desc: translate(
+						"settings.appearance.uiElements.showTimeEntriesInNote.description"
+					),
+					getValue: () => plugin.settings.showTimeEntriesInNote,
+					setValue: async (value: boolean) => {
+						plugin.settings.showTimeEntriesInNote = value;
+						save();
+					},
+				})
+			);
+
+			group.addSetting((setting) =>
+				void configureToggleSetting(setting, {
 					name: translate("settings.appearance.uiElements.showTaskCardInNote.name"),
 					desc: translate(
 						"settings.appearance.uiElements.showTaskCardInNote.description"
