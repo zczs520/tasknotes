@@ -17,6 +17,19 @@ describe("TaskNotes Kanban Notion-style layout", () => {
 		expect(swimlanes).toContain("justify-content: flex-start;");
 	});
 
+	it("keeps hovered card corners flush with the board background", () => {
+		const css = readRepoFile("styles/kanban-notion.css");
+		const hoveredCard = css.match(
+			/\.kanban-view__card-wrapper:hover > \.task-card\[data-status-tone\] \{([^}]+)\}/
+		)?.[1];
+		const hoveredActiveCard = css.match(
+			/\.kanban-view__card-wrapper:hover > \.task-card\.task-card--actively-tracked \{([^}]+)\}/
+		)?.[1];
+
+		expect(hoveredCard).toContain("box-shadow: none;");
+		expect(hoveredActiveCard).toContain("box-shadow: none;");
+	});
+
 	it("loads its scoped skin after the shared Bases styles", () => {
 		const buildManifest = readRepoFile("build-css.mjs");
 		const sharedStyles = buildManifest.indexOf("styles/bases-views.css");

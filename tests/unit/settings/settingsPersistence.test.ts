@@ -35,6 +35,14 @@ function createHost(options: {
 }
 
 describe("settings persistence helpers", () => {
+	it("defaults to Obsidian theme colors and preserves an explicit plugin color mode", () => {
+		expect(buildSettingsFromLoadedData(null).settings.usePluginThemeColors).toBe(false);
+		expect(
+			buildSettingsFromLoadedData({ usePluginThemeColors: true }).settings
+				.usePluginThemeColors
+		).toBe(true);
+	});
+
 	it("defaults new and existing installations to the nested goal folder", () => {
 		expect(buildSettingsFromLoadedData(null).settings.goalsFolder).toBe("TASKquence/Tasks/Goals");
 		expect(buildSettingsFromLoadedData({ tasksFolder: "Tasks" }).settings.goalsFolder).toBe("TASKquence/Tasks/Goals");

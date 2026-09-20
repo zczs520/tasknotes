@@ -314,6 +314,7 @@ export const DEFAULT_SETTINGS: TaskNotesSettings = {
 	// Suggestion performance defaults
 	suggestionDebounceMs: 0,
 	// Customization defaults
+	usePluginThemeColors: false,
 	fieldMapping: DEFAULT_FIELD_MAPPING,
 	customStatuses: DEFAULT_STATUSES,
 	customPriorities: DEFAULT_PRIORITIES,

@@ -151,6 +151,7 @@ export class SettingsLifecycleService {
 
 	private applySettingsSideEffects(): void {
 		this.plugin.apiService?.syncWebhookSettings?.();
+		this.plugin.applyThemeColorMode();
 
 		const cacheSettingsChanged = this.haveCacheSettingsChanged();
 		const timeTrackingSettingsChanged = this.haveTimeTrackingSettingsChanged();
@@ -189,6 +190,7 @@ export class SettingsLifecycleService {
 
 	async onExternalSettingsChange(): Promise<void> {
 		await this.plugin.loadSettings();
+		this.plugin.applyThemeColorMode();
 		this.plugin.apiService?.syncWebhookSettings?.();
 
 		this.plugin.fieldMapper?.updateMapping(this.plugin.settings.fieldMapping);

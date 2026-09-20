@@ -1,0 +1,372 @@
+/* ================================================================
+   OBSIDIAN APPEARANCE THEME COLOR MODE
+   Enabled when "Use TASKquence theme colors" is turned off.
+   Keep this file last so host-theme tokens replace the plugin's default
+   palette without changing its layout or information hierarchy.
+   ================================================================ */
+
+body.tasknotes-use-obsidian-theme-colors .tasknotes-plugin {
+	--tn-bg-primary: var(--background-primary);
+	--tn-bg-secondary: var(--background-secondary);
+	--tn-bg-primary-alt: var(--background-primary-alt, var(--background-primary));
+	--tn-bg-secondary-alt: var(--background-secondary-alt, var(--background-secondary));
+	--tn-text-normal: var(--text-normal);
+	--tn-text-muted: var(--text-muted);
+	--tn-text-faint: var(--text-faint);
+	--tn-text-accent: var(--text-accent, var(--interactive-accent));
+	--tn-border-color: var(--background-modifier-border);
+	--tn-border-color-hover: var(
+		--background-modifier-border-hover,
+		var(--background-modifier-border)
+	);
+	--tn-border-color-focus: var(--background-modifier-border-focus, var(--interactive-accent));
+	--tn-border-color-interactive: var(--interactive-accent);
+	--tn-interactive-normal: var(--interactive-normal);
+	--tn-interactive-hover: var(--background-modifier-hover);
+	--tn-interactive-accent: var(--interactive-accent);
+	--tn-interactive-accent-hover: var(--interactive-accent-hover);
+	--tn-color-info: var(--color-blue, var(--interactive-accent));
+	--tn-color-success: var(--color-green, var(--interactive-accent));
+	--tn-color-warning: var(--color-yellow, var(--text-warning));
+	--tn-color-error: var(--color-red, var(--text-error));
+	--tn-shadow-light: var(--shadow-s, 0 1px 2px rgb(0 0 0 / 8%));
+	--tn-shadow-medium: var(--shadow-l, 0 4px 12px rgb(0 0 0 / 12%));
+	--tn-shadow-strong: var(--shadow-l, 0 8px 24px rgb(0 0 0 / 16%));
+	--tn-shadow-hover: var(--shadow-l, 0 10px 30px rgb(0 0 0 / 18%));
+}
+
+/* Task board */
+body.tasknotes-use-obsidian-theme-colors .tasknotes-plugin.tn-tasknotesKanban {
+	--tn-kanban-page: var(--background-primary);
+	--tn-kanban-surface: var(--background-primary);
+	--tn-kanban-soft: var(--background-secondary);
+	--tn-kanban-line: var(--background-modifier-border);
+	--tn-kanban-line-strong: var(
+		--background-modifier-border-hover,
+		var(--background-modifier-border)
+	);
+	--tn-kanban-text: var(--text-normal);
+	--tn-kanban-muted: var(--text-muted);
+	--tn-kanban-faint: var(--text-faint);
+	--tn-kanban-coral: var(--interactive-accent);
+	--tn-kanban-green: var(--color-green, var(--interactive-accent));
+	--tn-kanban-green-soft: color-mix(
+		in srgb,
+		var(--color-green, var(--interactive-accent)) 12%,
+		var(--background-primary)
+	);
+	--tn-kanban-card-hover: var(--background-modifier-hover);
+	--tn-kanban-card-border: var(--background-modifier-border);
+	--tn-kanban-card-shadow: none;
+}
+
+body.tasknotes-use-obsidian-theme-colors .tasknotes-plugin.tn-tasknotesKanban :is(
+	.kanban-view__column,
+	.kanban-view__column-header-cell,
+	.kanban-view__swimlane-column
+):nth-child(6n + 1) {
+	--tn-kanban-tone: color-mix(in srgb, var(--text-muted) 10%, var(--background-primary));
+	--tn-kanban-tone-ink: var(--text-muted);
+}
+
+body.tasknotes-use-obsidian-theme-colors .tasknotes-plugin.tn-tasknotesKanban :is(
+	.kanban-view__column,
+	.kanban-view__column-header-cell,
+	.kanban-view__swimlane-column
+):nth-child(6n + 2) {
+	--tn-kanban-tone: color-mix(
+		in srgb,
+		var(--color-blue, var(--interactive-accent)) 12%,
+		var(--background-primary)
+	);
+	--tn-kanban-tone-ink: var(--color-blue, var(--interactive-accent));
+}
+
+body.tasknotes-use-obsidian-theme-colors .tasknotes-plugin.tn-tasknotesKanban :is(
+	.kanban-view__column,
+	.kanban-view__column-header-cell,
+	.kanban-view__swimlane-column
+):nth-child(6n + 3) {
+	--tn-kanban-tone: color-mix(
+		in srgb,
+		var(--color-green, var(--interactive-accent)) 12%,
+		var(--background-primary)
+	);
+	--tn-kanban-tone-ink: var(--color-green, var(--interactive-accent));
+}
+
+body.tasknotes-use-obsidian-theme-colors .tasknotes-plugin.tn-tasknotesKanban :is(
+	.kanban-view__column,
+	.kanban-view__column-header-cell,
+	.kanban-view__swimlane-column
+):nth-child(6n + 4) {
+	--tn-kanban-tone: color-mix(
+		in srgb,
+		var(--color-yellow, var(--interactive-accent)) 14%,
+		var(--background-primary)
+	);
+	--tn-kanban-tone-ink: var(--color-yellow, var(--interactive-accent));
+}
+
+body.tasknotes-use-obsidian-theme-colors .tasknotes-plugin.tn-tasknotesKanban :is(
+	.kanban-view__column,
+	.kanban-view__column-header-cell,
+	.kanban-view__swimlane-column
+):nth-child(6n + 5) {
+	--tn-kanban-tone: color-mix(
+		in srgb,
+		var(--color-red, var(--interactive-accent)) 12%,
+		var(--background-primary)
+	);
+	--tn-kanban-tone-ink: var(--color-red, var(--interactive-accent));
+}
+
+body.tasknotes-use-obsidian-theme-colors .tasknotes-plugin.tn-tasknotesKanban :is(
+	.kanban-view__column,
+	.kanban-view__column-header-cell,
+	.kanban-view__swimlane-column
+):nth-child(6n) {
+	--tn-kanban-tone: color-mix(
+		in srgb,
+		var(--color-purple, var(--interactive-accent)) 11%,
+		var(--background-primary)
+	);
+	--tn-kanban-tone-ink: var(--color-purple, var(--interactive-accent));
+}
+
+body.tasknotes-use-obsidian-theme-colors
+	.tasknotes-plugin.tn-tasknotesKanban
+	[data-status-tone="pending"] {
+	--tn-kanban-tone: color-mix(
+		in srgb,
+		var(--color-yellow, var(--interactive-accent)) 14%,
+		var(--background-primary)
+	);
+	--tn-kanban-tone-ink: var(--color-yellow, var(--interactive-accent));
+}
+
+body.tasknotes-use-obsidian-theme-colors
+	.tasknotes-plugin.tn-tasknotesKanban
+	[data-status-tone="in-progress"] {
+	--tn-kanban-tone: color-mix(
+		in srgb,
+		var(--color-blue, var(--interactive-accent)) 12%,
+		var(--background-primary)
+	);
+	--tn-kanban-tone-ink: var(--color-blue, var(--interactive-accent));
+}
+
+body.tasknotes-use-obsidian-theme-colors
+	.tasknotes-plugin.tn-tasknotesKanban
+	[data-status-tone="completed"] {
+	--tn-kanban-tone: color-mix(
+		in srgb,
+		var(--color-green, var(--interactive-accent)) 12%,
+		var(--background-primary)
+	);
+	--tn-kanban-tone-ink: var(--color-green, var(--interactive-accent));
+}
+
+body.tasknotes-use-obsidian-theme-colors
+	.tasknotes-view-active
+	.tn-bases-new-task-btn
+	> button.text-icon-button {
+	color: var(--text-on-accent);
+	background: var(--interactive-accent);
+	border-color: var(--interactive-accent);
+	box-shadow: var(--shadow-s, none);
+}
+
+body.tasknotes-use-obsidian-theme-colors
+	.tasknotes-view-active
+	.tn-bases-new-task-btn
+	> button.text-icon-button:hover {
+	color: var(--text-on-accent);
+	background: var(--interactive-accent-hover);
+	border-color: var(--interactive-accent-hover);
+}
+
+/* Time statistics board */
+body.tasknotes-use-obsidian-theme-colors .tn-time-statistics {
+	--tn-stats-text: var(--text-normal);
+	--tn-stats-accent: var(--interactive-accent);
+	--tn-stats-card: var(--background-primary);
+	--tn-stats-canvas: var(--background-primary);
+	--tn-stats-border: var(--background-modifier-border);
+	--tn-stats-hairline: var(--divider-color, var(--background-modifier-border));
+	--tn-stats-muted: var(--text-muted);
+	--tn-stats-sunk: var(--background-secondary);
+	--tn-stats-soft: var(--background-secondary-alt, var(--background-secondary));
+	--tn-stats-faint: var(--text-faint);
+}
+
+body.tasknotes-use-obsidian-theme-colors .tn-time-statistics__controls,
+body.tasknotes-use-obsidian-theme-colors .tn-time-statistics__day-chart {
+	background: var(--background-secondary);
+}
+
+body.tasknotes-use-obsidian-theme-colors
+	.tn-time-statistics
+	button.tn-time-statistics__period-tab.is-active {
+	color: var(--text-accent, var(--interactive-accent));
+	background: var(--background-modifier-hover);
+}
+
+body.tasknotes-use-obsidian-theme-colors .tn-time-statistics__live-indicator,
+body.tasknotes-use-obsidian-theme-colors
+	.tn-time-statistics
+	.tn-time-statistics__record-row.is-active {
+	color: var(--color-green, var(--text-success));
+	background: color-mix(
+		in srgb,
+		var(--color-green, var(--interactive-accent)) 12%,
+		var(--background-primary)
+	);
+}
+
+body.tasknotes-use-obsidian-theme-colors .tn-time-statistics__live-dot {
+	background: var(--color-green, var(--interactive-accent));
+}
+
+body.tasknotes-use-obsidian-theme-colors .tn-time-statistics__day-now {
+	background: var(--color-red, var(--text-error));
+}
+
+body.tasknotes-use-obsidian-theme-colors .tn-time-statistics :is(
+	.tn-time-statistics__heatmap-cell,
+	.tn-time-statistics__heatmap-swatch
+).is-level-1 {
+	background: color-mix(in srgb, var(--interactive-accent) 12%, var(--background-primary));
+}
+
+body.tasknotes-use-obsidian-theme-colors .tn-time-statistics :is(
+	.tn-time-statistics__heatmap-cell,
+	.tn-time-statistics__heatmap-swatch
+).is-level-2 {
+	background: color-mix(in srgb, var(--interactive-accent) 35%, var(--background-primary));
+}
+
+body.tasknotes-use-obsidian-theme-colors .tn-time-statistics :is(
+	.tn-time-statistics__heatmap-cell,
+	.tn-time-statistics__heatmap-swatch
+).is-level-3 {
+	background: color-mix(in srgb, var(--interactive-accent) 60%, var(--background-primary));
+}
+
+body.tasknotes-use-obsidian-theme-colors .tn-time-statistics :is(
+	.tn-time-statistics__heatmap-cell,
+	.tn-time-statistics__heatmap-swatch
+).is-level-4 {
+	color: var(--text-on-accent);
+	background: color-mix(in srgb, var(--interactive-accent) 90%, var(--background-primary));
+}
+
+body.tasknotes-use-obsidian-theme-colors .tn-time-statistics__empty-icon {
+	background: color-mix(in srgb, var(--interactive-accent) 10%, transparent);
+}
+
+/* Goal board, goal overlays, and goal cards embedded in other boards */
+body.tasknotes-use-obsidian-theme-colors :is(
+	.tn-goals-view,
+	.tn-goal-detail-modal,
+	.tn-goal-modal,
+	.tn-goal-panel
+) {
+	--tn-goal-page: var(--background-primary);
+	--tn-goal-card: var(--background-primary);
+	--tn-goal-soft: var(--background-secondary);
+	--tn-goal-sunk: var(--background-secondary-alt, var(--background-secondary));
+	--tn-goal-text: var(--text-normal);
+	--tn-goal-muted: var(--text-muted);
+	--tn-goal-faint: var(--text-faint);
+	--tn-goal-border: var(--background-modifier-border);
+	--tn-goal-line: var(--divider-color, var(--background-modifier-border));
+	--tn-goal-coral: var(--interactive-accent);
+	--tn-goal-teal: var(--color-green, var(--interactive-accent));
+	--tn-goal-teal-soft: color-mix(
+		in srgb,
+		var(--color-green, var(--interactive-accent)) 12%,
+		transparent
+	);
+	--tn-goal-violet: var(--color-purple, var(--interactive-accent));
+	--tn-goal-shadow: var(--shadow-s, none);
+	--interactive-accent: inherit;
+	--interactive-accent-hover: inherit;
+	--text-normal: inherit;
+	--text-muted: inherit;
+	--text-faint: inherit;
+}
+
+body.tasknotes-use-obsidian-theme-colors
+	.tn-time-statistics
+	.tn-goal-panel--statistics {
+	--tn-goal-teal: var(--color-green, var(--interactive-accent));
+	--tn-goal-coral: var(--interactive-accent);
+	--tn-goal-violet: var(--color-purple, var(--interactive-accent));
+	--tn-goal-border: var(--background-modifier-border);
+	--tn-goal-soft: var(--background-secondary);
+}
+
+body.tasknotes-use-obsidian-theme-colors :is(
+	.tn-goal-detail-modal button.tn-goal-detail__delete,
+	.tn-goal-detail__remove,
+	.tn-goal-detail-modal button.tn-goal-stock__remove,
+	.tn-goal-strip__pill:is(.is-behind, .is-over, .is-idle) .tn-goal-strip__value,
+	.tn-goal-strip__overlay-row:is(.is-idle, .is-over) :is(
+		.tn-goal-strip__overlay-note,
+		.tn-goal-strip__value
+	),
+	.tn-goal-ledger__row:is(.is-behind, .is-over) .tn-goal-ledger__note
+) {
+	color: var(--text-error);
+}
+
+body.tasknotes-use-obsidian-theme-colors .tn-goal-detail__delete-warning {
+	color: var(--text-normal);
+	background: var(
+		--background-modifier-error-hover,
+		color-mix(in srgb, var(--text-error) 12%, var(--background-primary))
+	);
+}
+
+body.tasknotes-use-obsidian-theme-colors
+	.tn-goal-detail-modal
+	.tn-goal-detail__delete-warning
+	.mod-warning {
+	color: var(--text-on-accent);
+	background: var(--interactive-accent);
+	border-color: var(--interactive-accent);
+}
+
+body.tasknotes-use-obsidian-theme-colors .tn-goal-modal__toggle span,
+body.tasknotes-use-obsidian-theme-colors
+	:is(.tn-goal-modal, .tn-goal-detail-modal, .tn-goals-view, .tn-goal-panel)
+	button.mod-cta {
+	color: var(--text-on-accent);
+}
+
+/* Floating task timer */
+body.tasknotes-use-obsidian-theme-colors
+	.tasknotes-plugin.tasknotes-active-task-control {
+	--tn-active-surface: var(--background-primary);
+	--tn-active-soft: var(--background-modifier-hover);
+	--tn-active-line: var(--background-modifier-border);
+	--tn-active-line-strong: var(
+		--background-modifier-border-hover,
+		var(--background-modifier-border)
+	);
+	--tn-active-text: var(--text-normal);
+	--tn-active-muted: var(--text-muted);
+	--tn-active-coral: var(--interactive-accent);
+	--tn-active-green: var(--color-green, var(--interactive-accent));
+	box-shadow: var(--shadow-l, 0 8px 24px rgb(0 0 0 / 16%));
+}
+
+body.tasknotes-use-obsidian-theme-colors
+	.tasknotes-plugin.tasknotes-active-task-control
+	.tasknotes-active-task-control__complete,
+body.tasknotes-use-obsidian-theme-colors
+	.tasknotes-plugin.tasknotes-active-task-control
+	.tasknotes-active-task-control__complete:hover {
+	color: var(--text-on-accent);
+}

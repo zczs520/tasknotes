@@ -158,6 +158,7 @@ export interface TaskNotesSettings {
 	/** Optional debounce in milliseconds for inline file suggestions (0 = disabled) */
 	suggestionDebounceMs?: number;
 	// Customization settings
+	usePluginThemeColors: boolean;
 	fieldMapping: FieldMapping;
 	customStatuses: StatusConfig[];
 	customPriorities: PriorityConfig[];

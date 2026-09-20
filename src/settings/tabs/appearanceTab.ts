@@ -59,6 +59,30 @@ export function renderAppearanceTab(
 	const translate = (key: TranslationKey, params?: Record<string, string | number>) =>
 		plugin.i18n.translate(key, params);
 
+	createSettingGroup(
+		container,
+		{
+			heading: translate("settings.appearance.themeColors.header"),
+			description: translate("settings.appearance.themeColors.description"),
+		},
+		(group) => {
+			group.addSetting((setting) =>
+				void configureToggleSetting(setting, {
+					name: translate("settings.appearance.themeColors.usePluginColors.name"),
+					desc: translate(
+						"settings.appearance.themeColors.usePluginColors.description"
+					),
+					getValue: () => plugin.settings.usePluginThemeColors,
+					setValue: async (value: boolean) => {
+						plugin.settings.usePluginThemeColors = value;
+						plugin.applyThemeColorMode();
+						save();
+					},
+				})
+			);
+		}
+	);
+
 	// Task Cards Section
 	const availableProperties = getAvailableProperties(plugin);
 	const currentProperties = plugin.settings.defaultVisibleProperties || [];

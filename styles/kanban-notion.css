@@ -383,7 +383,7 @@ body.theme-dark .tasknotes-plugin.tn-tasknotesKanban [data-status-tone="complete
 .tasknotes-plugin.tn-tasknotesKanban .kanban-view__card-wrapper:hover > .task-card[data-status-tone] {
     background-color: var(--tn-kanban-tone, var(--tn-kanban-card-hover));
     border-color: color-mix(in srgb, var(--tn-kanban-tone-ink, var(--tn-kanban-coral)) 32%, var(--tn-kanban-line));
-    box-shadow: 0 4px 10px color-mix(in srgb, var(--tn-kanban-tone-ink, var(--tn-kanban-text)) 13%, transparent);
+    box-shadow: none;
     transform: translateY(-3px);
 }
 
@@ -524,7 +524,7 @@ body.theme-dark .tasknotes-plugin.tn-tasknotesKanban [data-status-tone="complete
 .tasknotes-plugin.tn-tasknotesKanban .kanban-view__card-wrapper:hover > .task-card.task-card--actively-tracked {
     background-color: var(--tn-kanban-tone, var(--tn-kanban-card-hover));
     border-color: color-mix(in srgb, var(--tn-kanban-tone-ink, var(--tn-kanban-green)) 52%, var(--tn-kanban-line));
-    box-shadow: 0 4px 10px color-mix(in srgb, var(--tn-kanban-tone-ink, var(--tn-kanban-green)) 16%, transparent);
+    box-shadow: none;
 }
 
 .tasknotes-plugin.tn-tasknotesKanban .task-card--actively-tracked .task-card__title::after {

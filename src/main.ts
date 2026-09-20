@@ -109,6 +109,7 @@ import {
 	createTaskNotesPerformanceProfiler,
 	TaskNotesPerformanceProfiler,
 } from "./utils/PerformanceProfiler";
+import { applyThemeColorMode } from "./utils/themeColorMode";
 
 const tasknotesLogger = createTaskNotesLogger({ tag: "Main" });
 
@@ -130,6 +131,7 @@ export default class TaskNotesPlugin extends Plugin {
 	private settingsLoadCompromised = false;
 	private settingsDataSavePromise: Promise<void> | null = null;
 	private settingsDataSaveRequested = false;
+	private readonly themeColorDocuments = new Set<Document>();
 
 	// Ready promise to signal when initialization is complete
 	private readyPromise: Promise<void>;
@@ -286,6 +288,13 @@ export default class TaskNotesPlugin extends Plugin {
 		});
 
 		await this.loadSettings();
+		this.applyThemeColorMode();
+		this.registerEvent(
+			this.app.workspace.on("window-open", (_workspaceWindow, window) => {
+				this.themeColorDocuments.add(window.document);
+				applyThemeColorMode(window.document, this.settings.usePluginThemeColors);
+			})
+		);
 		this.performanceProfiler = createTaskNotesPerformanceProfiler({
 			isEnabled: () => this.settings?.enableDebugLogging === true,
 			logger: createTaskNotesLogger({
@@ -651,6 +660,10 @@ export default class TaskNotesPlugin extends Plugin {
 	}
 
 	onunload() {
+		for (const doc of this.themeColorDocuments) {
+			applyThemeColorMode(doc, true);
+		}
+		this.themeColorDocuments.clear();
 		this.emitter?.trigger(TASKNOTES_RUNTIME_LIFECYCLE_RAW_EVENTS.unloading, {
 			timestamp: new Date().toISOString(),
 		});
@@ -707,6 +720,16 @@ export default class TaskNotesPlugin extends Plugin {
 
 	async saveSettings() {
 		await this.settingsLifecycleService.saveSettings();
+	}
+
+	applyThemeColorMode(): void {
+		this.themeColorDocuments.add(activeDocument);
+		this.app.workspace.iterateAllLeaves((leaf) => {
+			this.themeColorDocuments.add(leaf.view.containerEl.ownerDocument);
+		});
+		for (const doc of this.themeColorDocuments) {
+			applyThemeColorMode(doc, this.settings.usePluginThemeColors);
+		}
 	}
 
 	/**

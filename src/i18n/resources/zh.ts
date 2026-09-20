@@ -1605,6 +1605,15 @@ export const zh: TranslationTree = {
 			},
 		},
 		appearance: {
+			themeColors: {
+				header: "主题色",
+				description: "选择使用 TASKquence 自带配色，或跟随当前 Obsidian 外观主题。",
+				usePluginColors: {
+					name: "使用插件主题色",
+					description:
+						"保持当前 TASKquence 配色。关闭后，三个看板、任务卡片和计时悬浮窗将继承 Obsidian 主题的背景、文字、边框、强调色、悬停状态和语义色。",
+				},
+			},
 			taskCards: {
 				header: "任务卡片",
 				description: "配置任务卡片在所有视图中的显示方式。",

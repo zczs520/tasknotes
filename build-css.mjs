@@ -44,6 +44,7 @@ const CSS_FILES = [
 	"styles/time-statistics.css", // Time statistics dashboard and timeline
 	"styles/goal-management.css", // Desktop goal management, progress, and milestone UI
 	"styles/static-style-utilities.css", // Static style utility classes migrated from inline styles
+	"styles/theme-integration.css", // Optional Obsidian appearance theme color integration
 ];
 
 const MAIN_CSS_TEMPLATE = `/* TaskNotes Plugin Styles */
