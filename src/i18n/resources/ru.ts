@@ -1422,6 +1422,16 @@ export const ru: TranslationTree = {
 			},
 		},
 		appearance: {
+			themeColors: {
+				header: "Цвета темы",
+				description:
+					"Выберите, будет ли TASKquence использовать собственную палитру или активную тему оформления Obsidian.",
+				usePluginColors: {
+					name: "Использовать цвета темы TASKquence",
+					description:
+						"Сохраняет текущие цвета TASKquence. Отключите этот параметр, чтобы доски и плавающий таймер наследовали фон, текст, границы, акценты, состояния при наведении и семантические цвета Obsidian.",
+				},
+			},
 			taskCards: {
 				header: "Карточки задач",
 				description: "Настройте отображение карточек задач во всех представлениях.",

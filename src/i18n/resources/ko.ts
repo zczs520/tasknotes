@@ -1383,6 +1383,16 @@ export const ko: TranslationTree = {
 			},
 		},
 		appearance: {
+			themeColors: {
+				header: "테마 색상",
+				description:
+					"TASKquence 고유 팔레트를 사용할지, 현재 Obsidian 모양 테마를 따를지 선택합니다.",
+				usePluginColors: {
+					name: "TASKquence 테마 색상 사용",
+					description:
+						"현재 TASKquence 색상을 유지합니다. 이 옵션을 끄면 보드와 플로팅 타이머의 배경, 텍스트, 테두리, 강조색, 호버 상태 및 의미 색상이 Obsidian 테마를 따릅니다.",
+				},
+			},
 			taskCards: {
 				header: "작업 카드",
 				description: "모든 뷰에서 작업 카드가 표시되는 방식을 설정합니다.",

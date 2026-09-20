@@ -1409,6 +1409,16 @@ export const ja: TranslationTree = {
 			},
 		},
 		appearance: {
+			themeColors: {
+				header: "テーマカラー",
+				description:
+					"TASKquence 独自の配色を使用するか、現在の Obsidian 外観テーマに従うかを選択します。",
+				usePluginColors: {
+					name: "TASKquence のテーマカラーを使用",
+					description:
+						"現在の TASKquence 配色を維持します。オフにすると、ボードとフローティングタイマーの背景、文字、境界線、アクセント、ホバー状態、セマンティックカラーが Obsidian のテーマを継承します。",
+				},
+			},
 			taskCards: {
 				header: "タスクカード",
 				description: "すべてのビューでタスクカードの表示方法を設定します。",

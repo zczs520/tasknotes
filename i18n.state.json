@@ -3498,6 +3498,22 @@
       "source": "61290f286c6963dbe266b1b6b20a4c3f29c78d66",
       "translation": "c54d4eb84d3640c1557eb9dcb99ade31309f0b4e"
     },
+    "settings.appearance.themeColors.header": {
+      "source": "4035d33370da78c41380fd5edd23f28ebb4a6feb",
+      "translation": "5b8f9c4b0748f9b8870375828f9725d36d7c2065"
+    },
+    "settings.appearance.themeColors.description": {
+      "source": "13a17e4300a24c9f2607151016231ffc761f4530",
+      "translation": "4ee1eb3bd59767add1f3213e5e87606ff32990fc"
+    },
+    "settings.appearance.themeColors.usePluginColors.name": {
+      "source": "3c8481b57e9977503191d294b5ec5b5e3ce7e520",
+      "translation": "3661b8542daf367f0e3fbc695f207c284a92cbb3"
+    },
+    "settings.appearance.themeColors.usePluginColors.description": {
+      "source": "911d9ba3c32ab6414162c9c8afd8f4a85a5e2f79",
+      "translation": "4479982da862a11bd1e36499cc361c963bb45b04"
+    },
     "settings.appearance.taskCards.header": {
       "source": "538e4423d286a639ec9d9bcc9ca84333f0be74f6",
       "translation": "20a69cc45e76fad40738bab186f0ffa7be6f8d99"
@@ -12785,6 +12801,22 @@
     "settings.taskProperties.customUserFields.autosuggestFilters.description": {
       "source": "61290f286c6963dbe266b1b6b20a4c3f29c78d66",
       "translation": "d6061c04e26ea34b6fa7a32b34b2acc54e6d10fc"
+    },
+    "settings.appearance.themeColors.header": {
+      "source": "4035d33370da78c41380fd5edd23f28ebb4a6feb",
+      "translation": "e2dfb6042b9cb5cbc14e70b90fb34202418cff11"
+    },
+    "settings.appearance.themeColors.description": {
+      "source": "13a17e4300a24c9f2607151016231ffc761f4530",
+      "translation": "6d8f0f1ef55493c4c9feac686f4d766895a7ed6f"
+    },
+    "settings.appearance.themeColors.usePluginColors.name": {
+      "source": "3c8481b57e9977503191d294b5ec5b5e3ce7e520",
+      "translation": "5d430ade976512cdc871816bbe5c1063f310c2b2"
+    },
+    "settings.appearance.themeColors.usePluginColors.description": {
+      "source": "911d9ba3c32ab6414162c9c8afd8f4a85a5e2f79",
+      "translation": "06260c1195fbdee5dbf0d721852192ec4198eaab"
     },
     "settings.appearance.taskCards.header": {
       "source": "538e4423d286a639ec9d9bcc9ca84333f0be74f6",
@@ -22074,6 +22106,22 @@
       "source": "61290f286c6963dbe266b1b6b20a4c3f29c78d66",
       "translation": "23a94e85cad389fac003ad9ad886b37bc52acf39"
     },
+    "settings.appearance.themeColors.header": {
+      "source": "4035d33370da78c41380fd5edd23f28ebb4a6feb",
+      "translation": "a45189a85fca1aac3f17c75da14f4a53a953777b"
+    },
+    "settings.appearance.themeColors.description": {
+      "source": "13a17e4300a24c9f2607151016231ffc761f4530",
+      "translation": "8680ac069b47b453ea0ffcdb9cb0c0edb1da3c59"
+    },
+    "settings.appearance.themeColors.usePluginColors.name": {
+      "source": "3c8481b57e9977503191d294b5ec5b5e3ce7e520",
+      "translation": "9848ad729cfed29865a73b2cf7d0417af58617a1"
+    },
+    "settings.appearance.themeColors.usePluginColors.description": {
+      "source": "911d9ba3c32ab6414162c9c8afd8f4a85a5e2f79",
+      "translation": "bafdba6e2fa94b7528b7a0755416bffcf213ee3b"
+    },
     "settings.appearance.taskCards.header": {
       "source": "538e4423d286a639ec9d9bcc9ca84333f0be74f6",
       "translation": "642148984b7b1f1908934199cb4f3fb2e857bd01"
@@ -31361,6 +31409,22 @@
     "settings.taskProperties.customUserFields.autosuggestFilters.description": {
       "source": "61290f286c6963dbe266b1b6b20a4c3f29c78d66",
       "translation": "0ed296d49c0b1d51f9bb879bbf880f53614bf648"
+    },
+    "settings.appearance.themeColors.header": {
+      "source": "4035d33370da78c41380fd5edd23f28ebb4a6feb",
+      "translation": "5deba6a204d9873e8ccdd37b6ff1bfca12705639"
+    },
+    "settings.appearance.themeColors.description": {
+      "source": "13a17e4300a24c9f2607151016231ffc761f4530",
+      "translation": "a25db3a428f4023afec2db3ab1297edc3206fd8e"
+    },
+    "settings.appearance.themeColors.usePluginColors.name": {
+      "source": "3c8481b57e9977503191d294b5ec5b5e3ce7e520",
+      "translation": "b295408cbc4024eab8bc0244de937cf5651e81c9"
+    },
+    "settings.appearance.themeColors.usePluginColors.description": {
+      "source": "911d9ba3c32ab6414162c9c8afd8f4a85a5e2f79",
+      "translation": "e19edfd5c2455dca7d06300256c34c2ef101b480"
     },
     "settings.appearance.taskCards.header": {
       "source": "538e4423d286a639ec9d9bcc9ca84333f0be74f6",
@@ -40650,6 +40714,22 @@
       "source": "61290f286c6963dbe266b1b6b20a4c3f29c78d66",
       "translation": "0350a1e0c83fff1c6c825a76f0e156ff429df7a3"
     },
+    "settings.appearance.themeColors.header": {
+      "source": "4035d33370da78c41380fd5edd23f28ebb4a6feb",
+      "translation": "4d6d1554a63bc027073b6d685a78ced361a15522"
+    },
+    "settings.appearance.themeColors.description": {
+      "source": "13a17e4300a24c9f2607151016231ffc761f4530",
+      "translation": "4508a62ea0ce6a8b53f28ad4fa072ebd1e258a86"
+    },
+    "settings.appearance.themeColors.usePluginColors.name": {
+      "source": "3c8481b57e9977503191d294b5ec5b5e3ce7e520",
+      "translation": "4b90b43c3c73b6193bf312e80b0b6c22469503de"
+    },
+    "settings.appearance.themeColors.usePluginColors.description": {
+      "source": "911d9ba3c32ab6414162c9c8afd8f4a85a5e2f79",
+      "translation": "fadb6a5aad610592f2c98fc7193e4e7d1d8d898b"
+    },
     "settings.appearance.taskCards.header": {
       "source": "538e4423d286a639ec9d9bcc9ca84333f0be74f6",
       "translation": "dc83c85e03113ebe20a3733d180c24b4606415a3"
@@ -49938,6 +50018,22 @@
       "source": "61290f286c6963dbe266b1b6b20a4c3f29c78d66",
       "translation": "307693f85b6f19eb78e05583abe36ec48ca0e290"
     },
+    "settings.appearance.themeColors.header": {
+      "source": "4035d33370da78c41380fd5edd23f28ebb4a6feb",
+      "translation": "648ba8347b3d8547eec3210a22df32459325f8e7"
+    },
+    "settings.appearance.themeColors.description": {
+      "source": "13a17e4300a24c9f2607151016231ffc761f4530",
+      "translation": "d56059bf2b671698ff2bde03a56a720ed3cad938"
+    },
+    "settings.appearance.themeColors.usePluginColors.name": {
+      "source": "3c8481b57e9977503191d294b5ec5b5e3ce7e520",
+      "translation": "715b36226ab69f69884d014d4b949b375a6fd992"
+    },
+    "settings.appearance.themeColors.usePluginColors.description": {
+      "source": "911d9ba3c32ab6414162c9c8afd8f4a85a5e2f79",
+      "translation": "9de2d445b7e6be7ec206916c9023dd80b87d8135"
+    },
     "settings.appearance.taskCards.header": {
       "source": "538e4423d286a639ec9d9bcc9ca84333f0be74f6",
       "translation": "4f8b35c40e12d30d12db1e3e4400421549214a8e"
@@ -59225,6 +59321,22 @@
     "settings.taskProperties.customUserFields.autosuggestFilters.description": {
       "source": "61290f286c6963dbe266b1b6b20a4c3f29c78d66",
       "translation": "2ad7b930566ee7d7065ea34005954711ff85ed34"
+    },
+    "settings.appearance.themeColors.header": {
+      "source": "4035d33370da78c41380fd5edd23f28ebb4a6feb",
+      "translation": "7e9cd95b403294c7a1fddb823e3d207a5a147461"
+    },
+    "settings.appearance.themeColors.description": {
+      "source": "13a17e4300a24c9f2607151016231ffc761f4530",
+      "translation": "0079368a438026dc1918e68fa239417dbae98314"
+    },
+    "settings.appearance.themeColors.usePluginColors.name": {
+      "source": "3c8481b57e9977503191d294b5ec5b5e3ce7e520",
+      "translation": "2adccfc1a0c45d29a12af3070f4fa0a06f45c90d"
+    },
+    "settings.appearance.themeColors.usePluginColors.description": {
+      "source": "911d9ba3c32ab6414162c9c8afd8f4a85a5e2f79",
+      "translation": "b62a4ffffc2d957ce77eaa44729fe1ee9aa78387"
     },
     "settings.appearance.taskCards.header": {
       "source": "538e4423d286a639ec9d9bcc9ca84333f0be74f6",
@@ -69023,6 +69135,22 @@
     "settings.taskProperties.customUserFields.autosuggestFilters.description": {
       "source": "61290f286c6963dbe266b1b6b20a4c3f29c78d66",
       "translation": "59eda010c844762c761d8c2dba0d9d9a6470d1df"
+    },
+    "settings.appearance.themeColors.header": {
+      "source": "4035d33370da78c41380fd5edd23f28ebb4a6feb",
+      "translation": "90b878eaa4a3a89aedd031b87f6263c1384c141c"
+    },
+    "settings.appearance.themeColors.description": {
+      "source": "13a17e4300a24c9f2607151016231ffc761f4530",
+      "translation": "23181a5803ee8516c7c13f0655fa0a422093cc43"
+    },
+    "settings.appearance.themeColors.usePluginColors.name": {
+      "source": "3c8481b57e9977503191d294b5ec5b5e3ce7e520",
+      "translation": "269bdf4e90be0246445ab2fab2fd23b01915d0ec"
+    },
+    "settings.appearance.themeColors.usePluginColors.description": {
+      "source": "911d9ba3c32ab6414162c9c8afd8f4a85a5e2f79",
+      "translation": "d258287f61dcf57f67480309c90861a657d8a1d1"
     },
     "settings.appearance.taskCards.header": {
       "source": "538e4423d286a639ec9d9bcc9ca84333f0be74f6",

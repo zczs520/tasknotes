@@ -1438,6 +1438,16 @@ export const es: TranslationTree = {
 			},
 		},
 		appearance: {
+			themeColors: {
+				header: "Colores del tema",
+				description:
+					"Elige si TASKquence utiliza su propia paleta o sigue el tema de apariencia activo de Obsidian.",
+				usePluginColors: {
+					name: "Usar los colores del tema de TASKquence",
+					description:
+						"Conserva los colores actuales de TASKquence. Desactiva esta opción para heredar los fondos, textos, bordes, acentos, estados al pasar el cursor y colores semánticos de Obsidian en los tableros y el temporizador flotante.",
+				},
+			},
 			taskCards: {
 				header: "Tarjetas de tareas",
 				description:

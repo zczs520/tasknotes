@@ -34,11 +34,3 @@ When a change has user-facing documentation, include a canonical tasknotes.dev l
 ```
 
 -->
-
-## Added
-
-- Added a theme color setting under Appearance & UI. TASKquence follows the active Obsidian theme by default; turning the setting on restores the TASKquence palette across boards, task surfaces, controls, and the floating timer.
-
-## Fixed
-
-- Removed the faint shadow beneath hovered Kanban cards so their rounded bottom corners blend cleanly into the board background.

@@ -46,6 +46,7 @@ function createLifecyclePlugin(saveSettingsDataOnly: jest.Mock): any {
 		settings: cloneSettings(),
 		saveSettingsDataOnly,
 		apiService: { syncWebhookSettings: jest.fn() },
+		applyThemeColorMode: jest.fn(),
 		fieldMapper: {
 			updateMapping: jest.fn(),
 			updateUserFields: jest.fn(),
@@ -137,6 +138,7 @@ describe("settings save coalescing", () => {
 
 		expect(saveSettingsDataOnly).toHaveBeenCalledTimes(2);
 		expect(plugin.apiService.syncWebhookSettings).toHaveBeenCalledTimes(1);
+		expect(plugin.applyThemeColorMode).toHaveBeenCalledTimes(1);
 		expect(plugin.fieldMapper.updateMapping).toHaveBeenCalledTimes(1);
 		expect(plugin.cacheManager.updateConfig).toHaveBeenCalledTimes(1);
 		expect(plugin.notifyDataChanged).toHaveBeenCalledTimes(1);

@@ -1430,6 +1430,16 @@ export const de: TranslationTree = {
 			},
 		},
 		appearance: {
+			themeColors: {
+				header: "Themenfarben",
+				description:
+					"Wähle, ob TASKquence seine eigene Farbpalette verwendet oder dem aktiven Obsidian-Erscheinungsbild folgt.",
+				usePluginColors: {
+					name: "TASKquence-Themefarben verwenden",
+					description:
+						"Behält die aktuellen TASKquence-Farben bei. Deaktiviere dies, um Obsidian-Hintergründe, Textfarben, Rahmen, Akzentfarben, Hover-Zustände und semantische Farben in Boards und im schwebenden Timer zu übernehmen.",
+				},
+			},
 			taskCards: {
 				header: "Aufgabenkarten",
 				description:
