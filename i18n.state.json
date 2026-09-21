@@ -1554,6 +1554,10 @@
     "views.basesViewSettings.kanban.columnOrderPlaceholder": null,
     "views.basesViewSettings.kanban.swimLaneOrderAdvanced": null,
     "views.basesViewSettings.kanban.swimLaneOrderPlaceholder": null,
+    "views.basesViewSettings.timeStatistics.pendingMilestones": null,
+    "views.basesViewSettings.timeStatistics.thisWeek": null,
+    "views.basesViewSettings.timeStatistics.thisMonth": null,
+    "views.basesViewSettings.timeStatistics.thisYear": null,
     "settings.header.documentation": {
       "source": "9e9cf3221a30246219863f1d2366e36cb580debc",
       "translation": "0401e23e6030c9e8bdb8c202fb8721e3e91ff3a3"
@@ -10866,6 +10870,10 @@
     "views.basesViewSettings.kanban.columnOrderPlaceholder": null,
     "views.basesViewSettings.kanban.swimLaneOrderAdvanced": null,
     "views.basesViewSettings.kanban.swimLaneOrderPlaceholder": null,
+    "views.basesViewSettings.timeStatistics.pendingMilestones": null,
+    "views.basesViewSettings.timeStatistics.thisWeek": null,
+    "views.basesViewSettings.timeStatistics.thisMonth": null,
+    "views.basesViewSettings.timeStatistics.thisYear": null,
     "settings.header.documentation": {
       "source": "9e9cf3221a30246219863f1d2366e36cb580debc",
       "translation": "60f92f2f9b4fbbfa88b9226f9e42abd30dd32c51"
@@ -20178,6 +20186,10 @@
     "views.basesViewSettings.kanban.columnOrderPlaceholder": null,
     "views.basesViewSettings.kanban.swimLaneOrderAdvanced": null,
     "views.basesViewSettings.kanban.swimLaneOrderPlaceholder": null,
+    "views.basesViewSettings.timeStatistics.pendingMilestones": null,
+    "views.basesViewSettings.timeStatistics.thisWeek": null,
+    "views.basesViewSettings.timeStatistics.thisMonth": null,
+    "views.basesViewSettings.timeStatistics.thisYear": null,
     "settings.header.documentation": {
       "source": "9e9cf3221a30246219863f1d2366e36cb580debc",
       "translation": "9e9cf3221a30246219863f1d2366e36cb580debc"
@@ -29490,6 +29502,10 @@
     "views.basesViewSettings.kanban.columnOrderPlaceholder": null,
     "views.basesViewSettings.kanban.swimLaneOrderAdvanced": null,
     "views.basesViewSettings.kanban.swimLaneOrderPlaceholder": null,
+    "views.basesViewSettings.timeStatistics.pendingMilestones": null,
+    "views.basesViewSettings.timeStatistics.thisWeek": null,
+    "views.basesViewSettings.timeStatistics.thisMonth": null,
+    "views.basesViewSettings.timeStatistics.thisYear": null,
     "settings.header.documentation": {
       "source": "9e9cf3221a30246219863f1d2366e36cb580debc",
       "translation": "427e87e11f2aee5d1161c1d76a4b55d46588413c"
@@ -38802,6 +38818,10 @@
     "views.basesViewSettings.kanban.columnOrderPlaceholder": null,
     "views.basesViewSettings.kanban.swimLaneOrderAdvanced": null,
     "views.basesViewSettings.kanban.swimLaneOrderPlaceholder": null,
+    "views.basesViewSettings.timeStatistics.pendingMilestones": null,
+    "views.basesViewSettings.timeStatistics.thisWeek": null,
+    "views.basesViewSettings.timeStatistics.thisMonth": null,
+    "views.basesViewSettings.timeStatistics.thisYear": null,
     "settings.header.documentation": {
       "source": "9e9cf3221a30246219863f1d2366e36cb580debc",
       "translation": "19e4eb25a1355912ec0ff756a3fdffa95fd81a15"
@@ -48114,6 +48134,10 @@
     "views.basesViewSettings.kanban.columnOrderPlaceholder": null,
     "views.basesViewSettings.kanban.swimLaneOrderAdvanced": null,
     "views.basesViewSettings.kanban.swimLaneOrderPlaceholder": null,
+    "views.basesViewSettings.timeStatistics.pendingMilestones": null,
+    "views.basesViewSettings.timeStatistics.thisWeek": null,
+    "views.basesViewSettings.timeStatistics.thisMonth": null,
+    "views.basesViewSettings.timeStatistics.thisYear": null,
     "settings.header.documentation": {
       "source": "9e9cf3221a30246219863f1d2366e36cb580debc",
       "translation": "7ee3f754f8c51477442e8aae4964e38fac6921da"
@@ -57426,6 +57450,10 @@
     "views.basesViewSettings.kanban.columnOrderPlaceholder": null,
     "views.basesViewSettings.kanban.swimLaneOrderAdvanced": null,
     "views.basesViewSettings.kanban.swimLaneOrderPlaceholder": null,
+    "views.basesViewSettings.timeStatistics.pendingMilestones": null,
+    "views.basesViewSettings.timeStatistics.thisWeek": null,
+    "views.basesViewSettings.timeStatistics.thisMonth": null,
+    "views.basesViewSettings.timeStatistics.thisYear": null,
     "settings.header.documentation": {
       "source": "9e9cf3221a30246219863f1d2366e36cb580debc",
       "translation": "c53a5edce43fe80a9022054388e569531bbe9756"
@@ -67091,6 +67119,22 @@
     "views.basesViewSettings.kanban.swimLaneOrderPlaceholder": {
       "source": "1eaa6f5b6886a4a7fe12a91de3981af3cf2e3ebd",
       "translation": "be5c839459ea47a486f8dd785f5d666899dbcb96"
+    },
+    "views.basesViewSettings.timeStatistics.pendingMilestones": {
+      "source": "a85b2cc5e377eb1bda59b993b19aecacce20acb3",
+      "translation": "6af9b6273f94494912caf966d9d556720c8b011f"
+    },
+    "views.basesViewSettings.timeStatistics.thisWeek": {
+      "source": "7b72883e078a6858cf0c79bf3e93e72e765e9ada",
+      "translation": "e16e8248b16f6990d0f8bc8a96e342d59d5b1c87"
+    },
+    "views.basesViewSettings.timeStatistics.thisMonth": {
+      "source": "1b4785331db3b08cd8e3cfa4bd36216731a79e54",
+      "translation": "389f0007de41e2232b27843cf20d56d073f5f963"
+    },
+    "views.basesViewSettings.timeStatistics.thisYear": {
+      "source": "094c097f3b0700c6484ba1590ce87edbcb6f9dc1",
+      "translation": "09aaf357b3dceafbcb5ab7500fc7e20c42f6e6db"
     },
     "settings.header.documentation": {
       "source": "9e9cf3221a30246219863f1d2366e36cb580debc",

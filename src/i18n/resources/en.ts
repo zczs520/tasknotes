@@ -695,6 +695,12 @@ export const en: TranslationTree = {
 				swimLaneOrderAdvanced: "Swimlane order (advanced)",
 				swimLaneOrderPlaceholder: "JSON object keyed by swimlane property",
 			},
+			timeStatistics: {
+				pendingMilestones: "Show milestones to update in",
+				thisWeek: "This week",
+				thisMonth: "This month",
+				thisYear: "This year",
+			},
 		},
 	},
 	settings: {

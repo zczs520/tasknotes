@@ -294,6 +294,32 @@ export async function registerBasesTaskList(plugin: TaskNotesPlugin): Promise<vo
 					name: t("viewNames.timeStatistics"),
 					icon: "bar-chart-3",
 					factory: buildTimeStatisticsViewFactory(plugin),
+					options: () => [
+						{
+							type: "group",
+							displayName: t("timeStatistics.pendingMilestones"),
+							items: [
+								{
+									type: "toggle",
+									key: "showPendingMilestonesWeek",
+									displayName: t("timeStatistics.thisWeek"),
+									default: true,
+								},
+								{
+									type: "toggle",
+									key: "showPendingMilestonesMonth",
+									displayName: t("timeStatistics.thisMonth"),
+									default: true,
+								},
+								{
+									type: "toggle",
+									key: "showPendingMilestonesYear",
+									displayName: t("timeStatistics.thisYear"),
+									default: true,
+								},
+							],
+						},
+					],
 				},
 				logger
 			);

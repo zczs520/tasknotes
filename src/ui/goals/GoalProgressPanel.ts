@@ -9,6 +9,10 @@ import {
 	goalInvestedHours,
 	milestoneNeedsUpdate,
 } from "../../goals/goalCalculations";
+import {
+	collectGoalMilestoneEvents,
+	type GoalMilestoneEvent,
+} from "../../goals/goalMilestoneEvents";
 import { goalCopy } from "../../goals/goalCopy";
 import { GoalCreationModal } from "../../modals/GoalCreationModal";
 import { showConfirmationModal } from "../../modals/ConfirmationModal";
@@ -29,6 +33,7 @@ export interface GoalProgressPanelOptions {
 	onOpenGoal?: (path: string) => void | Promise<void>;
 	recommendedTags?: readonly string[];
 	readOnly?: boolean;
+	showPendingMilestones?: boolean;
 	stripState?: GoalStripState;
 	onStripStateChange?: (state: GoalStripState) => void | Promise<void>;
 }
@@ -440,10 +445,16 @@ function renderLedgerRow(
 	progress: GoalProgress,
 	options: GoalProgressPanelOptions,
 	previous: GoalProgress | undefined,
-	hasChildren = false,
+	children: readonly GoalProgress[] = [],
 	zeroPeriods = 0
 ): void {
 	const chinese = plugin.i18n.getCurrentLocale() === "zh";
+	const hasChildren = children.length > 0;
+	const aggregateTarget = hasChildren
+		? children.reduce((total, child) => total + (child.target ?? 0), 0)
+		: null;
+	const displayTarget =
+		progress.target ?? (aggregateTarget && aggregateTarget > 0 ? aggregateTarget : null);
 	const row = parent.createDiv({ cls: `tn-goal-ledger__row ${visualClasses(progress)}` });
 	row.style.setProperty("--tn-goal-mode-color", getStatisticsColor("goal", progress.goal.path));
 	const header = row.createDiv({ cls: "tn-goal-ledger__header" });
@@ -471,7 +482,7 @@ function renderLedgerRow(
 	header.createSpan({
 		cls: "tn-goal-ledger__actual",
 		text:
-			progress.target !== null && options.period !== "year"
+			progress.goal.mode && displayTarget !== null && options.period !== "year"
 				? String(
 						progress.goal.mode === "count"
 							? Math.round(progress.actual)
@@ -479,10 +490,10 @@ function renderLedgerRow(
 					)
 				: formatActual(progress, chinese),
 	});
-	if (progress.target !== null && options.period !== "year") {
+	if (displayTarget !== null && options.period !== "year") {
 		header.createSpan({
 			cls: "tn-goal-ledger__target",
-			text: `/ ${formatTarget(progress, chinese)}`,
+			text: `/ ${formatTarget({ ...progress, target: displayTarget }, chinese)}`,
 		});
 	}
 	if (hasChildren || options.period === "year") return;
@@ -503,6 +514,102 @@ function renderLedgerRow(
 						: `No investment for ${zeroPeriods} ${unit}`
 					: stateCopy(plugin, progress),
 		});
+	}
+}
+
+function milestoneEventDate(date: string, chinese: boolean): string {
+	return new Intl.DateTimeFormat(chinese ? "zh-CN" : undefined, {
+		year: "numeric",
+		month: "long",
+		day: "numeric",
+	}).format(new Date(`${date}T00:00:00`));
+}
+
+function milestoneEventCopy(
+	event: GoalMilestoneEvent,
+	chinese: boolean
+): { primary: string; secondary: string } {
+	const date = milestoneEventDate(event.date, chinese);
+	if (event.kind === "achievement") {
+		if (event.milestone.kind === "boolean") {
+			return {
+				primary: chinese ? `${date}达成全部目标` : `${date} · Completed`,
+				secondary: chinese ? "里程碑全部完成" : "Milestone completed",
+			};
+		}
+		const achieved = event.achievedTiers.map((tier) =>
+			formatMilestoneValue(tier, event.milestone.unit)
+		);
+		const primary = chinese
+			? `${date}${achieved.length > 1 ? "连续达成" : "达成"}${achieved.join("、")}阶段`
+			: `${date} · Reached ${achieved.join(", ")}`;
+		return {
+			primary,
+			secondary: event.completed
+				? chinese
+					? "里程碑全部完成"
+					: "Milestone completed"
+				: event.nextTier !== undefined
+					? `${chinese ? "下一阶段：" : "Next stage: "}${formatMilestoneValue(event.nextTier, event.milestone.unit)}`
+					: chinese
+						? "阶段进度已记录"
+						: "Stage progress recorded",
+		};
+	}
+	const value = event.value ?? 0;
+	const primary = chinese
+		? `${date}进度更新至${formatMilestoneValue(value, event.milestone.unit)}`
+		: `${date} · Progress updated to ${formatMilestoneValue(value, event.milestone.unit)}`;
+	return {
+		primary,
+		secondary:
+			event.nextTier !== undefined
+				? chinese
+					? `尚未达成新阶段 · 距离${formatMilestoneValue(event.nextTier, event.milestone.unit)}还差${formatMilestoneValue(Math.max(0, event.nextTier - value), event.milestone.unit)}`
+					: `No new stage reached · ${formatMilestoneValue(Math.max(0, event.nextTier - value), event.milestone.unit)} to ${formatMilestoneValue(event.nextTier, event.milestone.unit)}`
+				: chinese
+					? "进度已记录"
+					: "Progress recorded",
+	};
+}
+
+function renderMilestoneProgress(
+	parent: HTMLElement,
+	plugin: TaskNotesPlugin,
+	events: readonly GoalMilestoneEvent[],
+	onOpenGoal?: (path: string) => void | Promise<void>
+): void {
+	if (!events.length) return;
+	const chinese = plugin.i18n.getCurrentLocale() === "zh";
+	const section = parent.createDiv({ cls: "tn-goal-ledger__milestone-progress" });
+	section.createDiv({
+		cls: "tn-goal-ledger__milestone-heading",
+		text: chinese ? "里程碑进展" : "Milestone progress",
+	});
+	const list = section.createDiv({ cls: "tn-goal-milestone-events" });
+	for (const event of events) {
+		const copy = milestoneEventCopy(event, chinese);
+		const row = list.createDiv({
+			cls: `tn-goal-milestone-event is-${event.kind}${event.completed ? " is-complete" : ""}`,
+		});
+		row.createSpan({
+			cls: "tn-goal-milestone-event__mark",
+			text: event.completed ? "✓" : event.kind === "achievement" ? "⚑" : "↗",
+		});
+		const body = row.createDiv({ cls: "tn-goal-milestone-event__body" });
+		const heading = body.createDiv({ cls: "tn-goal-milestone-event__heading" });
+		const owner = heading.createEl("a", {
+			cls: "tn-goal-milestone-event__owner",
+			text: event.goal.name,
+			attr: { href: event.goal.path },
+		});
+		owner.addEventListener("click", (clickEvent) => {
+			clickEvent.preventDefault();
+			void onOpenGoal?.(event.goal.path);
+		});
+		heading.createSpan({ text: event.milestone.name });
+		body.createDiv({ cls: "tn-goal-milestone-event__primary", text: copy.primary });
+		body.createDiv({ cls: "tn-goal-milestone-event__secondary", text: copy.secondary });
 	}
 }
 
@@ -905,7 +1012,7 @@ export async function renderGoalProgressPanel(
 			progress,
 			options,
 			previousByPath.get(progress.goal.path),
-			children.length > 0,
+			children,
 			zeroPeriodsFor(progress)
 		);
 		if (children.length) {
@@ -917,12 +1024,18 @@ export async function renderGoalProgressPanel(
 					child,
 					options,
 					previousByPath.get(child.goal.path),
-					false,
+					[],
 					zeroPeriodsFor(child)
 				);
 		}
 	}
-	if (options.period !== "day" && !options.readOnly) {
+	renderMilestoneProgress(
+		panel,
+		plugin,
+		collectGoalMilestoneEvents(result.goals, result.range),
+		options.onOpenGoal
+	);
+	if (options.period !== "day" && !options.readOnly && options.showPendingMilestones !== false) {
 		const pending = result.goals
 			.flatMap((goal) =>
 				goal.milestones.map((milestone, index) => ({ goal, milestone, index }))

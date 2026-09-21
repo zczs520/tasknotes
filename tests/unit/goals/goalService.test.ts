@@ -30,8 +30,8 @@ milestones:
 Keep creating
 `;
 
-function setup() {
-	const app = createMockApp({ "Goals/Developer.md": content });
+function setup(goalContent = content) {
+	const app = createMockApp({ "Goals/Developer.md": goalContent });
 	const getAllTasks = jest.fn().mockResolvedValue([]);
 	const plugin = {
 		app,
@@ -46,7 +46,10 @@ describe("goal service historical attribution and cached reads", () => {
 	it("reads only the configured folder and switches away from cached old goals", async () => {
 		const { app, plugin, service } = setup();
 		await service.listGoals();
-		await app.vault.create("Custom/Goals/New.md", content.replace("name: Developer", "name: New"));
+		await app.vault.create(
+			"Custom/Goals/New.md",
+			content.replace("name: Developer", "name: New")
+		);
 		await app.vault.create("Custom/Goals-extra/Other.md", content);
 		plugin.settings.goalsFolder = " Custom\\Goals/ ";
 		expect((await service.listGoals()).map((goal) => goal.name)).toEqual(["New"]);
@@ -71,7 +74,8 @@ describe("goal service historical attribution and cached reads", () => {
 			});
 			const expected = folder ? "Custom/Nested/Goals" : "TASKquence/Tasks/Goals";
 			expect(goals.map((goal) => goal.path)).toEqual([
-				`${expected}/Parent.md`, `${expected}/Child.md`,
+				`${expected}/Parent.md`,
+				`${expected}/Child.md`,
 			]);
 			expect(createFolder.mock.calls.map(([path]) => path)).toEqual(
 				expected.split("/").map((_, index, parts) => parts.slice(0, index + 1).join("/"))
@@ -148,5 +152,25 @@ describe("goal service historical attribution and cached reads", () => {
 		expect(milestone.unit).toBe("美元");
 		expect(milestone.current).toBe(0);
 		expect(milestone.tiers).toEqual([10, 100]);
+	});
+
+	it("records one progress snapshot per day and preserves a legacy prior value", async () => {
+		jest.useFakeTimers().setSystemTime(new Date("2026-09-21T12:00:00"));
+		try {
+			const legacyContent = content
+				.replace("current: 0", "current: 5")
+				.replace("    hours_at: {}", "    hours_at: {}\n    updated_at: 2026-09-17");
+			const { service } = setup(legacyContent);
+			await service.updateMilestone("Goals/Developer.md", 0, 12);
+			await service.updateMilestone("Goals/Developer.md", 0, 15);
+			const milestone = (await service.getGoal("Goals/Developer.md"))!.milestones[0];
+			expect(milestone.progressHistory).toEqual([
+				{ date: "2026-09-17", value: 5 },
+				{ date: "2026-09-21", value: 15 },
+			]);
+			expect(milestone.achieved).toEqual({ "10": "2026-09-21" });
+		} finally {
+			jest.useRealTimers();
+		}
 	});
 });

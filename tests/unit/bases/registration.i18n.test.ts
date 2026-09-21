@@ -97,5 +97,15 @@ describe("Bases registration localization", () => {
 			(call) => call[1] === "tasknotesTimeStatistics"
 		);
 		expect(timeStatisticsCall?.[2].name).toBe("TaskNotes Time 时间统计");
+		const timeStatisticsOptions = timeStatisticsCall?.[2].options?.(config) ?? [];
+		const pendingGroup = timeStatisticsOptions.find(
+			(option) => option.type === "group" && option.displayName === "待更新的里程碑显示位置"
+		);
+		expect(pendingGroup?.items.map((item) => item.displayName)).toEqual([
+			"本周",
+			"本月",
+			"本年",
+		]);
+		expect(pendingGroup?.items.every((item) => item.default === true)).toBe(true);
 	});
 });

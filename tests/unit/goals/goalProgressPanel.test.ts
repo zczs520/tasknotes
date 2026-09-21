@@ -233,6 +233,50 @@ describe("reference goal and tag presentation", () => {
 		expect(parent.querySelectorAll(".tn-goal-ledger__row > .tn-goal-strip__bar")).toHaveLength(
 			1
 		);
+		expect(
+			parent.querySelector(".tn-goal-ledger__row.is-aggregate .tn-goal-ledger__target")
+				?.textContent
+		).toBe("/ 8h");
+	});
+	it("renders filtered milestone progress and combines tiers achieved on the same day", async () => {
+		const { plugin, parent } = setup([
+			goal("产品", {
+				mode: "floor",
+				milestones: [
+					{ name: "上线", kind: "boolean", achieved: "2026-09-15", hours_at: 12 },
+					{
+						name: "用户",
+						kind: "number",
+						current: 55,
+						tiers: [10, 50, 100],
+						achieved: { "10": "2026-09-16", "50": "2026-09-16" },
+						hours_at: { "10": 4, "50": 8 },
+						progressHistory: [{ date: "2026-09-16", value: 55 }],
+					},
+					{
+						name: "粉丝",
+						kind: "number",
+						current: 300,
+						tiers: [1000],
+						achieved: {},
+						hours_at: {},
+						progressHistory: [{ date: "2026-09-17", value: 300 }],
+					},
+				],
+			}),
+		]);
+		await renderGoalProgressPanel(parent, plugin, [], {
+			...options,
+			variant: "statistics",
+			readOnly: true,
+		});
+		expect(parent.querySelector(".tn-goal-ledger__milestone-heading")?.textContent).toBe(
+			"里程碑进展"
+		);
+		expect(parent.querySelectorAll(".tn-goal-milestone-event")).toHaveLength(3);
+		expect(parent.textContent).toContain("连续达成10、50阶段");
+		expect(parent.textContent).toContain("进度更新至300");
+		expect(parent.querySelector(".tn-goal-ledger__milestones")).toBeNull();
 	});
 	it("does not expose milestone update inputs in historical statistics", async () => {
 		const { plugin, parent } = setup([
@@ -298,6 +342,28 @@ describe("reference goal and tag presentation", () => {
 			);
 		}
 	);
+	it("honors the per-view pending milestone visibility setting", async () => {
+		const { plugin, parent } = setup([
+			goal("副业", {
+				milestones: [
+					{
+						name: "收入",
+						kind: "number",
+						current: 0,
+						tiers: [10],
+						achieved: {},
+						hours_at: {},
+					},
+				],
+			}),
+		]);
+		await renderGoalProgressPanel(parent, plugin, [], {
+			...options,
+			variant: "statistics",
+			showPendingMilestones: false,
+		});
+		expect(parent.querySelector(".tn-goal-ledger__milestones")).toBeNull();
+	});
 	it("rejects blank inline milestone updates and submits explicit values", async () => {
 		const { plugin, parent } = setup([
 			goal("设计", {

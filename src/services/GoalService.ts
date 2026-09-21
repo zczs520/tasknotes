@@ -15,6 +15,7 @@ import type {
 	GoalDraftMilestone,
 	GoalGroupDraft,
 	GoalMilestone,
+	GoalMilestoneProgressSnapshot,
 	GoalPeriod,
 	GoalProgress,
 	GoalSettingsSnapshot,
@@ -92,6 +93,25 @@ function settingsHistoryValue(value: unknown): GoalSettingsSnapshot[] {
 		.sort((left, right) => left.date.localeCompare(right.date));
 }
 
+function milestoneProgressHistoryValue(value: unknown): GoalMilestoneProgressSnapshot[] {
+	if (!Array.isArray(value)) return [];
+	const byDate = new Map<string, GoalMilestoneProgressSnapshot>();
+	for (const item of value) {
+		if (!item || typeof item !== "object" || Array.isArray(item)) continue;
+		const raw = item as Frontmatter;
+		const numericValue = Number(raw.value);
+		if (
+			typeof raw.date !== "string" ||
+			!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/u.test(raw.date) ||
+			!Number.isFinite(numericValue) ||
+			numericValue < 0
+		)
+			continue;
+		byDate.set(raw.date, { date: raw.date, value: numericValue });
+	}
+	return [...byDate.values()].sort((left, right) => left.date.localeCompare(right.date));
+}
+
 function parseMilestone(value: unknown): GoalMilestone | null {
 	if (!value || typeof value !== "object" || Array.isArray(value)) return null;
 	const raw = value as Frontmatter;
@@ -118,6 +138,8 @@ function parseMilestone(value: unknown): GoalMilestone | null {
 					? Number(raw.hours_at)
 					: null,
 		updatedAt: typeof raw.updated_at === "string" ? raw.updated_at : undefined,
+		progressHistory:
+			kind === "number" ? milestoneProgressHistoryValue(raw.progress_history) : undefined,
 	};
 }
 
@@ -185,6 +207,7 @@ function cloneGoal(goal: GoalDefinition): GoalDefinition {
 				typeof milestone.hours_at === "object" && milestone.hours_at !== null
 					? { ...milestone.hours_at }
 					: milestone.hours_at,
+			progressHistory: milestone.progressHistory?.map((snapshot) => ({ ...snapshot })),
 		})),
 		settingsHistory: goal.settingsHistory.map((snapshot) => ({ ...snapshot })),
 	};
@@ -240,6 +263,14 @@ function encodeMilestone(milestone: GoalMilestone): Frontmatter {
 		achieved: milestone.achieved,
 		hours_at: milestone.hours_at,
 		...(milestone.updatedAt ? { updated_at: milestone.updatedAt } : {}),
+		...(milestone.progressHistory?.length
+			? {
+					progress_history: milestone.progressHistory.map((snapshot) => ({
+						date: snapshot.date,
+						value: snapshot.value,
+					})),
+				}
+			: {}),
 	};
 }
 
@@ -801,9 +832,30 @@ export class GoalService {
 				hoursAt[String(tier)] = Number(hours.toFixed(2));
 				crossedTiers.push(tier);
 			}
+			const previousValue = milestone.current ?? 0;
 			milestone.current = value;
 			milestone.achieved = achieved;
 			milestone.hours_at = hoursAt;
+			if (value !== previousValue) {
+				const progressHistory = [...(milestone.progressHistory ?? [])];
+				if (
+					progressHistory.length === 0 &&
+					previousValue > 0 &&
+					milestone.updatedAt &&
+					milestone.updatedAt !== today
+				) {
+					progressHistory.push({ date: milestone.updatedAt, value: previousValue });
+				}
+				const sameDayIndex = progressHistory.findIndex(
+					(snapshot) => snapshot.date === today
+				);
+				const snapshot = { date: today, value };
+				if (sameDayIndex >= 0) progressHistory[sameDayIndex] = snapshot;
+				else progressHistory.push(snapshot);
+				milestone.progressHistory = progressHistory.sort((left, right) =>
+					left.date.localeCompare(right.date)
+				);
+			}
 		}
 		milestone.updatedAt = today;
 

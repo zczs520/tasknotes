@@ -682,6 +682,12 @@ export const zh: TranslationTree = {
 				swimLaneOrderAdvanced: "泳道顺序（高级）",
 				swimLaneOrderPlaceholder: "以泳道属性为键的 JSON 对象",
 			},
+			timeStatistics: {
+				pendingMilestones: "待更新的里程碑显示位置",
+				thisWeek: "本周",
+				thisMonth: "本月",
+				thisYear: "本年",
+			},
 		},
 	},
 	settings: {

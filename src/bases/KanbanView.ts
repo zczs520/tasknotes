@@ -1937,6 +1937,10 @@ export class KanbanView extends BasesViewBase {
 		// Set CSS variables for column width and swimlane max height
 		this.boardEl.style.setProperty("--kanban-column-width", `${this.columnWidth}px`);
 		this.boardEl.style.setProperty(
+			"--kanban-swimlane-grid-width",
+			`${Math.max(0, columnKeys.length * this.columnWidth + Math.max(0, columnKeys.length - 1) * 12)}px`
+		);
+		this.boardEl.style.setProperty(
 			"--kanban-swimlane-max-height",
 			`${this.maxSwimlaneHeight}px`
 		);

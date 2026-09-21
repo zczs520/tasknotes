@@ -8,6 +8,11 @@ export interface GoalSettingsSnapshot {
 	period?: GoalPeriod;
 }
 
+export interface GoalMilestoneProgressSnapshot {
+	date: string;
+	value: number;
+}
+
 export interface GoalMilestone {
 	name: string;
 	kind: "number" | "boolean";
@@ -17,6 +22,7 @@ export interface GoalMilestone {
 	achieved: Record<string, string> | string | null;
 	hours_at: Record<string, number> | number | null;
 	updatedAt?: string;
+	progressHistory?: GoalMilestoneProgressSnapshot[];
 }
 
 export interface GoalDefinition {

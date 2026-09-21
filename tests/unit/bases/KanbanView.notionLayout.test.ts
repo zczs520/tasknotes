@@ -17,14 +17,17 @@ describe("TaskNotes Kanban Notion-style layout", () => {
 		expect(swimlanes).toContain("justify-content: flex-start;");
 	});
 
-	it("left-aligns collapsed swimlane headings instead of centering them", () => {
+	it("keeps collapsed swimlane headings aligned to the configured column grid", () => {
 		const css = readRepoFile("styles/kanban-notion.css");
 		const collapsedSection = css.match(
 			/\.kanban-view__swimlane-section--collapsed \{([^}]+)\}/
 		)?.[1];
+		const source = readRepoFile("src/bases/KanbanView.ts");
 
-		expect(collapsedSection).toContain("align-self: flex-start;");
-		expect(collapsedSection).toContain("min-width: 0;");
+		expect(collapsedSection).toContain(
+			"min-width: var(--kanban-swimlane-grid-width, max-content);"
+		);
+		expect(source).toContain('"--kanban-swimlane-grid-width"');
 	});
 
 	it("keeps hovered card corners flush with the board background", () => {

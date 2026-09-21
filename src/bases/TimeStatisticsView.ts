@@ -96,6 +96,18 @@ export class TimeStatisticsView extends BasesViewBase {
 	private referenceDate = new Date();
 	private renderVersion = 0;
 
+	private showPendingMilestonesForPeriod(): boolean {
+		if (this.period === "day") return false;
+		const key = {
+			week: "showPendingMilestonesWeek",
+			month: "showPendingMilestonesMonth",
+			year: "showPendingMilestonesYear",
+		}[this.period];
+		return (
+			!this.config || typeof this.config.get !== "function" || this.config.get(key) !== false
+		);
+	}
+
 	onload(): void {
 		this.enableGoalUpdates = true;
 		super.onload();
@@ -651,14 +663,6 @@ export class TimeStatisticsView extends BasesViewBase {
 		);
 		section.addClass("tn-time-statistics__ranking");
 		if (!hasGoals) section.addClass("tn-time-statistics__ranking--classic");
-		const heading = section.querySelector<HTMLElement>(".tn-time-statistics__panel-heading");
-		const description = section.ownerDocument.createElement("span");
-		description.className = "tn-time-statistics__rank-description";
-		description.textContent = chinese
-			? `${{ day: "当日", week: "本周", month: "本月", year: "全年" }[this.period]}单任务用时 Top 6 · 右侧标明算给了哪个目标`
-			: "Task time Top 6 · goal attribution on the right";
-		if (hasGoals)
-			heading?.querySelector(".tn-time-statistics__panel-title")?.after(description);
 		const maxDuration = Math.max(1, tasks[0]?.durationMs ?? 1);
 		const list = section.createDiv({ cls: "tn-time-statistics__ranking-list" });
 		for (const [index, task] of (hasGoals ? tasks.slice(0, 6) : tasks).entries()) {
@@ -727,10 +731,6 @@ export class TimeStatisticsView extends BasesViewBase {
 		heading.createEl("h3", {
 			cls: "tn-time-statistics__panel-title",
 			text: this.translate("distribution.title"),
-		});
-		heading.createSpan({
-			cls: "tn-time-statistics__panel-hint",
-			text: `${this.translate("summary.tagCount", { count: visibleTags.filter((tag) => tag.tag !== null).length })}${hasGoals ? ` · ${chinese ? "每行标明算给了哪个目标" : "Goal attribution per tag"}` : ""}`,
 		});
 		const attributedTotal = visibleTags.reduce((total, tag) => total + tag.durationMs, 0);
 		const maxDuration = Math.max(1, ...visibleTags.map((tag) => tag.durationMs));
@@ -821,6 +821,7 @@ export class TimeStatisticsView extends BasesViewBase {
 					new Date(),
 					this.getWeekStartsOn()
 				),
+				showPendingMilestones: this.showPendingMilestonesForPeriod(),
 				onRefresh: () => this.render(),
 				onOpenGoal: async (path) => {
 					await this.plugin.activateGoalsView(path);
@@ -830,7 +831,11 @@ export class TimeStatisticsView extends BasesViewBase {
 					.filter((tag): tag is string => Boolean(tag)),
 			});
 			// Historical/mobile snapshots can have attribution goals but no visible panel.
-			if (!goalHost.querySelector(".tn-goal-ledger__row, .tn-goal-ledger__milestones")) {
+			if (
+				!goalHost.querySelector(
+					".tn-goal-ledger__row, .tn-goal-ledger__milestones, .tn-goal-ledger__milestone-progress"
+				)
+			) {
 				goalHost.remove();
 				panel.addClass("tn-time-statistics__insights--single");
 			}
