@@ -1,6 +1,16 @@
 import { DateTimePickerModal } from "../../../src/modals/DateTimePickerModal";
 
 describe("Issue #1526: native task date picker", () => {
+	it("uses a compact date-only picker without the time input", () => {
+		const modal = new DateTimePickerModal({} as any, {
+			currentDate: "2026-09-29",
+			showTime: false,
+			onSelect: jest.fn(),
+		});
+		modal.open();
+		expect(modal.modalEl.classList.contains("tasknotes-date-time-picker-shell--date-only")).toBe(true);
+		expect(modal.contentEl.querySelector(".date-time-picker-modal__time-field")).toBeNull();
+	});
 	it("uses a native date input initialized with the current date", () => {
 		const onSelect = jest.fn();
 		const modal = new DateTimePickerModal({} as any, {

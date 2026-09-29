@@ -14,6 +14,7 @@ export interface ScheduledDatePopoverLabels extends CalendarMonthGridLabels {
 	thisFriday: string;
 	thisSunday: string;
 	fridayPassed: string;
+	clear: string;
 }
 
 export interface ScheduledDatePopoverOptions {
@@ -23,6 +24,7 @@ export interface ScheduledDatePopoverOptions {
 	locale?: string;
 	now?: Date;
 	onSelect: (date: string) => void;
+	onClear?: () => void;
 }
 
 export class ScheduledDatePopover {
@@ -81,6 +83,17 @@ export class ScheduledDatePopover {
 			today: now,
 			onSelect: (date) => this.select(date),
 		});
+		if (this.options.currentDate && this.options.onClear) {
+			const actions = root.createDiv("tn-scheduled-date-popover__actions");
+			const clearButton = actions.createEl("button", {
+				text: this.options.labels.clear,
+				attr: { type: "button" },
+			});
+			clearButton.addEventListener("click", () => {
+				this.options.onClear?.();
+				this.close();
+			});
+		}
 
 		this.position();
 		this.view.setTimeout(() => root.querySelector<HTMLButtonElement>("button")?.focus(), 0);

@@ -62,6 +62,7 @@ export interface DateContextMenuOptions {
 	showRelativeDates?: boolean;
 	title?: string;
 	dateRole?: "due" | "scheduled";
+	showTime?: boolean;
 	plugin?: TaskNotesPlugin;
 	app?: App;
 }
@@ -163,7 +164,11 @@ export class DateContextMenu {
 		this.menu.addSeparator();
 
 		this.menu.addItem((item) => {
-			item.setTitle(this.t("contextMenus.date.pickDateTime", "Pick date & time…"));
+			item.setTitle(
+				this.options.showTime === false
+					? this.t("ui.taskCard.scheduledPicker.chooseDate", "Choose date")
+					: this.t("contextMenus.date.pickDateTime", "Pick date & time…")
+			);
 			item.setIcon("calendar");
 			item.onClick(async () => {
 				this.showDateTimePicker();
@@ -345,8 +350,12 @@ export class DateContextMenu {
 		const modal = new DateTimePickerModal(app, {
 			currentDate: this.options.currentValue || null,
 			currentTime: this.options.currentTime || null,
-			title: this.t("contextMenus.date.modal.title", "Set date & time"),
+			title:
+				this.options.showTime === false
+					? this.t("ui.taskCard.scheduledPicker.chooseDate", "Choose date")
+					: this.t("contextMenus.date.modal.title", "Set date & time"),
 			dateRole: this.options.dateRole,
+			showTime: this.options.showTime,
 			plugin: this.options.plugin,
 			onSelect: (date, time) => {
 				this.options.onSelect(date, time);

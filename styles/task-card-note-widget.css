@@ -108,6 +108,14 @@
     font-size: 12px;
 }
 
+.task-card-note-widget__card .task-card__priority-dot {
+    display: none;
+}
+
+.task-card-note-widget__card .task-card__details-indicator {
+	display: none;
+}
+
 .task-card-note-widget__card .task-card__time-tracking-control {
     border-color: var(--tn-note-card-line-strong);
     border-radius: 9px;

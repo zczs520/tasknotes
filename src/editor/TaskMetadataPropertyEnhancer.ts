@@ -1,13 +1,18 @@
 import type TaskNotesPlugin from "../main";
 import type { TaskInfo } from "../types";
-import { formatTimestampForDisplay } from "../utils/dateUtils";
+import { DateTimePickerModal } from "../modals/DateTimePickerModal";
+import {
+	formatDateTimeForDisplay,
+	formatTimestampForDisplay,
+	getDatePart,
+} from "../utils/dateUtils";
 import { calculateTotalTimeSpent, formatTime, getActiveTimeEntry } from "../utils/helpers";
 
 const SUMMARY_CLASS = "tasknotes-system-property__summary";
 const ENHANCED_VALUE_CLASS = "tasknotes-system-property__value";
 const ENHANCED_ROW_CLASS = "tasknotes-system-property";
 
-type SystemPropertyId = "dateCreated" | "dateModified" | "timeEntries";
+type SystemPropertyId = "dateCreated" | "dateModified" | "scheduled" | "timeEntries";
 
 export interface TaskMetadataPropertySummary {
 	text: string;
@@ -59,6 +64,16 @@ export function getTaskMetadataPropertySummary(
 		};
 	}
 
+	if (matchesPropertyKey(plugin, "scheduled", propertyKey)) {
+		return {
+			text: task.scheduled
+				? formatDateTimeForDisplay(task.scheduled)
+				: plugin.i18n.translate("modals.task.notSet"),
+			title: plugin.i18n.translate("modals.task.dateMenu.scheduledTitle"),
+			interactive: true,
+		};
+	}
+
 	if (!matchesPropertyKey(plugin, "timeEntries", propertyKey)) {
 		return null;
 	}
@@ -71,6 +86,51 @@ export function getTaskMetadataPropertySummary(
 		text: translate(plugin, summaryKey, { count: entries.length, duration }),
 		title: translate(plugin, "editTimeEntriesTooltip"),
 		interactive: true,
+	};
+}
+
+function prepareScheduledDateSummary(
+	summaryElement: HTMLElement,
+	propertyKey: string,
+	task: TaskInfo,
+	plugin: TaskNotesPlugin
+): void {
+	summaryElement.setAttribute("role", "button");
+	summaryElement.tabIndex = 0;
+	const openPicker = (): void => {
+		const latestTask = plugin.cacheManager.getCachedTaskInfoSync(task.path) ?? task;
+		new DateTimePickerModal(plugin.app, {
+			currentDate: getDatePart(latestTask.scheduled || "") || null,
+			title: plugin.i18n.translate("modals.task.dateMenu.scheduledTitle"),
+			dateRole: "scheduled",
+			showTime: false,
+			plugin,
+			onSelect: (date) => {
+				void plugin
+					.updateTaskProperty(latestTask, "scheduled", date || undefined)
+					.then((updatedTask) => {
+						Object.assign(task, updatedTask);
+						const nextSummary = getTaskMetadataPropertySummary(propertyKey, task, plugin);
+						if (nextSummary) {
+							summaryElement.textContent = nextSummary.text;
+							summaryElement.title = nextSummary.title;
+							summaryElement.setAttribute("aria-label", nextSummary.title);
+						}
+					})
+					.catch(() => undefined);
+			},
+		}).open();
+	};
+	summaryElement.onclick = (event) => {
+		event.preventDefault();
+		event.stopPropagation();
+		openPicker();
+	};
+	summaryElement.onkeydown = (event) => {
+		if (event.key !== "Enter" && event.key !== " ") return;
+		event.preventDefault();
+		event.stopPropagation();
+		openPicker();
 	};
 }
 
@@ -131,7 +191,9 @@ export function enhanceTaskMetadataProperties(
 		summaryElement.title = summary.title;
 		summaryElement.setAttribute("aria-label", summary.title);
 
-		if (summary.interactive) {
+		if (matchesPropertyKey(plugin, "scheduled", propertyKey)) {
+			prepareScheduledDateSummary(summaryElement, propertyKey, task, plugin);
+		} else if (summary.interactive) {
 			prepareTimeEntriesSummary(summaryElement, task, plugin);
 		} else {
 			summaryElement.removeAttribute("role");

@@ -45,6 +45,7 @@ export function showTaskModalDateContextMenu(
 		currentTime: currentValue ? getTimePart(currentValue) : undefined,
 		title: getDateMenuTitle(context, type),
 		dateRole: type,
+		...(type === "scheduled" ? { showTime: false } : {}),
 		plugin: context.plugin,
 		onSelect: (value: string | null, time: string | null) => {
 			context.setDate(type, getSelectedDateValue(value, time));

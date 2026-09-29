@@ -156,6 +156,7 @@ function attachDateClickHandler(
 					thisFriday: plugin.i18n.translate("ui.taskCard.scheduledPicker.thisFriday"),
 					thisSunday: plugin.i18n.translate("ui.taskCard.scheduledPicker.thisSunday"),
 					fridayPassed: plugin.i18n.translate("ui.taskCard.scheduledPicker.fridayPassed"),
+					clear: plugin.i18n.translate("contextMenus.date.clearDate"),
 					previousMonth: plugin.i18n.translate(
 						"ui.taskCard.scheduledPicker.previousMonth"
 					),
@@ -166,6 +167,7 @@ function attachDateClickHandler(
 					const finalValue = currentTime ? `${dateValue}T${currentTime}` : dateValue;
 					void updateTaskDate(task, plugin, dateType, finalValue);
 				},
+				onClear: () => void updateTaskDate(task, plugin, dateType, undefined),
 			}).show();
 			return;
 		}
@@ -179,6 +181,7 @@ function attachDateClickHandler(
 				void updateTaskDate(task, plugin, dateType, finalValue);
 			},
 			dateRole: dateType,
+			showTime: !useScheduledDatePopover,
 			plugin,
 			app: plugin.app,
 		});

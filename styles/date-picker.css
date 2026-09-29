@@ -15,6 +15,21 @@
     min-width: 0;
 }
 
+.modal.tasknotes-date-time-picker-shell--date-only {
+    width: min(340px, calc(100vw - 32px));
+    max-width: min(340px, calc(100vw - 32px));
+    min-height: 0;
+}
+
+.modal.tasknotes-date-time-picker-shell--date-only .tasknotes-plugin.date-time-picker-modal {
+    width: 100%;
+    min-width: 0;
+}
+
+.modal.tasknotes-date-time-picker-shell--date-only .date-time-picker-modal__calendar {
+    padding-bottom: var(--size-4-2);
+}
+
 .tasknotes-plugin.date-time-picker-modal {
     width: min(376px, calc(100vw - 32px));
     min-width: min(376px, calc(100vw - 32px));
@@ -566,6 +581,13 @@
 
 .tasknotes-plugin .tn-scheduled-date-popover__calendar {
     padding-top: var(--size-4-3);
+}
+
+.tasknotes-plugin .tn-scheduled-date-popover__actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: var(--size-4-2);
+    border-top: 1px solid var(--background-modifier-border);
 }
 
 /* Modern custom date-range picker */

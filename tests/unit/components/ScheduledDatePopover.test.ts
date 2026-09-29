@@ -7,6 +7,7 @@ const labels = {
 	thisFriday: "本周五",
 	thisSunday: "本周日",
 	fridayPassed: "本周五已经过去",
+	clear: "清除",
 	previousMonth: "上个月",
 	nextMonth: "下个月",
 	chooseDate: "选择日期",
@@ -55,5 +56,23 @@ describe("ScheduledDatePopover", () => {
 		expect(onSelect).not.toHaveBeenCalled();
 		expect(Notice).toHaveBeenCalledWith(labels.fridayPassed);
 		expect(document.querySelector(".tn-scheduled-date-popover")).not.toBeNull();
+	});
+
+	it("clears an existing scheduled date", () => {
+		const anchor = document.body.createEl("button");
+		const onClear = jest.fn();
+		new ScheduledDatePopover({
+			anchor,
+			currentDate: "2026-08-05",
+			labels,
+			onSelect: jest.fn(),
+			onClear,
+		}).show();
+		const clear = document.querySelector<HTMLButtonElement>(
+			".tn-scheduled-date-popover__actions button"
+		);
+		clear?.click();
+		expect(onClear).toHaveBeenCalledTimes(1);
+		expect(document.querySelector(".tn-scheduled-date-popover")).toBeNull();
 	});
 });

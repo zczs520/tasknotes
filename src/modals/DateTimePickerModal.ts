@@ -105,6 +105,7 @@ export class DateTimePickerModal extends Modal {
 		contentEl.empty();
 		this.modalEl.addClass("tasknotes-date-time-picker-shell");
 		contentEl.addClass("tasknotes-plugin", "date-time-picker-modal");
+		this.modalEl.toggleClass("tasknotes-date-time-picker-shell--date-only", !this.shouldShowTime());
 
 		if (this.options.title) {
 			contentEl.createEl("h3", {
@@ -137,6 +138,7 @@ export class DateTimePickerModal extends Modal {
 		this.detachDateInputBehavior = null;
 		this.calendar = null;
 		this.modalEl.removeClass("tasknotes-date-time-picker-shell");
+		this.modalEl.removeClass("tasknotes-date-time-picker-shell--date-only");
 		this.contentEl.empty();
 	}
 

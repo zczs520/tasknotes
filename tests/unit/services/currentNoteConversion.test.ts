@@ -1,7 +1,10 @@
 import {
 	buildCurrentNoteConversionTaskInfo,
 	extractMarkdownBodyAfterFrontmatter,
+	parseCurrentNoteFrontmatter,
+	persistCurrentNoteConversion,
 	removeMarkdownSourceRanges,
+	readCurrentNoteForConversion,
 } from "../../../src/services/task-service/currentNoteConversion";
 
 const settings = {
@@ -10,6 +13,56 @@ const settings = {
 };
 
 describe("current note conversion planning", () => {
+	it("parses frontmatter from the same saved content used for conversion", () => {
+		expect(parseCurrentNoteFrontmatter("---\nstatus: open\npriority: high\n---\nLatest body")).toEqual({
+			status: "open",
+			priority: "high",
+		});
+	});
+
+	it("persists conversion immediately instead of waiting for a modal edit", async () => {
+		const task = buildCurrentNoteConversionTaskInfo({
+			path: "Notes/plain.md",
+			basename: "plain",
+			content: "123456789",
+			settings,
+			now: "2026-09-29T10:00:00+08:00",
+			today: "2026-09-29",
+		});
+		const updateTask = jest.fn(async (original, updates) => ({ ...original, ...updates }));
+
+		await persistCurrentNoteConversion(task, { updateTask });
+
+		expect(updateTask).toHaveBeenCalledWith(task, {
+			status: "none",
+			priority: "high",
+			scheduled: "2026-09-29",
+			dateCreated: "2026-09-29T10:00:00+08:00",
+			dateModified: "2026-09-29T10:00:00+08:00",
+		});
+	});
+
+	it("extracts a CRLF note body without retaining frontmatter", () => {
+		expect(extractMarkdownBodyAfterFrontmatter("---\r\nstatus: open\r\n---\r\n123456789")).toBe(
+			"123456789"
+		);
+	});
+	it("saves the active editor before reading the note being converted", async () => {
+		let content = "123456";
+		const file = { path: "Notes/plain.md" };
+		const save = jest.fn(async () => {
+			content = "123456789";
+		});
+		const app = {
+			workspace: { getActiveViewOfType: () => ({ file, save }) },
+			vault: { read: jest.fn(async () => content) },
+		};
+		expect(await readCurrentNoteForConversion(app as any, file as any)).toBe(
+			"123456789"
+		);
+		expect(save).toHaveBeenCalledTimes(1);
+	});
+
 	it("builds task info from frontmatter, defaults, and markdown body", () => {
 		const task = buildCurrentNoteConversionTaskInfo({
 			path: "Notes/plain.md",

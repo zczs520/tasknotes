@@ -86,7 +86,12 @@ import {
 	shouldNotifyForRelease,
 	TASKNOTES_COMMUNITY_PLUGIN_URL,
 } from "./api/releaseCheck";
-import { buildCurrentNoteConversionTaskInfo } from "./services/task-service/currentNoteConversion";
+import {
+	buildCurrentNoteConversionTaskInfo,
+	parseCurrentNoteFrontmatter,
+	persistCurrentNoteConversion,
+	readCurrentNoteForConversion,
+} from "./services/task-service/currentNoteConversion";
 import {
 	applyParentNoteProjectDefault,
 	shouldApplyParentNoteProjectDefault,
@@ -1232,48 +1237,55 @@ export default class TaskNotesPlugin extends Plugin {
 	 * Opens the task edit modal pre-populated with the note's existing data.
 	 */
 	async convertCurrentNoteToTask(): Promise<void> {
-		const activeFile = this.app.workspace.getActiveFile();
-		if (!activeFile) {
-			new Notice(this.i18n.translate("commands.convertCurrentNoteToTask.noActiveFile"));
-			return;
+		try {
+			const activeFile = this.app.workspace.getActiveFile();
+			if (!activeFile) {
+				new Notice(this.i18n.translate("commands.convertCurrentNoteToTask.noActiveFile"));
+				return;
+			}
+
+			const content = await readCurrentNoteForConversion(this.app, activeFile);
+			const frontmatter = parseCurrentNoteFrontmatter(content);
+			const existingTask = await this.cacheManager.getTaskInfo(activeFile.path);
+			if (this.cacheManager.isTaskFile(frontmatter) || existingTask) {
+				new Notice(this.i18n.translate("commands.convertCurrentNoteToTask.alreadyTask"));
+				return;
+			}
+
+			const metadata = this.app.metadataCache.getFileCache(activeFile);
+			const taskInfo = buildCurrentNoteConversionTaskInfo({
+				path: activeFile.path,
+				basename: activeFile.basename,
+				content,
+				frontmatter,
+				documentTags: collectCacheTags({ ...metadata, frontmatter }),
+				inlineTagRanges: (metadata?.tags ?? [])
+					.map((tag) => ({
+						start: tag.position.start.offset,
+						end: tag.position.end.offset,
+					}))
+					.filter((range) => content.slice(range.start, range.end).startsWith("#")),
+				settings: this.settings,
+			});
+
+			// Persist the task identity before opening the editor. Previously conversion
+			// depended on a later form edit or modal close, which made the header action
+			// appear to fail when the form was opened and left unchanged.
+			const convertedTask = await persistCurrentNoteConversion(taskInfo, this.taskService);
+			new Notice(
+				this.i18n.translate("commands.convertCurrentNoteToTask.success", {
+					title: convertedTask.title,
+				})
+			);
+			new TaskEditModal(this.app, this, { task: convertedTask }).open();
+		} catch (error) {
+			tasknotesLogger.error("Failed to convert current note to a task:", {
+				category: "persistence",
+				operation: "convert-current-note-to-task",
+				error,
+			});
+			new Notice(this.i18n.translate("services.instantTaskConvert.notices.conversionFailed"));
 		}
-
-		// Check if this note is already a task
-		const existingTask = await this.cacheManager.getTaskInfo(activeFile.path);
-		if (existingTask) {
-			new Notice(this.i18n.translate("commands.convertCurrentNoteToTask.alreadyTask"));
-			return;
-		}
-
-		// Read existing frontmatter and body from the file
-		const metadata = this.app.metadataCache.getFileCache(activeFile);
-		const frontmatter: Record<string, unknown> = metadata?.frontmatter || {};
-		const content = await this.app.vault.read(activeFile);
-
-		const taskInfo = buildCurrentNoteConversionTaskInfo({
-			path: activeFile.path,
-			basename: activeFile.basename,
-			content,
-			frontmatter,
-			documentTags: collectCacheTags(metadata),
-			inlineTagRanges: (metadata?.tags ?? []).map((tag) => ({
-				start: tag.position.start.offset,
-				end: tag.position.end.offset,
-			})),
-			settings: this.settings,
-		});
-
-		// Open the task edit modal with the constructed TaskInfo
-		new TaskEditModal(this.app, this, {
-			task: taskInfo,
-			onTaskUpdated: (updatedTask) => {
-				new Notice(
-					this.i18n.translate("commands.convertCurrentNoteToTask.success", {
-						title: updatedTask.title,
-					})
-				);
-			},
-		}).open();
 	}
 
 	/**
@@ -1407,6 +1419,7 @@ export default class TaskNotesPlugin extends Plugin {
 				currentDate: getDatePart(currentValue) || null,
 				currentTime: getTimePart(currentValue) || null,
 				dateRole: field,
+				showTime: field !== "scheduled",
 				plugin: this,
 				onSelect: (date, time) => {
 					void (async () => {

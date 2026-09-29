@@ -3410,6 +3410,7 @@ export const de: TranslationTree = {
 			blockingToggle: "Blockiert {count} Aufgaben",
 			priorityAriaLabel: "Priorität: {label}",
 			taskOptions: "Aufgabenoptionen",
+			view: "Ansehen",
 			recurrenceTooltip: "{label}: {value}",
 			reminderTooltipOne: "1 Erinnerung gesetzt (zum Verwalten klicken)",
 			reminderTooltipMany: "{count} Erinnerungen gesetzt (zum Verwalten klicken)",

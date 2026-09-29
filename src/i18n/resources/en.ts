@@ -3694,6 +3694,7 @@ export const en: TranslationTree = {
 			blockingToggle: "Blocking {count} tasks",
 			priorityAriaLabel: "Priority: {label}",
 			taskOptions: "Task options",
+			view: "View",
 			recurrenceTooltip: "{label}: {value}",
 			reminderTooltipOne: "1 reminder set (click to manage)",
 			reminderTooltipMany: "{count} reminders set (click to manage)",

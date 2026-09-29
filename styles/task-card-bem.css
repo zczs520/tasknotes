@@ -1646,6 +1646,31 @@ body.is-mobile .tasknotes-plugin .task-card:not(.task-card--layout-inline):not(.
     min-width: min(30%, 300px);
 }
 
+.tasknotes-plugin .task-card--layout-inline .task-card__view-action {
+    display: inline-flex;
+    align-items: center;
+    min-width: auto;
+    margin-left: 0.45em;
+    padding: 0 0.2em;
+    border: 0;
+    box-shadow: none;
+    background: transparent;
+    color: var(--text-accent);
+    font: inherit;
+    font-size: var(--tn-font-size-sm);
+    line-height: inherit;
+    vertical-align: baseline;
+    cursor: var(--cursor-link, pointer);
+}
+
+.tasknotes-plugin .task-card--layout-inline .task-card__view-action:hover,
+.tasknotes-plugin .task-card--layout-inline .task-card__view-action:focus-visible {
+    border: 0;
+    box-shadow: none;
+    background: var(--background-modifier-hover);
+    color: var(--text-accent-hover);
+}
+
 .tasknotes-plugin .task-card--layout-inline .task-card__metadata:hover {
     scrollbar-width: thin;
     scrollbar-color: var(--background-modifier-border) transparent;

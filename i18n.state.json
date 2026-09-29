@@ -8373,6 +8373,10 @@
       "source": "d7788a93bb9a5f6b6770830ead3075c0b91cc9a3",
       "translation": "90cc2f72527c565c0df522da59b86e82b7a3439c"
     },
+    "ui.taskCard.view": {
+      "source": "69bd4ef9fbd0894a22759c3766b859defbdedbc8",
+      "translation": "97d7cee1bd477307f9adf22b6bd2debf751d2eaa"
+    },
     "ui.taskCard.recurrenceTooltip": {
       "source": "468ddecacd77613fb8597819d97008bc336a76e8",
       "translation": "468ddecacd77613fb8597819d97008bc336a76e8"
@@ -17688,6 +17692,10 @@
     "ui.taskCard.taskOptions": {
       "source": "d7788a93bb9a5f6b6770830ead3075c0b91cc9a3",
       "translation": "2096e2755fdcbe02cb13702058e6ce7137b8f33b"
+    },
+    "ui.taskCard.view": {
+      "source": "69bd4ef9fbd0894a22759c3766b859defbdedbc8",
+      "translation": "49b372294f6b769e68728cb242fefb93789fed39"
     },
     "ui.taskCard.recurrenceTooltip": {
       "source": "468ddecacd77613fb8597819d97008bc336a76e8",
@@ -27005,6 +27013,10 @@
       "source": "d7788a93bb9a5f6b6770830ead3075c0b91cc9a3",
       "translation": "7c36c6f6e42464ff78702a1a86dca2fb04fbac11"
     },
+    "ui.taskCard.view": {
+      "source": "69bd4ef9fbd0894a22759c3766b859defbdedbc8",
+      "translation": "8a754f1f426ce1c3820bf0468c075f44798a5274"
+    },
     "ui.taskCard.recurrenceTooltip": {
       "source": "468ddecacd77613fb8597819d97008bc336a76e8",
       "translation": "468ddecacd77613fb8597819d97008bc336a76e8"
@@ -36320,6 +36332,10 @@
     "ui.taskCard.taskOptions": {
       "source": "d7788a93bb9a5f6b6770830ead3075c0b91cc9a3",
       "translation": "9c5f4352213dcb7796f2270c7eb5f42d0d640ece"
+    },
+    "ui.taskCard.view": {
+      "source": "69bd4ef9fbd0894a22759c3766b859defbdedbc8",
+      "translation": "a46924362170899f2cf4bc50ba4988e781c5a643"
     },
     "ui.taskCard.recurrenceTooltip": {
       "source": "468ddecacd77613fb8597819d97008bc336a76e8",
@@ -45637,6 +45653,10 @@
       "source": "d7788a93bb9a5f6b6770830ead3075c0b91cc9a3",
       "translation": "9dfa65b7ff96471bd4ba450f2831250b07ef7f2b"
     },
+    "ui.taskCard.view": {
+      "source": "69bd4ef9fbd0894a22759c3766b859defbdedbc8",
+      "translation": "58d6978a3e349e425282dbf456ed7a06242e07e6"
+    },
     "ui.taskCard.recurrenceTooltip": {
       "source": "468ddecacd77613fb8597819d97008bc336a76e8",
       "translation": "468ddecacd77613fb8597819d97008bc336a76e8"
@@ -54953,6 +54973,10 @@
       "source": "d7788a93bb9a5f6b6770830ead3075c0b91cc9a3",
       "translation": "1121bef387659d3190b56c3b78fa3c23bb3a0482"
     },
+    "ui.taskCard.view": {
+      "source": "69bd4ef9fbd0894a22759c3766b859defbdedbc8",
+      "translation": "49b372294f6b769e68728cb242fefb93789fed39"
+    },
     "ui.taskCard.recurrenceTooltip": {
       "source": "468ddecacd77613fb8597819d97008bc336a76e8",
       "translation": "468ddecacd77613fb8597819d97008bc336a76e8"
@@ -64268,6 +64292,10 @@
     "ui.taskCard.taskOptions": {
       "source": "d7788a93bb9a5f6b6770830ead3075c0b91cc9a3",
       "translation": "0feac49588233e47ad946845905042c210efa16b"
+    },
+    "ui.taskCard.view": {
+      "source": "69bd4ef9fbd0894a22759c3766b859defbdedbc8",
+      "translation": "ef4567f9236a1f9899f23af59da528513b5e6f7c"
     },
     "ui.taskCard.recurrenceTooltip": {
       "source": "468ddecacd77613fb8597819d97008bc336a76e8",
@@ -74415,6 +74443,10 @@
     "ui.taskCard.taskOptions": {
       "source": "d7788a93bb9a5f6b6770830ead3075c0b91cc9a3",
       "translation": "c1cb3fc29f8441d6bab1e47bbca0581b8269504a"
+    },
+    "ui.taskCard.view": {
+      "source": "69bd4ef9fbd0894a22759c3766b859defbdedbc8",
+      "translation": "f7acefd2d4cd1deb749561ad8bc53faa09c31797"
     },
     "ui.taskCard.recurrenceTooltip": {
       "source": "468ddecacd77613fb8597819d97008bc336a76e8",

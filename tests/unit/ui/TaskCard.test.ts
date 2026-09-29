@@ -262,6 +262,17 @@ describe('TaskCard Component', () => {
       expect(card.dataset.status).toBe('open');
     });
 
+    it('shows a View action that opens task details when requested', () => {
+      const task = TaskFactory.createTask({ path: 'Notes/view.md' });
+      const card = createTaskCard(task, mockPlugin, undefined, { showViewAction: true });
+      const viewButton = card.querySelector<HTMLButtonElement>('.task-card__view-action');
+
+      expect(viewButton).not.toBeNull();
+      expect(viewButton?.dataset.tnNoDrag).toBe('true');
+      viewButton?.click();
+      expect(mockPlugin.openTaskEditModal).toHaveBeenCalledWith(task);
+    });
+
     it('should sanitize status and priority class modifiers with spaces', () => {
       const task = TaskFactory.createTask({
         title: 'Test Task',

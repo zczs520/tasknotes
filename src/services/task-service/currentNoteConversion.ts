@@ -1,3 +1,4 @@
+import { App, getFrontMatterInfo, MarkdownView, parseYaml, TFile } from "obsidian";
 import type { TaskInfo } from "../../types";
 import type { TaskNotesSettings } from "../../types/settings";
 import { getCurrentDateString, getCurrentTimestamp } from "../../utils/dateUtils";
@@ -23,6 +24,39 @@ export interface CurrentNoteConversionInput {
 export interface MarkdownSourceRange {
 	start: number;
 	end: number;
+}
+
+/** Flush the active editor so conversion uses the latest visible note content. */
+export async function readCurrentNoteForConversion(app: App, file: TFile): Promise<string> {
+	const view = app.workspace.getActiveViewOfType(MarkdownView);
+	if (view?.file?.path === file.path) await view.save();
+	return app.vault.read(file);
+}
+
+export function parseCurrentNoteFrontmatter(content: string): Record<string, unknown> {
+	const info = getFrontMatterInfo(content);
+	if (!info.exists || !info.frontmatter.trim()) return {};
+	const parsed = parseYaml(info.frontmatter);
+	return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+		? (parsed as Record<string, unknown>)
+		: {};
+}
+
+interface CurrentNoteConversionUpdater {
+	updateTask(task: TaskInfo, updates: Partial<TaskInfo>): Promise<TaskInfo>;
+}
+
+export async function persistCurrentNoteConversion(
+	task: TaskInfo,
+	updater: CurrentNoteConversionUpdater
+): Promise<TaskInfo> {
+	return updater.updateTask(task, {
+		status: task.status,
+		priority: task.priority,
+		scheduled: task.scheduled,
+		dateCreated: task.dateCreated,
+		dateModified: task.dateModified,
+	});
 }
 
 export function buildCurrentNoteConversionTaskInfo({
@@ -88,7 +122,7 @@ export function removeMarkdownSourceRanges(
 }
 
 export function extractMarkdownBodyAfterFrontmatter(content: string): string {
-	const frontmatterMatch = content.match(/^---\n[\s\S]*?\n---\n*/);
+	const frontmatterMatch = content.match(/^---\r?\n[\s\S]*?\r?\n---\r?\n*/);
 	if (frontmatterMatch) {
 		return content.slice(frontmatterMatch[0].length).trim();
 	}

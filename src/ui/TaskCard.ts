@@ -66,6 +66,8 @@ export interface TaskCardOptions {
 	interactiveTags?: boolean;
 	/** When true, scheduled dates use the compact inline calendar picker. */
 	useScheduledDatePopover?: boolean;
+	/** Show a direct action that opens the task details. */
+	showViewAction?: boolean;
 }
 
 export const DEFAULT_TASK_CARD_OPTIONS: TaskCardOptions = {
@@ -225,6 +227,21 @@ export function createTaskCard(
 		propertyOptions: opts,
 		handlers: secondaryBadgeHandlers,
 	});
+	if (opts.showViewAction) {
+		const viewButton = mainRow.createEl("button", {
+			cls: "task-card__view-action",
+			text: plugin.i18n.translate("ui.taskCard.view"),
+			attr: {
+				type: "button",
+				"data-tn-no-drag": "true",
+			},
+		});
+		viewButton.addEventListener("click", (event) => {
+			event.preventDefault();
+			event.stopPropagation();
+			void plugin.openTaskEditModal(task);
+		});
+	}
 
 	createTaskCardContextMenuButton({
 		mainRow,

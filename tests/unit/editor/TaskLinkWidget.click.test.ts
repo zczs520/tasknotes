@@ -35,6 +35,7 @@ describe("TaskLinkWidget click behavior", () => {
 			expect.objectContaining({
 				layout: "inline",
 				openEditOnAnyClick: true,
+				showViewAction: true,
 			})
 		);
 	});

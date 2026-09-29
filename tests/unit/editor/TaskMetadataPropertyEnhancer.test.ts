@@ -6,6 +6,16 @@ import {
 	removeTaskMetadataPropertyEnhancements,
 } from "../../../src/editor/TaskMetadataPropertyEnhancer";
 
+const mockDatePickerOpen = jest.fn();
+let mockDatePickerOptions: any;
+
+jest.mock("../../../src/modals/DateTimePickerModal", () => ({
+	DateTimePickerModal: jest.fn().mockImplementation((_app, options) => {
+		mockDatePickerOptions = options;
+		return { open: mockDatePickerOpen };
+	}),
+}));
+
 function createTask(overrides: Partial<TaskInfo> = {}): TaskInfo {
 	return {
 		title: "Task",
@@ -21,6 +31,7 @@ function createTask(overrides: Partial<TaskInfo> = {}): TaskInfo {
 
 function createPlugin(): TaskNotesPlugin {
 	const plugin = {
+		app: {},
 		fieldMapper: {
 			toUserField: jest.fn((field: string) => field),
 		},
@@ -40,6 +51,10 @@ function createPlugin(): TaskNotesPlugin {
 			getCachedTaskInfoSync: jest.fn(() => null),
 		},
 		openTimeEntryEditor: jest.fn(),
+		updateTaskProperty: jest.fn(async (task: TaskInfo, property: string, value: unknown) => ({
+			...task,
+			[property]: value,
+		})),
 	};
 	return plugin as unknown as TaskNotesPlugin;
 }
@@ -57,6 +72,33 @@ function createPropertyRow(propertyKey: string): HTMLElement {
 describe("TaskMetadataPropertyEnhancer", () => {
 	beforeEach(() => {
 		document.body.innerHTML = "";
+		mockDatePickerOpen.mockClear();
+		mockDatePickerOptions = undefined;
+	});
+
+	it("replaces the native scheduled control with the compact date picker", async () => {
+		const plugin = createPlugin();
+		const task = createTask({ scheduled: "2026-09-18T09:30" });
+		createPropertyRow("scheduled");
+
+		enhanceTaskMetadataProperties(document, task, plugin);
+		const summary = document.querySelector<HTMLElement>(".tasknotes-system-property__summary");
+		summary?.click();
+
+		expect(mockDatePickerOpen).toHaveBeenCalledTimes(1);
+		expect(mockDatePickerOptions).toMatchObject({
+			currentDate: "2026-09-18",
+			dateRole: "scheduled",
+			showTime: false,
+			plugin,
+		});
+		mockDatePickerOptions.onSelect("2026-09-29", null);
+		await Promise.resolve();
+		expect(plugin.updateTaskProperty).toHaveBeenCalledWith(
+			task,
+			"scheduled",
+			"2026-09-29"
+		);
 	});
 
 	it("formats offset timestamps for local display without changing the stored value", () => {
