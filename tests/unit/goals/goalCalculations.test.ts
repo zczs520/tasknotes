@@ -191,6 +191,19 @@ describe("goal calculations", () => {
 		});
 	});
 
+	it("applies settings on their local calendar date while preserving earlier dates", () => {
+		const changing = goal({
+			target: "5h",
+			settingsHistory: [
+				{ date: "2026-09-17", target: 10, period: "weekly" },
+				{ date: "2026-10-29", target: 5 },
+			],
+		});
+		expect(getGoalSettingsAt(changing, new Date("2026-10-28T23:59:59.999")).target).toBe(10);
+		expect(getGoalSettingsAt(changing, new Date("2026-10-29T00:00:00")).target).toBe(5);
+		expect(getGoalSettingsAt(changing, new Date("2026-10-29T12:00:00")).target).toBe(5);
+	});
+
 	it("flags an unfinished numeric milestone when its value has gone stale", () => {
 		const tracked = goal({});
 		expect(

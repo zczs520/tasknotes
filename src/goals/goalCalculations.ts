@@ -107,7 +107,8 @@ export function parseGoalTarget(goal: GoalDefinition): number | null {
 }
 
 function snapshotTime(snapshot: GoalSettingsSnapshot): number {
-	const time = new Date(`${snapshot.date}T23:59:59.999`).getTime();
+	// Settings history stores local calendar dates, so edits apply on that day.
+	const time = new Date(`${snapshot.date}T00:00:00`).getTime();
 	return Number.isFinite(time) ? time : Number.NEGATIVE_INFINITY;
 }
 

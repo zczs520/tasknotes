@@ -27,6 +27,7 @@ import {
 	type TimeStatisticsRange,
 } from "../utils/timeStatistics";
 import { createTaskNotesLogger } from "../utils/tasknotesLogger";
+import { getTodayString } from "../utils/dateUtils";
 import {
 	createVaultFile,
 	createVaultFolder,
@@ -372,7 +373,7 @@ export class GoalService {
 
 	private async appendAdjustment(file: TFile, message: string): Promise<void> {
 		await processVaultFile(this.plugin.app, file, (content) => {
-			const line = `- ${new Date().toISOString().slice(0, 10)} ${message}`;
+			const line = `- ${getTodayString()} ${message}`;
 			const current = extractSection(content, "调整记录");
 			return replaceSection(content, "调整记录", [line, current].filter(Boolean).join("\n"));
 		});
@@ -557,7 +558,7 @@ export class GoalService {
 		const targets = goal.mode
 			? [goal]
 			: [goal, ...goals.filter((item) => item.parent === goal.name)];
-		const today = new Date().toISOString().slice(0, 10);
+		const today = getTodayString();
 		for (const item of targets) {
 			const file = this.plugin.app.vault.getAbstractFileByPath(item.path);
 			if (!(file instanceof TFile)) throw new Error(`Goal file not found: ${item.path}`);

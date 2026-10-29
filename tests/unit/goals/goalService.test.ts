@@ -99,6 +99,32 @@ describe("goal service historical attribution and cached reads", () => {
 		expect(result.progress[0].actual).toBe(2);
 		expect(result.progress[0].target).toBe(10);
 	});
+	it.each(["2026-10-29T00:30:00", "2026-10-29T12:00:00", "2026-10-29T23:30:00"])(
+		"immediately reflects saved targets in the current week at %s and preserves past weeks",
+		async (time) => {
+			jest.useFakeTimers().setSystemTime(new Date(time));
+			try {
+				const { service } = setup();
+				await service.updateGoalSettings("Goals/Developer.md", { target: 5 });
+				const current = await service.getProgress([], "week");
+				expect(current.goals[0].target).toBe("5h");
+				expect(current.goals[0].settingsHistory).toContainEqual({
+					date: "2026-10-29",
+					target: 5,
+				});
+				expect(current.progress[0].target).toBe(5);
+				const previous = await service.getProgress([], "week", new Date("2026-10-20T12:00:00"));
+				expect(previous.progress[0].target).toBe(10);
+				await service.updateGoalSettings("Goals/Developer.md", { target: 6 });
+				const revised = await service.getProgress([], "week");
+				expect(revised.progress[0].target).toBe(6);
+				expect(revised.goals[0].settingsHistory).toHaveLength(2);
+			} finally {
+				jest.useRealTimers();
+			}
+		}
+	);
+
 	it("rolls adopted historical tag data up to its new parent goal", async () => {
 		const { service } = setup();
 		const child = (await service.listGoals())[0];
