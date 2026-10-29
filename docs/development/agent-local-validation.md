@@ -35,4 +35,11 @@ Do not use `computer-use` or Windows app-control tools for this project. If the 
 - `npm run build`: production build without deployment.
 - `npm run build:test`: production build and test-vault deployment.
 
+Production builds reject `main.js` above 5,000,000 bytes so it stays within the
+Obsidian Sync Standard file limit. After a build, run
+`node esbuild.config.mjs production --analyze` to write a module-size report to
+`.ops/bundle-analysis.txt` and its esbuild metafile to `.ops/bundle-meta.json`.
+These local reports must not be committed. Bundle bytes measure download and
+sync size, not runtime heap usage.
+
 Select checks for the change; do not rebuild or deploy for documentation-only, instruction-only, or test-only edits. Full release validation is specified in [Release workflow](agent-release-workflow.md).

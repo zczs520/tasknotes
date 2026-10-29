@@ -1,7 +1,7 @@
 import esbuild from "esbuild";
 import process from "process";
 import { builtinModules } from "node:module";
-import { readFileSync, existsSync, copyFileSync, mkdirSync } from "fs";
+import { readFileSync, existsSync, copyFileSync, mkdirSync, statSync, writeFileSync } from "fs";
 import { resolve, join } from "path";
 import { homedir } from "os";
 
@@ -13,6 +13,8 @@ if you want to view the source, please visit the github repository of this plugi
 `;
 
 const prod = (process.argv[2] === "production");
+const analyze = process.argv.includes("--analyze");
+const maxReleaseBytes = 5_000_000;
 
 // Read copy destinations from .copy-files.local (same logic as copy-files.mjs)
 function getCopyDestinations() {
@@ -87,8 +89,11 @@ const context = await esbuild.context({
 	],
 	format: "cjs",
 	target: "es2018",
+	// Preserve Unicode directly instead of expanding translated strings to \\uXXXX.
+	charset: "utf8",
 	logLevel: "info",
 	sourcemap: prod ? false : "inline",
+	metafile: prod,
 	treeShaking: true,
 	outfile: "main.js",
 	minify: prod,
@@ -96,8 +101,22 @@ const context = await esbuild.context({
 });
 
 if (prod) {
-	await context.rebuild();
-	process.exit(0);
+	try {
+		const result = await context.rebuild();
+		const bundleBytes = statSync("main.js").size;
+		console.log(`Release bundle: ${bundleBytes.toLocaleString("en-US")} / ${maxReleaseBytes.toLocaleString("en-US")} bytes`);
+		if (analyze) {
+			mkdirSync(".ops", { recursive: true });
+			writeFileSync(".ops/bundle-meta.json", JSON.stringify(result.metafile, null, 2));
+			writeFileSync(".ops/bundle-analysis.txt", await esbuild.analyzeMetafile(result.metafile));
+			console.log("Bundle analysis written to .ops/bundle-analysis.txt and .ops/bundle-meta.json");
+		}
+		if (bundleBytes > maxReleaseBytes) {
+			throw new Error("main.js exceeds the 5 MB Obsidian Sync Standard limit. Run node esbuild.config.mjs production --analyze to inspect bundle contributors.");
+		}
+	} finally {
+		await context.dispose();
+	}
 } else {
 	await context.watch();
 }
