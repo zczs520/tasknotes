@@ -86,6 +86,11 @@ import {
 	type BasesEntryWithGetValue,
 } from "./calendarEventMount";
 import { CALENDAR_END_TIME_MAX_HOUR, normalizeCalendarTimeValue } from "../utils/calendarTime";
+import {
+	applyCalendarSlotHeight,
+	CALENDAR_SLOT_HEIGHT_DEFAULT,
+	normalizeCalendarSlotHeight,
+} from "./calendarSlotHeight";
 import { filterEmptyProjects, sanitizeForCssClass } from "../utils/helpers";
 import { createTaskNotesLogger } from "../utils/tasknotesLogger";
 
@@ -488,6 +493,7 @@ export class CalendarView extends BasesViewBase {
 		slotMinTime: string;
 		slotMaxTime: string;
 		slotDuration: string;
+		slotHeight: number;
 		snapDuration: string;
 		firstDay: number;
 		weekNumbers: boolean;
@@ -560,6 +566,10 @@ export class CalendarView extends BasesViewBase {
 				true
 			),
 			slotDuration: this.validateTimeValue(calendarSettings.slotDuration, "00:30:00"),
+			slotHeight: normalizeCalendarSlotHeight(
+				calendarSettings.slotHeight,
+				CALENDAR_SLOT_HEIGHT_DEFAULT
+			),
 			snapDuration: this.validateTimeValue(calendarSettings.slotDuration, "00:30:00"),
 			scrollTime: this.validateTimeValue(calendarSettings.scrollTime, "08:00:00"),
 			firstDay: calendarSettings.firstDay,
@@ -995,6 +1005,10 @@ export class CalendarView extends BasesViewBase {
 				this.getConfigOption<string | undefined>("slotDuration", undefined),
 				this.viewOptions.slotDuration
 			);
+			this.viewOptions.slotHeight = normalizeCalendarSlotHeight(
+				this.getConfigOption<unknown>("slotHeight", this.viewOptions.slotHeight),
+				this.viewOptions.slotHeight
+			);
 			this.viewOptions.snapDuration = this.validateTimeValue(
 				this.getConfigOption<string | undefined>("snapDuration", undefined),
 				this.viewOptions.slotDuration
@@ -1104,6 +1118,7 @@ export class CalendarView extends BasesViewBase {
 			// Mark config as successfully loaded
 			this.configLoaded = true;
 			this.applyLayoutClasses();
+			this.applySlotHeight();
 
 			// Apply today highlight styling if calendar is already initialized
 			if (this.calendar) {
@@ -1383,12 +1398,14 @@ export class CalendarView extends BasesViewBase {
 				this.applyLayoutClasses();
 				this.scheduleTodayColumnWidthUpdate();
 				this.scheduleDailyNoteHeaderLinkUpdate();
+				this.scheduleSlotHeightUpdate();
 				this.scheduleRefreshButtonIconUpdate();
 			},
 			datesSet: () => {
 				this.applyLayoutClasses();
 				this.scheduleTodayColumnWidthUpdate();
 				this.scheduleDailyNoteHeaderLinkUpdate();
+				this.scheduleSlotHeightUpdate();
 				this.scheduleRefreshButtonIconUpdate();
 			},
 		};
@@ -1398,11 +1415,13 @@ export class CalendarView extends BasesViewBase {
 		this.calendar.render();
 		this._recreateTargetDate = null;
 		this.applyLayoutClasses();
+		this.applySlotHeight();
 
 		// Apply showTodayHighlight option via CSS
 		this.applyTodayHighlightStyling();
 		this.scheduleTodayColumnWidthUpdate();
 		this.scheduleDailyNoteHeaderLinkUpdate();
+		this.scheduleSlotHeightUpdate();
 		this.scheduleRefreshButtonIconUpdate();
 	}
 
@@ -1555,6 +1574,20 @@ export class CalendarView extends BasesViewBase {
 		this.applyHeightModeClass();
 		this.applyTimeGridVisibilityClass();
 		this.applyCalendarModeClass();
+	}
+
+	/**
+	 * Apply the configured time slot height. FullCalendar has no option for the
+	 * rendered row height, so it is driven by a CSS custom property instead.
+	 */
+	private applySlotHeight(): void {
+		applyCalendarSlotHeight(this.calendarEl, this.viewOptions.slotHeight);
+	}
+
+	private scheduleSlotHeightUpdate(): void {
+		const win = this.containerEl.ownerDocument.defaultView || window;
+		win.setTimeout(() => this.applySlotHeight(), 0);
+		win.setTimeout(() => this.applySlotHeight(), 50);
 	}
 
 	private getEffectiveHeightMode(): CalendarHeightMode {

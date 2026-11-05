@@ -259,6 +259,7 @@ export const ja: TranslationTree = {
 					dayEndTimePlaceholder: "HH:mm:ss（例：20:00:00）",
 					timeSlotDuration: "タイムスロット期間",
 					timeSlotDurationPlaceholder: "HH:mm:ss（例：00:30:00）",
+					timeSlotHeight: "時間枠の高さ (px)",
 					dragDropResolution: "ドラッグ/ドロップ間隔",
 					dragDropResolutionPlaceholder: "HH:mm:ss（例：00:05:00）",
 					weekStartsOn: "週の開始曜日",
@@ -1582,6 +1583,11 @@ export const ja: TranslationTree = {
 						thirtyMinutes: "30分",
 						sixtyMinutes: "60分",
 					},
+				},
+				timeSlotHeight: {
+					name: "時間枠の高さ",
+					description: "各時間枠の行の高さ（ピクセル、5〜60）。15分刻みのときに小さくすると、1日分をスクロールせずに表示できます。",
+					placeholder: "24",
 				},
 				startTime: {
 					name: "開始時刻",

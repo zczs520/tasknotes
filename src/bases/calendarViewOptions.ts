@@ -418,6 +418,15 @@ function buildCalendarTimeGridOptions(plugin: TaskNotesPlugin, t: Translate): Ba
 			placeholder: t("layout.timeSlotDurationPlaceholder"),
 		},
 		{
+			type: "slider",
+			key: "slotHeight",
+			displayName: t("layout.timeSlotHeight"),
+			default: calendarSettings.slotHeight,
+			min: 5,
+			max: 60,
+			step: 1,
+		},
+		{
 			type: "text",
 			key: "snapDuration",
 			displayName: t("layout.dragDropResolution"),

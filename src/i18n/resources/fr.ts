@@ -262,6 +262,7 @@ export const fr: TranslationTree = {
 					dayEndTimePlaceholder: "HH:mm:ss (ex. 20:00:00)",
 					timeSlotDuration: "Durée de la plage horaire",
 					timeSlotDurationPlaceholder: "HH:mm:ss (ex. 00:30:00)",
+					timeSlotHeight: "Hauteur des créneaux (px)",
 					dragDropResolution: "Résolution du glisser-déposer",
 					dragDropResolutionPlaceholder: "HH:mm:ss (ex. 00:05:00)",
 					weekStartsOn: "La semaine commence le",
@@ -1626,6 +1627,11 @@ export const fr: TranslationTree = {
 						thirtyMinutes: "30 minutes",
 						sixtyMinutes: "60 minutes",
 					},
+				},
+				timeSlotHeight: {
+					name: "Hauteur des créneaux horaires",
+					description: "Hauteur en pixels de chaque créneau horaire (5-60). Réduisez-la avec des créneaux de 15 minutes pour afficher une journée entière sans défilement.",
+					placeholder: "24",
 				},
 				startTime: {
 					name: "Heure de début",

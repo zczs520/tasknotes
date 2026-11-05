@@ -277,6 +277,7 @@ export const zh: TranslationTree = {
 					dayEndTimePlaceholder: "HH:mm:ss（例如：20:00:00）",
 					timeSlotDuration: "时间段持续时间",
 					timeSlotDurationPlaceholder: "HH:mm:ss（例如：00:30:00）",
+					timeSlotHeight: "时间格高度 (px)",
 					dragDropResolution: "拖放时间粒度",
 					dragDropResolutionPlaceholder: "HH:mm:ss（例如：00:05:00）",
 					weekStartsOn: "一周开始于",
@@ -1782,6 +1783,11 @@ export const zh: TranslationTree = {
 						thirtyMinutes: "30分钟",
 						sixtyMinutes: "60分钟",
 					},
+				},
+				timeSlotHeight: {
+					name: "时间格高度",
+					description: "每行时间格的高度（像素，5-60）。使用 15 分钟一格的视图时调小该值，可避免整天时间轴需要滚动查看。",
+					placeholder: "24",
 				},
 				startTime: {
 					name: "开始时间",

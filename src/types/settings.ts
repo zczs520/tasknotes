@@ -375,6 +375,7 @@ export interface CalendarViewSettings {
 	slotMinTime: string; // Start time (HH:MM:SS format)
 	slotMaxTime: string; // End time (HH:MM:SS format)
 	scrollTime: string; // Initial scroll position (HH:MM:SS format)
+	slotHeight: number; // Height of each time slot row in pixels (5-60)
 	// Week settings
 	firstDay: 0 | 1 | 2 | 3 | 4 | 5 | 6; // 0 = Sunday, 1 = Monday, etc.
 	// Display preferences

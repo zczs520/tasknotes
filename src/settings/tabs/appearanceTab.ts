@@ -534,6 +534,25 @@ export function renderAppearanceTab(
 			);
 
 			group.addSetting((setting) =>
+				void configureNumberSetting(setting, {
+					name: translate("settings.appearance.timeSettings.timeSlotHeight.name"),
+					desc: translate("settings.appearance.timeSettings.timeSlotHeight.description"),
+					placeholder: translate(
+						"settings.appearance.timeSettings.timeSlotHeight.placeholder"
+					),
+					min: 5,
+					max: 60,
+					debounceMs: 300,
+					getValue: () => plugin.settings.calendarViewSettings.slotHeight,
+					setValue: async (value: number) => {
+						const clamped = Math.min(60, Math.max(5, Math.round(value)));
+						plugin.settings.calendarViewSettings.slotHeight = clamped;
+						save();
+					},
+				})
+			);
+
+			group.addSetting((setting) =>
 				void configureTextSetting(setting, {
 					name: translate("settings.appearance.timeSettings.startTime.name"),
 					desc: translate("settings.appearance.timeSettings.startTime.description"),

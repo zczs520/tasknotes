@@ -137,6 +137,7 @@ export const DEFAULT_CALENDAR_VIEW_SETTINGS: CalendarViewSettings = {
 	slotMinTime: "00:00:00", // Start at midnight
 	slotMaxTime: "24:00:00", // End at midnight next day
 	scrollTime: "08:00:00", // Scroll to 8 AM
+	slotHeight: 24, // Time slot row height in pixels (5-60)
 	// Week settings
 	firstDay: 1, // Monday
 	// Display preferences

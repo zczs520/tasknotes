@@ -393,6 +393,37 @@ body.is-popout-window .markdown-embed .tn-tasknotesTaskList .tn-bases-items-cont
     --fc-border-color: var(--background-modifier-border);
 }
 
+/* Time grid slot height - driven by the "Time slot height" setting.
+   #bases-calendar is the FullCalendar root element itself, so the slot rows are
+   direct descendants and must not be matched through an extra ".fc" level. */
+#bases-calendar {
+    --tn-calendar-slot-height: 24px;
+}
+
+#bases-calendar .fc-timegrid-slot {
+    height: var(--tn-calendar-slot-height);
+    line-height: 0;
+}
+
+/* The slot lane only exists to draw grid lines, so it must not force a text-line
+   minimum height when the configured slot height is very small. */
+#bases-calendar .fc-timegrid-slot-lane {
+    line-height: 0;
+}
+
+/* Keep hour labels readable at small slot heights without letting the label text
+   stretch the row: FullCalendar gives the label frame 8px of vertical padding,
+   which survives height: 0 on a border-box element and makes labelled rows
+   taller than empty ones. Remove that padding and let the text overflow. */
+#bases-calendar .fc-timegrid-slot-label-frame {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    height: 0;
+    padding-block: 0;
+    overflow: visible;
+}
+
 /* Responsive design for Bases views */
 @media (max-width: 768px) {
     .tn-bases-kanban-board {

@@ -286,6 +286,7 @@ export const en: TranslationTree = {
 					dayEndTimePlaceholder: "HH:mm:ss (e.g., 20:00:00)",
 					timeSlotDuration: "Time slot duration",
 					timeSlotDurationPlaceholder: "HH:mm:ss (e.g., 00:30:00)",
+					timeSlotHeight: "Time slot height (px)",
 					dragDropResolution: "Drag/drop resolution",
 					dragDropResolutionPlaceholder: "HH:mm:ss (e.g., 00:05:00)",
 					weekStartsOn: "Week starts on",
@@ -1841,6 +1842,12 @@ export const en: TranslationTree = {
 						thirtyMinutes: "30 minutes",
 						sixtyMinutes: "60 minutes",
 					},
+				},
+				timeSlotHeight: {
+					name: "Time slot height",
+					description:
+						"Height of each time slot row in pixels (5-60). Lower it when using 15-minute slots to keep a full day from scrolling.",
+					placeholder: "24",
 				},
 				startTime: {
 					name: "Start time",

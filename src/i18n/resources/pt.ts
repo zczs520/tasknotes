@@ -260,6 +260,7 @@ export const pt: TranslationTree = {
 					dayEndTimePlaceholder: "HH:mm:ss (ex: 20:00:00)",
 					timeSlotDuration: "Duração do slot de tempo",
 					timeSlotDurationPlaceholder: "HH:mm:ss (ex: 00:30:00)",
+					timeSlotHeight: "Altura do intervalo de tempo (px)",
 					dragDropResolution: "Resolução de arrastar/soltar",
 					dragDropResolutionPlaceholder: "HH:mm:ss (ex: 00:05:00)",
 					weekStartsOn: "A semana começa em",
@@ -1614,6 +1615,11 @@ export const pt: TranslationTree = {
 						thirtyMinutes: "30 minutos",
 						sixtyMinutes: "60 minutos",
 					},
+				},
+				timeSlotHeight: {
+					name: "Altura do intervalo de tempo",
+					description: "Altura em pixels de cada linha de intervalo (5-60). Reduza ao usar intervalos de 15 minutos para ver o dia inteiro sem rolar.",
+					placeholder: "24",
 				},
 				startTime: {
 					name: "Hora de início",

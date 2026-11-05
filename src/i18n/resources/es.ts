@@ -261,6 +261,7 @@ export const es: TranslationTree = {
 					dayEndTimePlaceholder: "HH:mm:ss (ej. 20:00:00)",
 					timeSlotDuration: "Duración del intervalo de tiempo",
 					timeSlotDurationPlaceholder: "HH:mm:ss (ej. 00:30:00)",
+					timeSlotHeight: "Altura de la franja horaria (px)",
 					dragDropResolution: "Resolución de arrastrar y soltar",
 					dragDropResolutionPlaceholder: "HH:mm:ss (ej. 00:05:00)",
 					weekStartsOn: "La semana comienza el",
@@ -1622,6 +1623,11 @@ export const es: TranslationTree = {
 						thirtyMinutes: "30 minutos",
 						sixtyMinutes: "60 minutos",
 					},
+				},
+				timeSlotHeight: {
+					name: "Altura de la franja horaria",
+					description: "Altura en píxeles de cada franja horaria (5-60). Redúcela al usar franjas de 15 minutos para ver un día completo sin desplazarte.",
+					placeholder: "24",
 				},
 				startTime: {
 					name: "Hora de inicio",

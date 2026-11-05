@@ -114,6 +114,22 @@ describe("calendar view options", () => {
 		expect(isHidden(findOption(weekOptions, "eventMaxStack"))).toBe(false);
 	});
 
+	it("exposes the time slot height in the time grid group", () => {
+		const slotHeight = findOption(
+			buildCalendarViewOptions(createPlugin(), createConfig({ calendarView: "timeGridWeek" })),
+			"slotHeight"
+		);
+
+		expect(slotHeight).toMatchObject({
+			type: "slider",
+			displayName: "views.basesCalendar.settings.layout.timeSlotHeight",
+			default: DEFAULT_SETTINGS.calendarViewSettings.slotHeight,
+			min: 5,
+			max: 60,
+			step: 1,
+		});
+	});
+
 	it("only shows month density controls for month and year views", () => {
 		const plugin = createPlugin();
 		const monthOptions = buildCalendarViewOptions(

@@ -261,6 +261,7 @@ export const de: TranslationTree = {
 					dayEndTimePlaceholder: "HH:mm:ss (z.B. 20:00:00)",
 					timeSlotDuration: "Zeitschlitzdauer",
 					timeSlotDurationPlaceholder: "HH:mm:ss (z.B. 00:30:00)",
+					timeSlotHeight: "Zeitfensterhöhe (px)",
 					dragDropResolution: "Auflösung für Ziehen/Ablegen",
 					dragDropResolutionPlaceholder: "HH:mm:ss (z.B. 00:05:00)",
 					weekStartsOn: "Woche beginnt am",
@@ -1612,6 +1613,11 @@ export const de: TranslationTree = {
 						thirtyMinutes: "30 Minuten",
 						sixtyMinutes: "60 Minuten",
 					},
+				},
+				timeSlotHeight: {
+					name: "Höhe der Zeitfenster",
+					description: "Höhe jeder Zeitfensterzeile in Pixeln (5–60). Bei 15-Minuten-Schritten verringern, damit ein ganzer Tag ohne Scrollen passt.",
+					placeholder: "24",
 				},
 				startTime: {
 					name: "Startzeit",

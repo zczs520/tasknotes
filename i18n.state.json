@@ -752,6 +752,10 @@
       "source": "42dcf2fde11e354fe96a959abe2424d9339a8589",
       "translation": "b4bbf64dc40534031d82ceb781e7b201e91f68a3"
     },
+    "views.basesCalendar.settings.layout.timeSlotHeight": {
+      "source": "8cae314bf86b360900c4beef8f4d05ae19f40b3b",
+      "translation": "01d4373e258e7ecc193f21299cd78fe2bc6994f3"
+    },
     "views.basesCalendar.settings.layout.dragDropResolution": {
       "source": "10bae1b83a90069958aeb5e093500223c0719848",
       "translation": "c6628f51cebbe1f9be67312022133109c3dd006b"
@@ -3889,6 +3893,18 @@
     "settings.appearance.timeSettings.timeSlotDuration.options.sixtyMinutes": {
       "source": "ee8eb1a538076df1fc5eb012609ace6f96e49228",
       "translation": "66d3e54d7f91f2c8b321908471e44767d3c206d6"
+    },
+    "settings.appearance.timeSettings.timeSlotHeight.name": {
+      "source": "2becdf482526260a53a872a9e863358bc93fc411",
+      "translation": "b45537efbed8ef1dd32744f576deb97a782213a7"
+    },
+    "settings.appearance.timeSettings.timeSlotHeight.description": {
+      "source": "b5a507932b374d1d4f5652be99ff920df47032be",
+      "translation": "3c1f410829dd5a2a0cad5e3a7458ddf27e9bdf16"
+    },
+    "settings.appearance.timeSettings.timeSlotHeight.placeholder": {
+      "source": "4d134bc072212ace2df385dae143139da74ec0ef",
+      "translation": "4d134bc072212ace2df385dae143139da74ec0ef"
     },
     "settings.appearance.timeSettings.startTime.name": {
       "source": "88d8206d586abe4c8e35c8e9adcc649d07c99a1e",
@@ -10072,6 +10088,10 @@
       "source": "42dcf2fde11e354fe96a959abe2424d9339a8589",
       "translation": "84ed6d9e5a3898b4f62d998df68e77624024a797"
     },
+    "views.basesCalendar.settings.layout.timeSlotHeight": {
+      "source": "8cae314bf86b360900c4beef8f4d05ae19f40b3b",
+      "translation": "f73377fba49a24100b8643b5cf8719cd47e579dd"
+    },
     "views.basesCalendar.settings.layout.dragDropResolution": {
       "source": "10bae1b83a90069958aeb5e093500223c0719848",
       "translation": "f893179e3146bfae4d8eeea2e4f3710d5b7b5d13"
@@ -13209,6 +13229,18 @@
     "settings.appearance.timeSettings.timeSlotDuration.options.sixtyMinutes": {
       "source": "ee8eb1a538076df1fc5eb012609ace6f96e49228",
       "translation": "471f026c61e22e7dde6bc753316f2c4f14a28ac4"
+    },
+    "settings.appearance.timeSettings.timeSlotHeight.name": {
+      "source": "2becdf482526260a53a872a9e863358bc93fc411",
+      "translation": "086cd8c12181630b966dccd46330eaad42ba090d"
+    },
+    "settings.appearance.timeSettings.timeSlotHeight.description": {
+      "source": "b5a507932b374d1d4f5652be99ff920df47032be",
+      "translation": "1e8d83dd6bc828e787c3232000ba237c75cd4ee7"
+    },
+    "settings.appearance.timeSettings.timeSlotHeight.placeholder": {
+      "source": "4d134bc072212ace2df385dae143139da74ec0ef",
+      "translation": "4d134bc072212ace2df385dae143139da74ec0ef"
     },
     "settings.appearance.timeSettings.startTime.name": {
       "source": "88d8206d586abe4c8e35c8e9adcc649d07c99a1e",
@@ -19392,6 +19424,10 @@
       "source": "42dcf2fde11e354fe96a959abe2424d9339a8589",
       "translation": "f91b444cf92bd0a247a23d6e7d846893676f1efc"
     },
+    "views.basesCalendar.settings.layout.timeSlotHeight": {
+      "source": "8cae314bf86b360900c4beef8f4d05ae19f40b3b",
+      "translation": "c067b6ea25735b5e9793ec6566b99cf959fb2744"
+    },
     "views.basesCalendar.settings.layout.dragDropResolution": {
       "source": "10bae1b83a90069958aeb5e093500223c0719848",
       "translation": "0ecf86f1a4bacc9053daea31ab9258fd00b2c622"
@@ -22529,6 +22565,18 @@
     "settings.appearance.timeSettings.timeSlotDuration.options.sixtyMinutes": {
       "source": "ee8eb1a538076df1fc5eb012609ace6f96e49228",
       "translation": "ee8eb1a538076df1fc5eb012609ace6f96e49228"
+    },
+    "settings.appearance.timeSettings.timeSlotHeight.name": {
+      "source": "2becdf482526260a53a872a9e863358bc93fc411",
+      "translation": "cb7e0273f4ee4a1986b1b52b1da96bcce60dd26d"
+    },
+    "settings.appearance.timeSettings.timeSlotHeight.description": {
+      "source": "b5a507932b374d1d4f5652be99ff920df47032be",
+      "translation": "f2e1e88023142b4938da11b6484d7033452844bd"
+    },
+    "settings.appearance.timeSettings.timeSlotHeight.placeholder": {
+      "source": "4d134bc072212ace2df385dae143139da74ec0ef",
+      "translation": "4d134bc072212ace2df385dae143139da74ec0ef"
     },
     "settings.appearance.timeSettings.startTime.name": {
       "source": "88d8206d586abe4c8e35c8e9adcc649d07c99a1e",
@@ -28712,6 +28760,10 @@
       "source": "42dcf2fde11e354fe96a959abe2424d9339a8589",
       "translation": "11ef7c65a18066af074d8c55613a6a6ff8bc9dbb"
     },
+    "views.basesCalendar.settings.layout.timeSlotHeight": {
+      "source": "8cae314bf86b360900c4beef8f4d05ae19f40b3b",
+      "translation": "5e4fbd5cd4a21a08e67dcd9288fb2c4b7ed2ffb4"
+    },
     "views.basesCalendar.settings.layout.dragDropResolution": {
       "source": "10bae1b83a90069958aeb5e093500223c0719848",
       "translation": "ca04d38b6f5c4c6b332caa4de6fed81bff845d82"
@@ -31849,6 +31901,18 @@
     "settings.appearance.timeSettings.timeSlotDuration.options.sixtyMinutes": {
       "source": "ee8eb1a538076df1fc5eb012609ace6f96e49228",
       "translation": "5862af513110021d624608e9b8b9473fdf782769"
+    },
+    "settings.appearance.timeSettings.timeSlotHeight.name": {
+      "source": "2becdf482526260a53a872a9e863358bc93fc411",
+      "translation": "c1aa3a43feb323f12645bf7ae0e44bfcb53d4499"
+    },
+    "settings.appearance.timeSettings.timeSlotHeight.description": {
+      "source": "b5a507932b374d1d4f5652be99ff920df47032be",
+      "translation": "edd3369324b216afd03c6561d9dee0573271f6a0"
+    },
+    "settings.appearance.timeSettings.timeSlotHeight.placeholder": {
+      "source": "4d134bc072212ace2df385dae143139da74ec0ef",
+      "translation": "4d134bc072212ace2df385dae143139da74ec0ef"
     },
     "settings.appearance.timeSettings.startTime.name": {
       "source": "88d8206d586abe4c8e35c8e9adcc649d07c99a1e",
@@ -38032,6 +38096,10 @@
       "source": "42dcf2fde11e354fe96a959abe2424d9339a8589",
       "translation": "616865e7b3296dfd2bdb6c6966443f42489d4f73"
     },
+    "views.basesCalendar.settings.layout.timeSlotHeight": {
+      "source": "8cae314bf86b360900c4beef8f4d05ae19f40b3b",
+      "translation": "e77c09391d8ddbd7f1d54fe118550c9dced4d26c"
+    },
     "views.basesCalendar.settings.layout.dragDropResolution": {
       "source": "10bae1b83a90069958aeb5e093500223c0719848",
       "translation": "3201b2813062ec065f0f6bea5b93b1a922186ba2"
@@ -41169,6 +41237,18 @@
     "settings.appearance.timeSettings.timeSlotDuration.options.sixtyMinutes": {
       "source": "ee8eb1a538076df1fc5eb012609ace6f96e49228",
       "translation": "c1818994791b6c4d2bdf9ec874cc568db93710dd"
+    },
+    "settings.appearance.timeSettings.timeSlotHeight.name": {
+      "source": "2becdf482526260a53a872a9e863358bc93fc411",
+      "translation": "a30ed04b1083d0b44e8b8a3863a1b2b81104a14c"
+    },
+    "settings.appearance.timeSettings.timeSlotHeight.description": {
+      "source": "b5a507932b374d1d4f5652be99ff920df47032be",
+      "translation": "b3d8956122e99481b5c63407b356369b08442e2e"
+    },
+    "settings.appearance.timeSettings.timeSlotHeight.placeholder": {
+      "source": "4d134bc072212ace2df385dae143139da74ec0ef",
+      "translation": "4d134bc072212ace2df385dae143139da74ec0ef"
     },
     "settings.appearance.timeSettings.startTime.name": {
       "source": "88d8206d586abe4c8e35c8e9adcc649d07c99a1e",
@@ -47352,6 +47432,10 @@
       "source": "42dcf2fde11e354fe96a959abe2424d9339a8589",
       "translation": "99332bae87308c3ce447a78af64c00e2a8b1b8ba"
     },
+    "views.basesCalendar.settings.layout.timeSlotHeight": {
+      "source": "8cae314bf86b360900c4beef8f4d05ae19f40b3b",
+      "translation": "0f5ff9c1a57c466d038c29d28d46ad5683e519ef"
+    },
     "views.basesCalendar.settings.layout.dragDropResolution": {
       "source": "10bae1b83a90069958aeb5e093500223c0719848",
       "translation": "6594e906e5d044d74cda586ff5e3597014a90715"
@@ -50489,6 +50573,18 @@
     "settings.appearance.timeSettings.timeSlotDuration.options.sixtyMinutes": {
       "source": "ee8eb1a538076df1fc5eb012609ace6f96e49228",
       "translation": "471f026c61e22e7dde6bc753316f2c4f14a28ac4"
+    },
+    "settings.appearance.timeSettings.timeSlotHeight.name": {
+      "source": "2becdf482526260a53a872a9e863358bc93fc411",
+      "translation": "f6e1a32a3a12dc8557c5e8f1583a28015d923a39"
+    },
+    "settings.appearance.timeSettings.timeSlotHeight.description": {
+      "source": "b5a507932b374d1d4f5652be99ff920df47032be",
+      "translation": "5b7ce2a6d9ce4c393d0d857adec2375d0abc6267"
+    },
+    "settings.appearance.timeSettings.timeSlotHeight.placeholder": {
+      "source": "4d134bc072212ace2df385dae143139da74ec0ef",
+      "translation": "4d134bc072212ace2df385dae143139da74ec0ef"
     },
     "settings.appearance.timeSettings.startTime.name": {
       "source": "88d8206d586abe4c8e35c8e9adcc649d07c99a1e",
@@ -56672,6 +56768,10 @@
       "source": "42dcf2fde11e354fe96a959abe2424d9339a8589",
       "translation": "f523d5d23e814daa0c269a9a0c1cff38fb16560d"
     },
+    "views.basesCalendar.settings.layout.timeSlotHeight": {
+      "source": "8cae314bf86b360900c4beef8f4d05ae19f40b3b",
+      "translation": "3bcbd5dce5d03202525df5a7404c7d119ec6731a"
+    },
     "views.basesCalendar.settings.layout.dragDropResolution": {
       "source": "10bae1b83a90069958aeb5e093500223c0719848",
       "translation": "06ef6c342fddeec7341f6fd6c9874652f2004491"
@@ -59809,6 +59909,18 @@
     "settings.appearance.timeSettings.timeSlotDuration.options.sixtyMinutes": {
       "source": "ee8eb1a538076df1fc5eb012609ace6f96e49228",
       "translation": "fbdc2dea4c4044d25122a362db34c22b03e6e1f8"
+    },
+    "settings.appearance.timeSettings.timeSlotHeight.name": {
+      "source": "2becdf482526260a53a872a9e863358bc93fc411",
+      "translation": "a15116d435dc040787667ee71bc3e538f001ae91"
+    },
+    "settings.appearance.timeSettings.timeSlotHeight.description": {
+      "source": "b5a507932b374d1d4f5652be99ff920df47032be",
+      "translation": "35cdbb2e5b5b9febf90137e46e0f7a06e2b09d19"
+    },
+    "settings.appearance.timeSettings.timeSlotHeight.placeholder": {
+      "source": "4d134bc072212ace2df385dae143139da74ec0ef",
+      "translation": "4d134bc072212ace2df385dae143139da74ec0ef"
     },
     "settings.appearance.timeSettings.startTime.name": {
       "source": "88d8206d586abe4c8e35c8e9adcc649d07c99a1e",
@@ -66040,6 +66152,10 @@
       "source": "42dcf2fde11e354fe96a959abe2424d9339a8589",
       "translation": "fd33b47fedea685a26f4f3b27a7fccf19a0d919d"
     },
+    "views.basesCalendar.settings.layout.timeSlotHeight": {
+      "source": "8cae314bf86b360900c4beef8f4d05ae19f40b3b",
+      "translation": "482643f7e4f9b3d749276a39b08e5297b074f3e4"
+    },
     "views.basesCalendar.settings.layout.dragDropResolution": {
       "source": "10bae1b83a90069958aeb5e093500223c0719848",
       "translation": "f868576e3459e313ed790332927c45f71515b77a"
@@ -69651,6 +69767,18 @@
     "settings.appearance.timeSettings.timeSlotDuration.options.sixtyMinutes": {
       "source": "ee8eb1a538076df1fc5eb012609ace6f96e49228",
       "translation": "98f69813c945a3a853b470fac3e11e67db44b9d6"
+    },
+    "settings.appearance.timeSettings.timeSlotHeight.name": {
+      "source": "2becdf482526260a53a872a9e863358bc93fc411",
+      "translation": "d34ce26e25826df4ec8cfc583332297b33dcc298"
+    },
+    "settings.appearance.timeSettings.timeSlotHeight.description": {
+      "source": "b5a507932b374d1d4f5652be99ff920df47032be",
+      "translation": "dea59db76b4573f1d079ed599f7552fb03b05519"
+    },
+    "settings.appearance.timeSettings.timeSlotHeight.placeholder": {
+      "source": "4d134bc072212ace2df385dae143139da74ec0ef",
+      "translation": "4d134bc072212ace2df385dae143139da74ec0ef"
     },
     "settings.appearance.timeSettings.startTime.name": {
       "source": "88d8206d586abe4c8e35c8e9adcc649d07c99a1e",

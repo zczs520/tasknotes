@@ -34,3 +34,7 @@ When a change has user-facing documentation, include a canonical tasknotes.dev l
 ```
 
 -->
+
+## Added
+
+- Added a **Time slot height** setting (5–60 px, default 24) under Settings → Appearance → Time settings, and a matching *Time slot height (px)* slider in each calendar view's options. It sets the real rendered height of the time-grid rows, so a 15-minute grid can be made as compact as a 30-minute one instead of needing a long scroll.

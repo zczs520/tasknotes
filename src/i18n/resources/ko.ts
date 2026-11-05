@@ -259,6 +259,7 @@ export const ko: TranslationTree = {
 					dayEndTimePlaceholder: "HH:mm:ss (예: 20:00:00)",
 					timeSlotDuration: "시간 슬롯 간격",
 					timeSlotDurationPlaceholder: "HH:mm:ss (예: 00:30:00)",
+					timeSlotHeight: "시간 슬롯 높이 (px)",
 					dragDropResolution: "드래그/드롭 간격",
 					dragDropResolutionPlaceholder: "HH:mm:ss (예: 00:05:00)",
 					weekStartsOn: "주 시작 요일",
@@ -1557,6 +1558,11 @@ export const ko: TranslationTree = {
 						thirtyMinutes: "30분",
 						sixtyMinutes: "60분",
 					},
+				},
+				timeSlotHeight: {
+					name: "시간 슬롯 높이",
+					description: "각 시간 슬롯 행의 높이(픽셀, 5~60)입니다. 15분 단위일 때 낮추면 하루 전체를 스크롤 없이 볼 수 있습니다.",
+					placeholder: "24",
 				},
 				startTime: {
 					name: "시작 시간",

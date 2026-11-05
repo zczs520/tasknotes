@@ -261,6 +261,7 @@ export const ru: TranslationTree = {
 					dayEndTimePlaceholder: "ЧЧ:мм:сс (например, 20:00:00)",
 					timeSlotDuration: "Длительность временного слота",
 					timeSlotDurationPlaceholder: "ЧЧ:мм:сс (например, 00:30:00)",
+					timeSlotHeight: "Высота ячейки времени (px)",
 					dragDropResolution: "Шаг перетаскивания",
 					dragDropResolutionPlaceholder: "ЧЧ:мм:сс (например, 00:05:00)",
 					weekStartsOn: "Неделя начинается с",
@@ -1604,6 +1605,11 @@ export const ru: TranslationTree = {
 						thirtyMinutes: "30 минут",
 						sixtyMinutes: "60 минут",
 					},
+				},
+				timeSlotHeight: {
+					name: "Высота ячейки времени",
+					description: "Высота каждой строки временной сетки в пикселях (5–60). Уменьшите её для 15-минутных интервалов, чтобы весь день помещался без прокрутки.",
+					placeholder: "24",
 				},
 				startTime: {
 					name: "Время начала",
