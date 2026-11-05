@@ -202,6 +202,10 @@ export const de: TranslationTree = {
 			hints: {
 				refresh: "Kalenderabonnements aktualisieren",
 				today: "Zu heute gehen",
+				prevPeriod: "Vorheriger Zeitraum",
+				prevDay: "Vorheriger Tag",
+				nextDay: "Nächster Tag",
+				nextPeriod: "Nächster Zeitraum",
 				prev: "Zurück",
 				next: "Weiter",
 				month: "Monatsansicht",

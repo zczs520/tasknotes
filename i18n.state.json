@@ -560,6 +560,22 @@
       "source": "22819a02167d15aaee9f2cb00e9dd113a1b4ed2c",
       "translation": "d5291c40587fa340b95f867b42c09ea9e3d56564"
     },
+    "views.basesCalendar.hints.prevPeriod": {
+      "source": "0aab6a575e143c08cf2e8b9390ff5e673b15b168",
+      "translation": "a76fe14fb61b4904d0929cab00987fca90f9cd4a"
+    },
+    "views.basesCalendar.hints.prevDay": {
+      "source": "e2b6b0a1d0bcc56a045b2a74b159ffd40172003c",
+      "translation": "55864474893e6240682f26b52c58299e0f719dfe"
+    },
+    "views.basesCalendar.hints.nextDay": {
+      "source": "38f859dde041a79ba8933ac0a80271471c73c47d",
+      "translation": "a60676d215c3f524b27dba4ceaa29c5276b838a1"
+    },
+    "views.basesCalendar.hints.nextPeriod": {
+      "source": "0630852d72f5339b88fc5c456822239238bd4104",
+      "translation": "31a9fb6d646f09c87752008d71993374836abc36"
+    },
     "views.basesCalendar.hints.prev": {
       "source": "50f94286ba30706a19070d3ec0a0c8d34d6cf6eb",
       "translation": "4080624342b2ce2a088159d7e261edbcbf76ce5f"
@@ -9879,6 +9895,22 @@
     "views.basesCalendar.hints.today": {
       "source": "22819a02167d15aaee9f2cb00e9dd113a1b4ed2c",
       "translation": "9c80917019ccb40d21ea678bef176b6ce84d3aa8"
+    },
+    "views.basesCalendar.hints.prevPeriod": {
+      "source": "0aab6a575e143c08cf2e8b9390ff5e673b15b168",
+      "translation": "6cc4e9bb0274f96c151019e77a999e47e2f67677"
+    },
+    "views.basesCalendar.hints.prevDay": {
+      "source": "e2b6b0a1d0bcc56a045b2a74b159ffd40172003c",
+      "translation": "0f242e62b5022f5b57060f2fe90f054e9b98a267"
+    },
+    "views.basesCalendar.hints.nextDay": {
+      "source": "38f859dde041a79ba8933ac0a80271471c73c47d",
+      "translation": "83a6e793e91a145b84b9649668d0a4178eeb6fe8"
+    },
+    "views.basesCalendar.hints.nextPeriod": {
+      "source": "0630852d72f5339b88fc5c456822239238bd4104",
+      "translation": "de3f3050cbccdfad96b9fa43ca6224f1477242e9"
     },
     "views.basesCalendar.hints.prev": {
       "source": "50f94286ba30706a19070d3ec0a0c8d34d6cf6eb",
@@ -19200,6 +19232,22 @@
       "source": "22819a02167d15aaee9f2cb00e9dd113a1b4ed2c",
       "translation": "1d7f2fbc1a250867d13d7d13cdb783c089b9a7eb"
     },
+    "views.basesCalendar.hints.prevPeriod": {
+      "source": "0aab6a575e143c08cf2e8b9390ff5e673b15b168",
+      "translation": "5e420e76da006b2d42208ceae8f2be79c7c6e143"
+    },
+    "views.basesCalendar.hints.prevDay": {
+      "source": "e2b6b0a1d0bcc56a045b2a74b159ffd40172003c",
+      "translation": "f9fa33a4bcd95fe815a4c53e18f314b2d8368ddb"
+    },
+    "views.basesCalendar.hints.nextDay": {
+      "source": "38f859dde041a79ba8933ac0a80271471c73c47d",
+      "translation": "6c0d8d6be2c0d2073fb13f52971e6426f52b9e03"
+    },
+    "views.basesCalendar.hints.nextPeriod": {
+      "source": "0630852d72f5339b88fc5c456822239238bd4104",
+      "translation": "0f0cc84373893d2db2b3239c117c62a0e1211d80"
+    },
     "views.basesCalendar.hints.prev": {
       "source": "50f94286ba30706a19070d3ec0a0c8d34d6cf6eb",
       "translation": "a527f171f7b688435e810a93548039d428f3010c"
@@ -28519,6 +28567,22 @@
     "views.basesCalendar.hints.today": {
       "source": "22819a02167d15aaee9f2cb00e9dd113a1b4ed2c",
       "translation": "ed3d696bddf742e7a2985dda566c1b5d8ed05f62"
+    },
+    "views.basesCalendar.hints.prevPeriod": {
+      "source": "0aab6a575e143c08cf2e8b9390ff5e673b15b168",
+      "translation": "409d59801d755baca1d5e58159329db188a3a38a"
+    },
+    "views.basesCalendar.hints.prevDay": {
+      "source": "e2b6b0a1d0bcc56a045b2a74b159ffd40172003c",
+      "translation": "671a2c692e11be1250023fac15e4d1ddefb2e376"
+    },
+    "views.basesCalendar.hints.nextDay": {
+      "source": "38f859dde041a79ba8933ac0a80271471c73c47d",
+      "translation": "9702b45b3db24ccd5dc0c0dd562365d6e41f1064"
+    },
+    "views.basesCalendar.hints.nextPeriod": {
+      "source": "0630852d72f5339b88fc5c456822239238bd4104",
+      "translation": "f6c3ca61ed3da92fca2cacaf7016e1aeed4eed71"
     },
     "views.basesCalendar.hints.prev": {
       "source": "50f94286ba30706a19070d3ec0a0c8d34d6cf6eb",
@@ -37840,6 +37904,22 @@
       "source": "22819a02167d15aaee9f2cb00e9dd113a1b4ed2c",
       "translation": "b6a43a2f185549543033e4b38bd9d30732df4ca9"
     },
+    "views.basesCalendar.hints.prevPeriod": {
+      "source": "0aab6a575e143c08cf2e8b9390ff5e673b15b168",
+      "translation": "389997ec4f4e8abde952f83bec91151f2c5bfe0a"
+    },
+    "views.basesCalendar.hints.prevDay": {
+      "source": "e2b6b0a1d0bcc56a045b2a74b159ffd40172003c",
+      "translation": "fa9a799834621f9342b91b6765408a0512361601"
+    },
+    "views.basesCalendar.hints.nextDay": {
+      "source": "38f859dde041a79ba8933ac0a80271471c73c47d",
+      "translation": "c98d717bf992cd99dd0dd1d3b10fe386eeb56b2d"
+    },
+    "views.basesCalendar.hints.nextPeriod": {
+      "source": "0630852d72f5339b88fc5c456822239238bd4104",
+      "translation": "c96069dc45896a6d85964bc39cf4cac7fc9dbd67"
+    },
     "views.basesCalendar.hints.prev": {
       "source": "50f94286ba30706a19070d3ec0a0c8d34d6cf6eb",
       "translation": "dc03452ea52e9fa1f6069a05eea5b636bd4ce7ac"
@@ -47160,6 +47240,22 @@
       "source": "22819a02167d15aaee9f2cb00e9dd113a1b4ed2c",
       "translation": "e067fe5638f80c4fd633eb7e7aa76a5047c95b5b"
     },
+    "views.basesCalendar.hints.prevPeriod": {
+      "source": "0aab6a575e143c08cf2e8b9390ff5e673b15b168",
+      "translation": "84dedc37d8cc21b0eef8c64c43aa7997cd72bbd5"
+    },
+    "views.basesCalendar.hints.prevDay": {
+      "source": "e2b6b0a1d0bcc56a045b2a74b159ffd40172003c",
+      "translation": "3bdf2c7de744a250094ef4a61a09a56e02074fca"
+    },
+    "views.basesCalendar.hints.nextDay": {
+      "source": "38f859dde041a79ba8933ac0a80271471c73c47d",
+      "translation": "57a19e16c4f04a4f1f3c346db4ae32a209be10ce"
+    },
+    "views.basesCalendar.hints.nextPeriod": {
+      "source": "0630852d72f5339b88fc5c456822239238bd4104",
+      "translation": "b694535e6f7df20dc48aab7d1f1f01b734e3ba9d"
+    },
     "views.basesCalendar.hints.prev": {
       "source": "50f94286ba30706a19070d3ec0a0c8d34d6cf6eb",
       "translation": "d97f1097b8f366a61015ee2b590dc5d910d58279"
@@ -56479,6 +56575,22 @@
     "views.basesCalendar.hints.today": {
       "source": "22819a02167d15aaee9f2cb00e9dd113a1b4ed2c",
       "translation": "6863e7e01130de4dcd7098213e0c2c0635b40af4"
+    },
+    "views.basesCalendar.hints.prevPeriod": {
+      "source": "0aab6a575e143c08cf2e8b9390ff5e673b15b168",
+      "translation": "4c4d30f4f8715e22adf4d2a9b5b39d10dd50c22f"
+    },
+    "views.basesCalendar.hints.prevDay": {
+      "source": "e2b6b0a1d0bcc56a045b2a74b159ffd40172003c",
+      "translation": "0e26e83b9183f77e50f7da0e51305d089ed9ecf3"
+    },
+    "views.basesCalendar.hints.nextDay": {
+      "source": "38f859dde041a79ba8933ac0a80271471c73c47d",
+      "translation": "9ee75443206d9302a377e959a71ae9e1d8106de7"
+    },
+    "views.basesCalendar.hints.nextPeriod": {
+      "source": "0630852d72f5339b88fc5c456822239238bd4104",
+      "translation": "8806769b01ddf139190d392ad7cfa1f67be42835"
     },
     "views.basesCalendar.hints.prev": {
       "source": "50f94286ba30706a19070d3ec0a0c8d34d6cf6eb",
@@ -65847,6 +65959,22 @@
     "views.basesCalendar.hints.today": {
       "source": "22819a02167d15aaee9f2cb00e9dd113a1b4ed2c",
       "translation": "41e9b9a2e1514ed50b7c42d9516700474eee778b"
+    },
+    "views.basesCalendar.hints.prevPeriod": {
+      "source": "0aab6a575e143c08cf2e8b9390ff5e673b15b168",
+      "translation": "c2b701fd2489a2c152bdd52464cb06271d21d5db"
+    },
+    "views.basesCalendar.hints.prevDay": {
+      "source": "e2b6b0a1d0bcc56a045b2a74b159ffd40172003c",
+      "translation": "3a970b8032630fb05a584ff6b36e81a63a10db7c"
+    },
+    "views.basesCalendar.hints.nextDay": {
+      "source": "38f859dde041a79ba8933ac0a80271471c73c47d",
+      "translation": "630ae4ff7f6451f541eb7633d183954093ca2d00"
+    },
+    "views.basesCalendar.hints.nextPeriod": {
+      "source": "0630852d72f5339b88fc5c456822239238bd4104",
+      "translation": "66c412531edc347af54da3e12381b9bb3be9d149"
     },
     "views.basesCalendar.hints.prev": {
       "source": "50f94286ba30706a19070d3ec0a0c8d34d6cf6eb",

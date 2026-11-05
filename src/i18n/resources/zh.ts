@@ -221,6 +221,10 @@ export const zh: TranslationTree = {
 			hints: {
 				refresh: "刷新日历订阅",
 				today: "转到今天",
+				prevPeriod: "上一周期",
+				prevDay: "上一天",
+				nextDay: "下一天",
+				nextPeriod: "下一周期",
 				prev: "上一个",
 				next: "下一个",
 				month: "月视图",

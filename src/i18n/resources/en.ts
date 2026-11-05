@@ -226,6 +226,10 @@ export const en: TranslationTree = {
 			hints: {
 				refresh: "Refresh calendar subscriptions",
 				today: "Go to today",
+				prevPeriod: "Previous period",
+				prevDay: "Previous day",
+				nextDay: "Next day",
+				nextPeriod: "Next period",
 				prev: "Previous",
 				next: "Next",
 				month: "Month view",

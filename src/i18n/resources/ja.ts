@@ -202,6 +202,10 @@ export const ja: TranslationTree = {
 			hints: {
 				refresh: "カレンダー購読を更新",
 				today: "今日に移動",
+				prevPeriod: "前の期間",
+				prevDay: "前日",
+				nextDay: "翌日",
+				nextPeriod: "次の期間",
 				prev: "前へ",
 				next: "次へ",
 				month: "月表示",

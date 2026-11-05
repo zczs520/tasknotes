@@ -202,6 +202,10 @@ export const ru: TranslationTree = {
 			hints: {
 				refresh: "Обновить подписки календаря",
 				today: "Перейти к сегодня",
+				prevPeriod: "Предыдущий период",
+				prevDay: "Предыдущий день",
+				nextDay: "Следующий день",
+				nextPeriod: "Следующий период",
 				prev: "Назад",
 				next: "Вперёд",
 				month: "Вид по месяцам",

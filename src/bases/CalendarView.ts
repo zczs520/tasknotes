@@ -7,6 +7,7 @@ import type { TimeblockCreationResult } from "../modals/TimeblockCreationModal";
 import {
 	Calendar as FullCalendar,
 	CalendarOptions,
+	type CalendarApi,
 	type DateSelectArg,
 	type EventClickArg,
 	type EventDropArg,
@@ -54,7 +55,7 @@ import { CalendarEventCreationModal } from "../modals/CalendarEventCreationModal
 import { ICSEventInfoModal } from "../modals/ICSEventInfoModal";
 import { Menu, Platform, TFile, setIcon, setTooltip } from "obsidian";
 import type { EventRef } from "obsidian";
-import { format } from "date-fns";
+import { format, startOfWeek, type Day } from "date-fns";
 import { TaskContextMenu } from "../components/TaskContextMenu";
 import { ICSEventContextMenu } from "../components/ICSEventContextMenu";
 import { parseDateToLocal } from "../utils/dateUtils";
@@ -86,6 +87,7 @@ import {
 	type BasesEntryWithGetValue,
 } from "./calendarEventMount";
 import { CALENDAR_END_TIME_MAX_HOUR, normalizeCalendarTimeValue } from "../utils/calendarTime";
+import { CALENDAR_DAY_NAVIGATION_TOOLBAR } from "./calendarDayNavigation";
 import { filterEmptyProjects, sanitizeForCssClass } from "../utils/helpers";
 import { createTaskNotesLogger } from "../utils/tasknotesLogger";
 
@@ -1224,7 +1226,9 @@ export class CalendarView extends BasesViewBase {
 		if (!this.calendarEl) return;
 
 		// Determine initial date
-		const initialDate = this._recreateTargetDate ?? this.determineInitialDate(taskNotes);
+		const initialDate = this.alignWeekViewInitialDate(
+			this._recreateTargetDate ?? this.determineInitialDate(taskNotes)
+		);
 
 		// Build calendar options
 		const calendarOptions: CalendarOptions = {
@@ -1238,7 +1242,7 @@ export class CalendarView extends BasesViewBase {
 			initialView: this.viewOptions.calendarView,
 			initialDate: initialDate,
 			headerToolbar: {
-				left: "prev,next today refreshCalendars",
+				left: CALENDAR_DAY_NAVIGATION_TOOLBAR,
 				center: "title",
 				right: "multiMonthYear,dayGridMonth,timeGridWeek,timeGridCustom,timeGridDay,listWeek",
 			},
@@ -1263,6 +1267,55 @@ export class CalendarView extends BasesViewBase {
 				list: this.plugin.i18n.translate("views.basesCalendar.hints.list") || "List view",
 			},
 			customButtons: {
+				todayAligned: {
+					text: this.plugin.i18n.translate("views.basesCalendar.today"),
+					hint:
+						this.plugin.i18n.translate("views.basesCalendar.hints.today") ||
+						"Go to today",
+					click: () => {
+						(this.calendar as unknown as CalendarApi | null)?.gotoDate(
+							this.alignWeekStart(new Date())
+						);
+					},
+				},
+				prevPeriod: {
+					text: "<<",
+					hint:
+						this.plugin.i18n.translate(
+							"views.basesCalendar.hints.prevPeriod"
+						) || "Previous period",
+					click: () => {
+						this.shiftCalendarViewByPeriod(-1);
+					},
+				},
+				prevDay: {
+					text: "<",
+					hint:
+						this.plugin.i18n.translate("views.basesCalendar.hints.prevDay") ||
+						"Previous day",
+					click: () => {
+						this.shiftCalendarViewByDays(-1);
+					},
+				},
+				nextDay: {
+					text: ">",
+					hint:
+						this.plugin.i18n.translate("views.basesCalendar.hints.nextDay") ||
+						"Next day",
+					click: () => {
+						this.shiftCalendarViewByDays(1);
+					},
+				},
+				nextPeriod: {
+					text: ">>",
+					hint:
+						this.plugin.i18n.translate(
+							"views.basesCalendar.hints.nextPeriod"
+						) || "Next period",
+					click: () => {
+						this.shiftCalendarViewByPeriod(1);
+					},
+				},
 				refreshCalendars: {
 					text:
 						this.plugin.i18n.translate("views.basesCalendar.buttonText.refresh") ||
@@ -1276,9 +1329,17 @@ export class CalendarView extends BasesViewBase {
 				},
 			},
 			views: {
+				// Day alignment keeps these views from snapping back to the week
+				// edge, so the day buttons can slide the range one day at a time.
+				timeGridWeek: {
+					type: "timeGrid",
+					duration: { weeks: 1 },
+					dateAlignment: "day",
+				},
 				timeGridCustom: {
 					type: "timeGrid",
 					duration: { days: this.viewOptions.customDayCount },
+					dateAlignment: "day",
 					buttonText: this.plugin.i18n.translate(
 						"views.basesCalendar.buttonText.customDays",
 						{
@@ -2593,6 +2654,69 @@ export class CalendarView extends BasesViewBase {
 			menu.showAtMouseEvent(info.jsEvent);
 		} else {
 			menu.showAtPosition({ x: 0, y: 0 });
+		}
+	}
+
+	/** Week views start on the first day of the week instead of today. */
+	private alignWeekStart(date: Date): Date {
+		if (this.viewOptions.calendarView !== "timeGridWeek") {
+			return date;
+		}
+
+		return startOfWeek(date, {
+			weekStartsOn: this.viewOptions.firstDay as Day,
+		});
+	}
+
+	private alignWeekViewInitialDate(
+		date: Date | string | undefined
+	): Date | string | undefined {
+		if (this.viewOptions.calendarView !== "timeGridWeek") {
+			return date;
+		}
+
+		const base = date ? new Date(date) : new Date();
+		if (Number.isNaN(base.getTime())) {
+			return date;
+		}
+
+		return this.alignWeekStart(base);
+	}
+
+	/**
+	 * Move the visible range by a number of days. Time-grid views use day
+	 * alignment so they slide instead of snapping back to the week edge.
+	 */
+	private shiftCalendarViewByDays(delta: number): void {
+		const api = this.calendar as unknown as CalendarApi | null;
+		api?.incrementDate({ days: delta });
+	}
+
+	/**
+	 * Move the visible range by one view length. Time-grid views are measured in
+	 * days so the period buttons stay in sync with the sliding range; the other
+	 * views keep FullCalendar's native period navigation.
+	 */
+	private shiftCalendarViewByPeriod(direction: -1 | 1): void {
+		const api = this.calendar as unknown as CalendarApi | null;
+		if (!api) return;
+
+		const view = api.view;
+		if (view.type.startsWith("timeGrid")) {
+			const days = Math.max(
+				1,
+				Math.round(
+					(view.currentEnd.getTime() - view.currentStart.getTime()) / 86_400_000
+				)
+			);
+			api.incrementDate({ days: direction * days });
+			return;
+		}
+
+		if (direction > 0) {
+			api.next();
+		} else {
+			api.prev();
 		}
 	}
 

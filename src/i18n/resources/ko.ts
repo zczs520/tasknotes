@@ -202,6 +202,10 @@ export const ko: TranslationTree = {
 			hints: {
 				refresh: "캘린더 구독 새로고침",
 				today: "오늘로 이동",
+				prevPeriod: "이전 기간",
+				prevDay: "이전 날",
+				nextDay: "다음 날",
+				nextPeriod: "다음 기간",
 				prev: "이전",
 				next: "다음",
 				month: "월간 보기",
