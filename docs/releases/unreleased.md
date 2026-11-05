@@ -34,3 +34,7 @@ When a change has user-facing documentation, include a canonical tasknotes.dev l
 ```
 
 -->
+
+## Added
+
+- Added a **Drag and drop resolution** setting under Settings → Appearance → Time settings. It controls how precisely dragged tasks and selected time ranges snap to the clock in every calendar view. Leave it empty to keep following the time slot duration, or enter `00:01:00` (or just `1`) for one-minute dragging without having to configure each view separately. A view's own *Drag and drop resolution* option still takes precedence when it is set.

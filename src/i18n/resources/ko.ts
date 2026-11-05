@@ -1558,6 +1558,11 @@ export const ko: TranslationTree = {
 						sixtyMinutes: "60분",
 					},
 				},
+				snapDuration: {
+					name: "끌어 놓기 시간 단위",
+					description: "모든 캘린더 보기에서 끌어 놓은 작업과 선택한 시간이 눈금에 맞춰지는 정밀도입니다. 비워 두면 시간 슬롯 간격을 따르며, 00:01:00(또는 1)을 입력하면 1분 단위로 맞춰집니다.",
+					placeholder: "분 또는 HH:mm:ss (예: 00:01:00)",
+				},
 				startTime: {
 					name: "시작 시간",
 					description: "타임라인 뷰에 표시되는 가장 이른 시간 (HH:MM 형식)",

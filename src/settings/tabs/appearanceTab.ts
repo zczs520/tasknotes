@@ -11,7 +11,11 @@ import {
 import { PropertySelectorModal } from "../../modals/PropertySelectorModal";
 import { getAvailableProperties, getPropertyLabels } from "../../utils/propertyHelpers";
 import type { CalendarViewSettings } from "../../types/settings";
-import { CALENDAR_END_TIME_MAX_HOUR, normalizeCalendarTimeValue } from "../../utils/calendarTime";
+import {
+	CALENDAR_END_TIME_MAX_HOUR,
+	normalizeCalendarSnapDuration,
+	normalizeCalendarTimeValue,
+} from "../../utils/calendarTime";
 
 type CalendarDefaultView = CalendarViewSettings["defaultView"];
 type CalendarFirstDay = CalendarViewSettings["firstDay"];
@@ -528,6 +532,31 @@ export function renderAppearanceTab(
 							return;
 						}
 						plugin.settings.calendarViewSettings.slotDuration = value;
+						save();
+					},
+				})
+			);
+
+			group.addSetting((setting) =>
+				void configureTextSetting(setting, {
+					name: translate("settings.appearance.timeSettings.snapDuration.name"),
+					desc: translate(
+						"settings.appearance.timeSettings.snapDuration.description"
+					),
+					placeholder: translate(
+						"settings.appearance.timeSettings.snapDuration.placeholder"
+					),
+					debounceMs: 300,
+					getValue: () => plugin.settings.calendarViewSettings.snapDuration,
+					setValue: async (value: string) => {
+						const normalized = normalizeCalendarSnapDuration(value);
+						if (!normalized.isValid) {
+							new Notice(
+								"Invalid snapping interval. Enter minutes (1-120) or hh:mm:ss, or leave it empty."
+							);
+							return;
+						}
+						plugin.settings.calendarViewSettings.snapDuration = normalized.value;
 						save();
 					},
 				})

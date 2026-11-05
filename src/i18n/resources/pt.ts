@@ -1615,6 +1615,11 @@ export const pt: TranslationTree = {
 						sixtyMinutes: "60 minutos",
 					},
 				},
+				snapDuration: {
+					name: "Resolução de arrastar e soltar",
+					description: "Precisão com que tarefas arrastadas e intervalos selecionados se ajustam ao relógio em todas as vistas de calendário. Deixe vazio para seguir a duração do intervalo; use 00:01:00 (ou 1) para ajustes de um minuto.",
+					placeholder: "Minutos ou HH:mm:ss (ex.: 00:01:00)",
+				},
 				startTime: {
 					name: "Hora de início",
 					description:

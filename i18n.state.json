@@ -3890,6 +3890,18 @@
       "source": "ee8eb1a538076df1fc5eb012609ace6f96e49228",
       "translation": "66d3e54d7f91f2c8b321908471e44767d3c206d6"
     },
+    "settings.appearance.timeSettings.snapDuration.name": {
+      "source": "500e73a60cbcd661b9748511197240572a95c341",
+      "translation": "c454571abfeedafa6d614d391702948f9ce80ddc"
+    },
+    "settings.appearance.timeSettings.snapDuration.description": {
+      "source": "4e07bf9fe40450cad056c09dcee91f3b1122016d",
+      "translation": "9032521beaf8d451ac4572b38a712fc50c4dff2d"
+    },
+    "settings.appearance.timeSettings.snapDuration.placeholder": {
+      "source": "fc64db0c3d78dabaa46b8667a964a9fde88216d0",
+      "translation": "5ecdfa6cda1bc3d26a264b593028c5d685793f27"
+    },
     "settings.appearance.timeSettings.startTime.name": {
       "source": "88d8206d586abe4c8e35c8e9adcc649d07c99a1e",
       "translation": "4aa533c84189a4c82a1a07bfdac1895974ad6d28"
@@ -13209,6 +13221,18 @@
     "settings.appearance.timeSettings.timeSlotDuration.options.sixtyMinutes": {
       "source": "ee8eb1a538076df1fc5eb012609ace6f96e49228",
       "translation": "471f026c61e22e7dde6bc753316f2c4f14a28ac4"
+    },
+    "settings.appearance.timeSettings.snapDuration.name": {
+      "source": "500e73a60cbcd661b9748511197240572a95c341",
+      "translation": "f893179e3146bfae4d8eeea2e4f3710d5b7b5d13"
+    },
+    "settings.appearance.timeSettings.snapDuration.description": {
+      "source": "4e07bf9fe40450cad056c09dcee91f3b1122016d",
+      "translation": "601cb54095ad82fc7843931fb2c6cefbd4bba53d"
+    },
+    "settings.appearance.timeSettings.snapDuration.placeholder": {
+      "source": "fc64db0c3d78dabaa46b8667a964a9fde88216d0",
+      "translation": "0d460a37001e4af040e782434a5814866c06e59c"
     },
     "settings.appearance.timeSettings.startTime.name": {
       "source": "88d8206d586abe4c8e35c8e9adcc649d07c99a1e",
@@ -22530,6 +22554,18 @@
       "source": "ee8eb1a538076df1fc5eb012609ace6f96e49228",
       "translation": "ee8eb1a538076df1fc5eb012609ace6f96e49228"
     },
+    "settings.appearance.timeSettings.snapDuration.name": {
+      "source": "500e73a60cbcd661b9748511197240572a95c341",
+      "translation": "9c19714c6962cbb1dc3fc0d44e6e7366e8588833"
+    },
+    "settings.appearance.timeSettings.snapDuration.description": {
+      "source": "4e07bf9fe40450cad056c09dcee91f3b1122016d",
+      "translation": "229692601704fb760d8ce943d42f158fb88bf5ef"
+    },
+    "settings.appearance.timeSettings.snapDuration.placeholder": {
+      "source": "fc64db0c3d78dabaa46b8667a964a9fde88216d0",
+      "translation": "74e9f45c14115c9e9c5e0951b3075fdefa561147"
+    },
     "settings.appearance.timeSettings.startTime.name": {
       "source": "88d8206d586abe4c8e35c8e9adcc649d07c99a1e",
       "translation": "3ca90c1c63730e9855171e6d307b025866f7c391"
@@ -31849,6 +31885,18 @@
     "settings.appearance.timeSettings.timeSlotDuration.options.sixtyMinutes": {
       "source": "ee8eb1a538076df1fc5eb012609ace6f96e49228",
       "translation": "5862af513110021d624608e9b8b9473fdf782769"
+    },
+    "settings.appearance.timeSettings.snapDuration.name": {
+      "source": "500e73a60cbcd661b9748511197240572a95c341",
+      "translation": "db5fc85cbe2626fa8bb3bcc1894443d12c047eb9"
+    },
+    "settings.appearance.timeSettings.snapDuration.description": {
+      "source": "4e07bf9fe40450cad056c09dcee91f3b1122016d",
+      "translation": "3b969a03af0865dd205bd03e180adaecb4f16b1e"
+    },
+    "settings.appearance.timeSettings.snapDuration.placeholder": {
+      "source": "fc64db0c3d78dabaa46b8667a964a9fde88216d0",
+      "translation": "64b9403c6f6c5418b205a6a98275f261d12fb98d"
     },
     "settings.appearance.timeSettings.startTime.name": {
       "source": "88d8206d586abe4c8e35c8e9adcc649d07c99a1e",
@@ -41170,6 +41218,18 @@
       "source": "ee8eb1a538076df1fc5eb012609ace6f96e49228",
       "translation": "c1818994791b6c4d2bdf9ec874cc568db93710dd"
     },
+    "settings.appearance.timeSettings.snapDuration.name": {
+      "source": "500e73a60cbcd661b9748511197240572a95c341",
+      "translation": "ca32eb50b73f922c4f86ee1cd626ff1cf0c5e23f"
+    },
+    "settings.appearance.timeSettings.snapDuration.description": {
+      "source": "4e07bf9fe40450cad056c09dcee91f3b1122016d",
+      "translation": "b5a8d086fbef7fc4480bb76075e4b86b56965dbc"
+    },
+    "settings.appearance.timeSettings.snapDuration.placeholder": {
+      "source": "fc64db0c3d78dabaa46b8667a964a9fde88216d0",
+      "translation": "6c8cf079f5ae1262b3c9a2860de4289d7862f5b8"
+    },
     "settings.appearance.timeSettings.startTime.name": {
       "source": "88d8206d586abe4c8e35c8e9adcc649d07c99a1e",
       "translation": "c2a700baf031d3e98264f7480ada4e14c10e5278"
@@ -50490,6 +50550,18 @@
       "source": "ee8eb1a538076df1fc5eb012609ace6f96e49228",
       "translation": "471f026c61e22e7dde6bc753316f2c4f14a28ac4"
     },
+    "settings.appearance.timeSettings.snapDuration.name": {
+      "source": "500e73a60cbcd661b9748511197240572a95c341",
+      "translation": "461ed3f8fe053993cb629e29f0e387255668ccba"
+    },
+    "settings.appearance.timeSettings.snapDuration.description": {
+      "source": "4e07bf9fe40450cad056c09dcee91f3b1122016d",
+      "translation": "d5957af8dd151b43dfdd4e6d2860c56771a8071f"
+    },
+    "settings.appearance.timeSettings.snapDuration.placeholder": {
+      "source": "fc64db0c3d78dabaa46b8667a964a9fde88216d0",
+      "translation": "c753cc6d9de78f96211b75b80d303dfeb82760a5"
+    },
     "settings.appearance.timeSettings.startTime.name": {
       "source": "88d8206d586abe4c8e35c8e9adcc649d07c99a1e",
       "translation": "a8a606c7c69d1e5bd5bcabbcfe71cdaab9c46d5c"
@@ -59809,6 +59881,18 @@
     "settings.appearance.timeSettings.timeSlotDuration.options.sixtyMinutes": {
       "source": "ee8eb1a538076df1fc5eb012609ace6f96e49228",
       "translation": "fbdc2dea4c4044d25122a362db34c22b03e6e1f8"
+    },
+    "settings.appearance.timeSettings.snapDuration.name": {
+      "source": "500e73a60cbcd661b9748511197240572a95c341",
+      "translation": "67fcb8993c1c602c7cb4983bf37376751c98d514"
+    },
+    "settings.appearance.timeSettings.snapDuration.description": {
+      "source": "4e07bf9fe40450cad056c09dcee91f3b1122016d",
+      "translation": "70618fd1e974344290b6e28e840871821b55314d"
+    },
+    "settings.appearance.timeSettings.snapDuration.placeholder": {
+      "source": "fc64db0c3d78dabaa46b8667a964a9fde88216d0",
+      "translation": "650c97f4dd083c6789364c90be47568f7bbcbc33"
     },
     "settings.appearance.timeSettings.startTime.name": {
       "source": "88d8206d586abe4c8e35c8e9adcc649d07c99a1e",
@@ -69651,6 +69735,18 @@
     "settings.appearance.timeSettings.timeSlotDuration.options.sixtyMinutes": {
       "source": "ee8eb1a538076df1fc5eb012609ace6f96e49228",
       "translation": "98f69813c945a3a853b470fac3e11e67db44b9d6"
+    },
+    "settings.appearance.timeSettings.snapDuration.name": {
+      "source": "500e73a60cbcd661b9748511197240572a95c341",
+      "translation": "f868576e3459e313ed790332927c45f71515b77a"
+    },
+    "settings.appearance.timeSettings.snapDuration.description": {
+      "source": "4e07bf9fe40450cad056c09dcee91f3b1122016d",
+      "translation": "fff0726032b0f4ad5f5887daf5640999d4a25e53"
+    },
+    "settings.appearance.timeSettings.snapDuration.placeholder": {
+      "source": "fc64db0c3d78dabaa46b8667a964a9fde88216d0",
+      "translation": "1403015d4b3a681b1391eedbcebca35e68805b37"
     },
     "settings.appearance.timeSettings.startTime.name": {
       "source": "88d8206d586abe4c8e35c8e9adcc649d07c99a1e",

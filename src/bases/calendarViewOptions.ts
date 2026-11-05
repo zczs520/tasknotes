@@ -421,7 +421,8 @@ function buildCalendarTimeGridOptions(plugin: TaskNotesPlugin, t: Translate): Ba
 			type: "text",
 			key: "snapDuration",
 			displayName: t("layout.dragDropResolution"),
-			default: calendarSettings.slotDuration,
+			default:
+				calendarSettings.snapDuration || calendarSettings.slotDuration,
 			placeholder: t("layout.dragDropResolutionPlaceholder"),
 		},
 		{
