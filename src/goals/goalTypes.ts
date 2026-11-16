@@ -1,3 +1,5 @@
+export const DEFAULT_GOALS_FOLDER = "TASKquence/Tasks/Goals";
+
 export type GoalMode = "floor" | "ceiling" | "count";
 export type GoalPeriod = "weekly" | "monthly" | "quarterly";
 export type GoalStatus = "active" | "paused";
@@ -19,10 +21,16 @@ export interface GoalMilestone {
 	unit?: string;
 	current?: number;
 	tiers?: number[];
+	stages?: GoalMilestoneStage[];
 	achieved: Record<string, string> | string | null;
 	hours_at: Record<string, number> | number | null;
 	updatedAt?: string;
 	progressHistory?: GoalMilestoneProgressSnapshot[];
+}
+
+export interface GoalMilestoneStage {
+	id: string;
+	name: string;
 }
 
 export interface GoalDefinition {
@@ -56,6 +64,7 @@ export interface GoalDraftMilestone {
 	name: string;
 	tiers: number[];
 	unit?: string;
+	stages?: GoalMilestoneStage[];
 }
 
 export interface GoalDraftItem {

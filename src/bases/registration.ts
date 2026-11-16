@@ -5,6 +5,7 @@ import { buildKanbanViewFactory } from "./KanbanView";
 import { buildCalendarViewFactory } from "./CalendarView";
 import { buildMiniCalendarViewFactory } from "./MiniCalendarView";
 import { buildTimeStatisticsViewFactory } from "./TimeStatisticsView";
+import { buildGoalsViewFactory } from "./GoalsView";
 import { registerBasesView, unregisterBasesView } from "./api";
 import { buildCalendarViewOptions, buildMiniCalendarViewOptions } from "./calendarViewOptions";
 import { createTaskNotesLogger } from "../utils/tasknotesLogger";
@@ -324,13 +325,25 @@ export async function registerBasesTaskList(plugin: TaskNotesPlugin): Promise<vo
 				logger
 			);
 
+			const goalsSuccess = registerBasesView(
+				plugin,
+				"tasknotesGoals",
+				{
+					name: plugin.i18n.translate("goals.management"),
+					icon: "flag",
+					factory: buildGoalsViewFactory(plugin),
+				},
+				logger
+			);
+
 			// Consider it successful if any view registered successfully
 			if (
 				!taskListSuccess &&
 				!kanbanSuccess &&
 				!calendarSuccess &&
 				!miniCalendarSuccess &&
-				!timeStatisticsSuccess
+				!timeStatisticsSuccess &&
+				!goalsSuccess
 			) {
 				logger.debug("Bases plugin not available for registration", {
 					category: "configuration",
@@ -402,6 +415,7 @@ export function unregisterBasesViews(plugin: TaskNotesPlugin): void {
 		unregisterBasesView(plugin, "tasknotesCalendar", logger);
 		unregisterBasesView(plugin, "tasknotesMiniCalendar", logger);
 		unregisterBasesView(plugin, "tasknotesTimeStatistics", logger);
+		unregisterBasesView(plugin, "tasknotesGoals", logger);
 	} catch (error) {
 		logger.error("Error during view unregistration", {
 			category: "provider",

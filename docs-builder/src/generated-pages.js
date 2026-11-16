@@ -66,7 +66,13 @@ async function loadRuntimeDocumentationData() {
 			DEFAULT_SETTINGS.customStatuses,
 			DEFAULT_SETTINGS.customPriorities
 		);
-		const plugin = { settings: DEFAULT_SETTINGS, fieldMapper };
+		const plugin = {
+			settings: DEFAULT_SETTINGS,
+			fieldMapper,
+			i18n: {
+				translate: (key) => key.split(".").reduce((value, segment) => value?.[segment], en) ?? key,
+			},
+		};
 		const baseIds = Object.keys(DEFAULT_SETTINGS.commandFileMapping);
 		const baseTemplates = Object.fromEntries(
 			baseIds.map((id) => [id, generateBasesFileTemplate(id, plugin)])

@@ -1,5 +1,5 @@
 import { DEFAULT_ENABLED_VIEWS } from "./viewFeatures";
-import { DEFAULT_GOALS_FOLDER } from "../goals/goalFolder";
+import { DEFAULT_GOALS_FOLDER } from "../goals/goalTypes";
 import { FieldMapping, StatusConfig, PriorityConfig } from "../types";
 import {
 	TaskNotesSettings,
@@ -397,6 +397,7 @@ export const DEFAULT_SETTINGS: TaskNotesSettings = {
 		"open-advanced-calendar-view": "TASKquence/Views/calendar-default.base",
 		"open-agenda-view": "TASKquence/Views/agenda-default.base",
 		"open-statistics": "TASKquence/Views/time-statistics.base",
+		"open-goals-view": "TASKquence/Views/goals.base",
 		"pomodoro-stats-base": "TASKquence/Views/pomodoro-stats.base",
 		relationships: "TASKquence/Views/relationships.base",
 	},

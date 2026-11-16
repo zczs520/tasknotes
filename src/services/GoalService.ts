@@ -1,6 +1,7 @@
 import { normalizePath, parseYaml, stringifyYaml, TFile } from "obsidian";
 import type TaskNotesPlugin from "../main";
 import { normalizeGoalsFolder } from "../goals/goalFolder";
+import { completionStages, completionStageDate } from "../goals/milestoneStages";
 import type { TaskInfo } from "../types";
 import {
 	attributeGoalSegments,
@@ -15,6 +16,7 @@ import type {
 	GoalDraftMilestone,
 	GoalGroupDraft,
 	GoalMilestone,
+	GoalMilestoneStage,
 	GoalMilestoneProgressSnapshot,
 	GoalPeriod,
 	GoalProgress,
@@ -113,12 +115,32 @@ function milestoneProgressHistoryValue(value: unknown): GoalMilestoneProgressSna
 	return [...byDate.values()].sort((left, right) => left.date.localeCompare(right.date));
 }
 
+function parseStages(value: unknown): GoalMilestoneStage[] {
+	if (!Array.isArray(value)) return [];
+	const seen = new Set<string>();
+	return value.flatMap((item) => {
+		if (!item || typeof item !== "object") return [];
+		const { id, name } = item as Record<string, unknown>;
+		if (
+			typeof id !== "string" ||
+			!id ||
+			seen.has(id) ||
+			typeof name !== "string" ||
+			!name.trim()
+		)
+			return [];
+		seen.add(id);
+		return [{ id, name: name.trim() }];
+	});
+}
+
 function parseMilestone(value: unknown): GoalMilestone | null {
 	if (!value || typeof value !== "object" || Array.isArray(value)) return null;
 	const raw = value as Frontmatter;
 	if (typeof raw.name !== "string" || !raw.name.trim()) return null;
 	const tiers = numberArray(raw.tiers);
 	const kind = raw.kind === "number" || tiers.length > 0 ? "number" : "boolean";
+	const stages = kind === "boolean" ? parseStages(raw.stages) : [];
 	return {
 		name: raw.name.trim(),
 		kind,
@@ -126,14 +148,15 @@ function parseMilestone(value: unknown): GoalMilestone | null {
 		current:
 			kind === "number" && Number.isFinite(Number(raw.current)) ? Number(raw.current) : 0,
 		tiers: kind === "number" ? tiers : undefined,
+		...(stages.length ? { stages } : {}),
 		achieved:
-			kind === "number"
+			kind === "number" || (stages.length && typeof raw.achieved !== "string")
 				? recordValue(raw.achieved)
 				: typeof raw.achieved === "string"
 					? raw.achieved
 					: null,
 		hours_at:
-			kind === "number"
+			kind === "number" || (stages.length && typeof raw.hours_at !== "number")
 				? numberRecordValue(raw.hours_at)
 				: Number.isFinite(Number(raw.hours_at))
 					? Number(raw.hours_at)
@@ -200,6 +223,7 @@ function cloneGoal(goal: GoalDefinition): GoalDefinition {
 		milestones: goal.milestones.map((milestone) => ({
 			...milestone,
 			tiers: milestone.tiers ? [...milestone.tiers] : undefined,
+			stages: milestone.stages?.map((stage) => ({ ...stage })),
 			achieved:
 				typeof milestone.achieved === "object" && milestone.achieved !== null
 					? { ...milestone.achieved }
@@ -223,14 +247,34 @@ function safeGoalName(value: string): string {
 
 function milestoneFrontmatter(draft?: GoalDraftMilestone): Frontmatter[] {
 	if (!draft?.name.trim()) return [];
+	if (
+		draft.tiers.some(
+			(tier, index) =>
+				!Number.isFinite(tier) || tier <= 0 || (index > 0 && tier <= draft.tiers[index - 1])
+		)
+	) {
+		throw new Error("Milestone tiers must be positive and increasing.");
+	}
+	if (
+		draft.stages &&
+		(draft.tiers.length ||
+			!draft.stages.length ||
+			parseStages(draft.stages).length !== draft.stages.length)
+	) {
+		throw new Error("Milestone stages need unique IDs and non-empty names.");
+	}
 	const updatedAt = new Date().toISOString().slice(0, 10);
 	if (draft.tiers.length === 0) {
+		const stages = draft.stages?.length
+			? draft.stages.map((stage) => ({ ...stage, name: stage.name.trim() }))
+			: undefined;
 		return [
 			{
 				name: draft.name.trim(),
 				kind: "boolean",
-				achieved: null,
-				hours_at: null,
+				...(stages ? { stages } : {}),
+				achieved: stages ? {} : null,
+				hours_at: stages ? {} : null,
 				updated_at: updatedAt,
 			},
 		];
@@ -253,10 +297,40 @@ function milestonesFrontmatter(drafts: readonly GoalDraftMilestone[]): Frontmatt
 	return drafts.flatMap((draft) => milestoneFrontmatter(draft));
 }
 
+function recordNumericMilestoneProgress(
+	milestone: GoalMilestone,
+	value: number,
+	date: string,
+	force = false
+): void {
+	const previousValue = milestone.current ?? 0;
+	milestone.current = value;
+	if (value === previousValue && !force) return;
+	const progressHistory = [...(milestone.progressHistory ?? [])];
+	if (
+		!progressHistory.length &&
+		previousValue > 0 &&
+		milestone.updatedAt &&
+		milestone.updatedAt !== date
+	) {
+		progressHistory.push({ date: milestone.updatedAt, value: previousValue });
+	}
+	const sameDayIndex = progressHistory.findIndex((snapshot) => snapshot.date === date);
+	const snapshot = { date, value };
+	if (sameDayIndex >= 0) progressHistory[sameDayIndex] = snapshot;
+	else progressHistory.push(snapshot);
+	milestone.progressHistory = progressHistory.sort((left, right) =>
+		left.date.localeCompare(right.date)
+	);
+}
+
 function encodeMilestone(milestone: GoalMilestone): Frontmatter {
 	return {
 		name: milestone.name,
 		kind: milestone.kind,
+		...(milestone.stages?.length
+			? { stages: milestone.stages.map((stage) => ({ ...stage })) }
+			: {}),
 		...(milestone.unit ? { unit: milestone.unit } : {}),
 		...(milestone.kind === "number"
 			? { current: milestone.current ?? 0, tiers: milestone.tiers ?? [] }
@@ -728,6 +802,65 @@ export class GoalService {
 		this.goalCache.delete(goal.path);
 	}
 
+	async updateMilestoneDefinition(
+		goalPath: string,
+		milestoneIndex: number,
+		draft: GoalDraftMilestone
+	): Promise<void> {
+		if (!milestoneFrontmatter(draft).length) throw new Error("Milestone name cannot be empty.");
+		const goal = await this.getGoal(goalPath);
+		if (!goal) throw new Error("Goal not found.");
+		const file = this.plugin.app.vault.getAbstractFileByPath(goal.path);
+		if (!(file instanceof TFile)) throw new Error("Goal file not found.");
+		await processVaultFrontMatter(this.plugin.app, file, (frontmatter) => {
+			const milestones = Array.isArray(frontmatter.milestones)
+				? [...frontmatter.milestones]
+				: [];
+			const milestone = parseMilestone(milestones[milestoneIndex]);
+			if (!milestone) throw new Error("Milestone not found.");
+			if ((milestone.kind === "number") !== draft.tiers.length > 0)
+				throw new Error("Existing milestone type cannot be changed.");
+			milestone.name = draft.name.trim();
+			if (milestone.kind === "number") {
+				milestone.tiers = [...draft.tiers];
+				milestone.unit = draft.unit?.trim() || undefined;
+				const keys = new Set(draft.tiers.map(String));
+				milestone.achieved = Object.fromEntries(
+					Object.entries(recordValue(milestone.achieved)).filter(([key]) => keys.has(key))
+				);
+				milestone.hours_at = Object.fromEntries(
+					Object.entries(numberRecordValue(milestone.hours_at)).filter(([key]) =>
+						keys.has(key)
+					)
+				);
+			} else {
+				const oldStages = completionStages(milestone);
+				const stages =
+					draft.stages?.map((stage) => ({ ...stage, name: stage.name.trim() })) ??
+					oldStages;
+				const achieved: Record<string, string> = {};
+				const hoursAt: Record<string, number> = {};
+				for (const stage of stages) {
+					const date = completionStageDate(milestone, stage.id);
+					if (date) achieved[stage.id] = date;
+					const hours =
+						typeof milestone.hours_at === "number"
+							? stage.id === oldStages[0].id
+								? milestone.hours_at
+								: undefined
+							: milestone.hours_at?.[stage.id];
+					if (hours !== undefined) hoursAt[stage.id] = hours;
+				}
+				milestone.stages = stages;
+				milestone.achieved = achieved;
+				milestone.hours_at = hoursAt;
+			}
+			milestones[milestoneIndex] = encodeMilestone(milestone);
+			frontmatter.milestones = milestones;
+		});
+		this.goalCache.delete(goal.path);
+	}
+
 	async updateGoalScope(goalPath: string, scope: readonly string[]): Promise<void> {
 		const goal = await this.getGoal(goalPath);
 		if (!goal?.mode) throw new Error("Only single and child goals can own tags.");
@@ -803,7 +936,8 @@ export class GoalService {
 	async updateMilestone(
 		goalPath: string,
 		milestoneIndex: number,
-		value: number | true
+		value: number | true,
+		stageId?: string
 	): Promise<{ achievedTier?: number; crossedTiers: number[] }> {
 		const goal = await this.getGoal(goalPath);
 		if (!goal) throw new Error("Goal not found.");
@@ -814,10 +948,31 @@ export class GoalService {
 		const crossedTiers: number[] = [];
 
 		if (milestone.kind === "boolean") {
-			if (value !== true || milestone.achieved) return { crossedTiers };
+			if (value !== true) return { crossedTiers };
+			const stages = completionStages(milestone);
+			const stage = stageId
+				? stages.find((item) => item.id === stageId)
+				: stages.find((item) => !completionStageDate(milestone, item.id));
+			if (stageId && !stage) throw new Error("Milestone stage not found.");
+			if (!stage || completionStageDate(milestone, stage.id)) return { crossedTiers };
 			const hours = await this.getMilestoneHours(goal, new Date(goal.created), until);
-			milestone.achieved = today;
-			milestone.hours_at = Number(hours.toFixed(2));
+			if (milestone.stages?.length) {
+				const achieved = Object.fromEntries(
+					stages.flatMap((item) => {
+						const date = completionStageDate(milestone, item.id);
+						return date ? [[item.id, date]] : [];
+					})
+				);
+				const hoursAt =
+					typeof milestone.hours_at === "number"
+						? { [stages[0].id]: milestone.hours_at }
+						: numberRecordValue(milestone.hours_at);
+				milestone.achieved = { ...achieved, [stage.id]: today };
+				milestone.hours_at = { ...hoursAt, [stage.id]: Number(hours.toFixed(2)) };
+			} else {
+				milestone.achieved = today;
+				milestone.hours_at = Number(hours.toFixed(2));
+			}
 		} else {
 			if (typeof value !== "number" || !Number.isFinite(value) || value < 0) {
 				throw new Error("Milestone value must be a non-negative number.");
@@ -833,30 +988,9 @@ export class GoalService {
 				hoursAt[String(tier)] = Number(hours.toFixed(2));
 				crossedTiers.push(tier);
 			}
-			const previousValue = milestone.current ?? 0;
-			milestone.current = value;
 			milestone.achieved = achieved;
 			milestone.hours_at = hoursAt;
-			if (value !== previousValue) {
-				const progressHistory = [...(milestone.progressHistory ?? [])];
-				if (
-					progressHistory.length === 0 &&
-					previousValue > 0 &&
-					milestone.updatedAt &&
-					milestone.updatedAt !== today
-				) {
-					progressHistory.push({ date: milestone.updatedAt, value: previousValue });
-				}
-				const sameDayIndex = progressHistory.findIndex(
-					(snapshot) => snapshot.date === today
-				);
-				const snapshot = { date: today, value };
-				if (sameDayIndex >= 0) progressHistory[sameDayIndex] = snapshot;
-				else progressHistory.push(snapshot);
-				milestone.progressHistory = progressHistory.sort((left, right) =>
-					left.date.localeCompare(right.date)
-				);
-			}
+			recordNumericMilestoneProgress(milestone, value, today);
 		}
 		milestone.updatedAt = today;
 
@@ -875,20 +1009,56 @@ export class GoalService {
 	async undoMilestoneAchievement(
 		goalPath: string,
 		milestoneIndex: number,
-		tier?: number
+		tier?: number | string
 	): Promise<void> {
 		const goal = await this.getGoal(goalPath);
 		if (!goal) throw new Error("Goal not found.");
 		const milestone = goal.milestones[milestoneIndex];
 		if (!milestone) throw new Error("Milestone not found.");
 		if (milestone.kind === "boolean") {
-			milestone.achieved = null;
-			milestone.hours_at = null;
-		} else if (tier !== undefined) {
+			if (milestone.stages?.length) {
+				const id =
+					typeof tier === "string"
+						? tier
+						: [...milestone.stages]
+								.reverse()
+								.find((stage) => completionStageDate(milestone, stage.id))?.id;
+				if (!id) return;
+				const achieved = recordValue(milestone.achieved);
+				const hoursAt = numberRecordValue(milestone.hours_at);
+				delete achieved[id];
+				delete hoursAt[id];
+				milestone.achieved = achieved;
+				milestone.hours_at = hoursAt;
+			} else {
+				milestone.achieved = null;
+				milestone.hours_at = null;
+			}
+		} else {
 			const achieved = recordValue(milestone.achieved);
 			const hoursAt = numberRecordValue(milestone.hours_at);
-			delete achieved[String(tier)];
-			delete hoursAt[String(tier)];
+			const tiers = milestone.tiers ?? [];
+			const target =
+				tier === undefined
+					? [...tiers].reverse().find((value) => achieved[String(value)])
+					: Number(tier);
+			if (target !== undefined) {
+				if (!Number.isFinite(target) || !tiers.includes(target))
+					throw new Error("Numeric milestone tier not found.");
+				if (!achieved[String(target)]) return;
+				// Numeric tiers are cumulative: undoing a tier also invalidates later tiers.
+				for (const value of tiers.filter((value) => value >= target)) {
+					delete achieved[String(value)];
+					delete hoursAt[String(value)];
+				}
+			} else if ((milestone.current ?? 0) === 0) return;
+			const previousTier = [...tiers].reverse().find((value) => achieved[String(value)]) ?? 0;
+			recordNumericMilestoneProgress(
+				milestone,
+				Math.min(milestone.current ?? 0, previousTier),
+				new Date().toISOString().slice(0, 10),
+				true
+			);
 			milestone.achieved = achieved;
 			milestone.hours_at = hoursAt;
 		}

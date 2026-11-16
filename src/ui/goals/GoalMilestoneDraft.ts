@@ -1,31 +1,45 @@
-import type { GoalDraftMilestone } from "../../goals/goalTypes";
+import type { GoalDraftMilestone, GoalMilestoneStage } from "../../goals/goalTypes";
 
 export interface MilestoneDraftState {
 	name: string;
 	kind: "number" | "boolean";
 	tiers: string[];
 	unit?: string;
+	stages?: GoalMilestoneStage[];
 }
 
 export function parseMilestoneDraft(state: MilestoneDraftState): GoalDraftMilestone | null {
 	if (!state.name.trim()) return null;
-	const tiers = state.kind === "boolean" ? [] : state.tiers.map((value) => Number(value.trim()));
+	if (state.kind === "boolean") {
+		const stages = state.stages ?? [{ id: "complete", name: "完成" }];
+		if (
+			!stages.length ||
+			stages.some((stage) => !stage.name.trim() || !stage.id) ||
+			new Set(stages.map((stage) => stage.id)).size !== stages.length
+		)
+			return null;
+		return {
+			name: state.name.trim(),
+			tiers: [],
+			stages: stages.map((stage) => ({ ...stage, name: stage.name.trim() })),
+		};
+	}
+	const tiers = state.tiers.map((value) => Number(value.trim()));
 	if (
-		state.kind === "number" &&
-		(!tiers.length ||
-			tiers.some(
-				(value, index) =>
-					!state.tiers[index].trim() ||
-					!Number.isFinite(value) ||
-					value <= 0 ||
-					(index > 0 && value <= tiers[index - 1])
-			))
+		!tiers.length ||
+		tiers.some(
+			(value, index) =>
+				!state.tiers[index].trim() ||
+				!Number.isFinite(value) ||
+				value <= 0 ||
+				(index > 0 && value <= tiers[index - 1])
+		)
 	)
 		return null;
 	return {
 		name: state.name.trim(),
 		tiers,
-		...(state.kind === "number" && state.unit?.trim() ? { unit: state.unit.trim() } : {}),
+		...(state.unit?.trim() ? { unit: state.unit.trim() } : {}),
 	};
 }
 
@@ -34,9 +48,11 @@ export function renderMilestoneDraft(
 	parent: HTMLElement,
 	state: MilestoneDraftState,
 	onChange: () => void,
-	onRemove: () => void
+	onRemove: () => void,
+	options: { lockKind?: boolean; removeLabel?: string } = {}
 ): void {
 	const row = parent.createDiv({ cls: "tn-goal-modal__milestone-row" });
+	const usedStageIds = new Set(state.stages?.map((stage) => stage.id) ?? []);
 	const draw = (): void => {
 		row.empty();
 		const header = row.createDiv({ cls: "tn-goal-modal__milestone-header" });
@@ -60,6 +76,7 @@ export function renderMilestoneDraft(
 				cls: state.kind === kind ? "is-selected" : "",
 				attr: { type: "button", "aria-pressed": String(state.kind === kind) },
 			});
+			button.disabled = options.lockKind === true;
 			button.addEventListener("click", () => {
 				state.kind = kind;
 				if (!state.tiers.length) state.tiers.push("");
@@ -71,14 +88,62 @@ export function renderMilestoneDraft(
 		const remove = header.createEl("button", {
 			cls: "tn-goal-modal__remove",
 			text: "×",
-			attr: { type: "button", "aria-label": "移除此里程碑" },
+			attr: { type: "button", "aria-label": options.removeLabel ?? "移除此里程碑" },
 		});
 		remove.addEventListener("click", onRemove);
 		if (state.kind === "boolean") {
-			row.createDiv({
-				cls: "tn-goal-modal__milestone-boolean-hint",
-				text: "一个勾选项 · 达成时二次确认并回填累计投入，不需要档位",
+			const stages = (state.stages ??= [{ id: "complete", name: "完成" }]);
+			const tierRow = row.createDiv({
+				cls: "tn-goal-modal__tier-row tn-goal-modal__stage-row",
 			});
+			for (const [index, stage] of stages.entries()) {
+				const chip = tierRow.createSpan({
+					cls: "tn-goal-modal__tier-chip tn-goal-modal__stage-chip",
+				});
+				chip.createSpan({ text: `L${index + 1}` });
+				const input = chip.createEl("input", {
+					attr: {
+						type: "text",
+						value: stage.name,
+						placeholder: "阶段名称",
+						"aria-label": `第 ${index + 1} 档阶段名称`,
+					},
+				});
+				input.addEventListener("input", () => {
+					stage.name = input.value;
+					update();
+				});
+				const removeStage = chip.createEl("button", {
+					text: "×",
+					attr: { type: "button", "aria-label": `移除第 ${index + 1} 档` },
+				});
+				removeStage.disabled = stages.length === 1;
+				removeStage.addEventListener("click", () => {
+					stages.splice(index, 1);
+					draw();
+					onChange();
+				});
+			}
+			const add = tierRow.createEl("button", {
+				cls: "tn-goal-modal__add-tier",
+				text: "+ 档",
+				attr: { type: "button" },
+			});
+			add.addEventListener("click", () => {
+				let suffix = 1;
+				while (usedStageIds.has(`stage-${suffix}`)) suffix += 1;
+				usedStageIds.add(`stage-${suffix}`);
+				stages.push({ id: `stage-${suffix}`, name: "" });
+				draw();
+				onChange();
+				row.querySelectorAll<HTMLInputElement>(".tn-goal-modal__stage-chip input")[
+					stages.length - 1
+				]?.focus();
+			});
+			row.createDiv({
+				cls: "tn-goal-modal__tier-message",
+			});
+			update(false);
 			return;
 		}
 		const tiers = row.createDiv({ cls: "tn-goal-modal__tier-row" });
@@ -147,8 +212,12 @@ export function renderMilestoneDraft(
 		message?.toggleClass("is-error", !validTiers);
 		message?.setText(
 			validTiers
-				? `${state.tiers.length} 档 · 进度按档位等分，不按数值等分`
-				: "至少填写一档，并按从小到大排列"
+				? state.kind === "boolean"
+					? `${state.stages?.length ?? 1} 档 · 每档单独确认，记录完成日期与累计投入`
+					: `${state.tiers.length} 档 · 进度按档位等分，不按数值等分`
+				: state.kind === "boolean"
+					? "至少保留一档，并填写每档阶段名称"
+					: "至少填写一档，并按从小到大排列"
 		);
 		if (notify) onChange();
 	};

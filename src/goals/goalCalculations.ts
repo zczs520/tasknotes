@@ -7,6 +7,7 @@ import {
 } from "../utils/timeStatistics";
 import type { GoalDefinition, GoalPeriod, GoalProgress, GoalSettingsSnapshot } from "./goalTypes";
 import type { TaskInfo } from "../types";
+import { completionStages, completionStageDate } from "./milestoneStages";
 
 const HOUR_MS = 60 * 60 * 1000;
 
@@ -296,7 +297,13 @@ export function countZeroGoalPeriods(
 }
 
 export function milestoneProgress(milestone: GoalDefinition["milestones"][number]): number {
-	if (milestone.kind === "boolean") return milestone.achieved ? 1 : 0;
+	if (milestone.kind === "boolean") {
+		const stages = completionStages(milestone);
+		return (
+			stages.filter((stage) => completionStageDate(milestone, stage.id)).length /
+			stages.length
+		);
+	}
 	const tiers = milestone.tiers ?? [];
 	if (tiers.length === 0) return 0;
 	const current = milestone.current ?? 0;

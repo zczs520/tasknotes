@@ -38,6 +38,7 @@ Task lists, calendars, agenda, Pomodoro and relationship views start disabled. E
 Default active views:
 - [[TASKquence/Views/kanban-default.base|Kanban]]
 - [[TASKquence/Views/time-statistics.base|Time statistics]]
+- [[TASKquence/Views/goals.base|Goal management]]
 
 You can change their file paths in settings, or embed a Base by adding ! before its wiki link.
 
@@ -83,6 +84,7 @@ export const STARTER_NOTE_CHINESE_CONTENT = `# 欢迎使用 TaskNotes Time
 默认启用的视图：
 - [[TASKquence/Views/kanban-default.base|看板]]
 - [[TASKquence/Views/time-statistics.base|时间统计]]
+- [[TASKquence/Views/goals.base|目标管理]]
 
 可在设置里修改文件路径，也可以在上述双链前加上 ! 将视图嵌入笔记。
 

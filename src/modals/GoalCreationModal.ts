@@ -6,10 +6,11 @@ import type {
 	GoalGroupDraft,
 	GoalMode,
 	GoalPeriod,
+	GoalMilestoneStage,
 } from "../goals/goalTypes";
 import { goalCopy } from "../goals/goalCopy";
 import { normalizeGoalTag } from "../goals/goalCalculations";
-import { renderMilestoneDraft } from "../ui/goals/GoalMilestoneDraft";
+import { renderMilestoneDraft, parseMilestoneDraft } from "../ui/goals/GoalMilestoneDraft";
 
 type DraftItemState = {
 	name: string;
@@ -19,6 +20,7 @@ type DraftItemState = {
 	milestoneTiers: string;
 	milestoneUnit?: string;
 	milestoneKind?: "number" | "boolean";
+	milestoneStages?: GoalMilestoneStage[];
 	milestoneVisible?: boolean;
 	baseline?: number;
 	extraMilestones?: DraftItemState[];
@@ -26,14 +28,6 @@ type DraftItemState = {
 
 function tagLeaf(tag: string): string {
 	return tag.split("/").filter(Boolean).pop() ?? tag;
-}
-
-function parseTiers(value: string): number[] | null {
-	if (!value.trim()) return [];
-	const tiers = value.split(/[,，]/u).map((item) => (item.trim() ? Number(item.trim()) : NaN));
-	if (tiers.some((tier) => !Number.isFinite(tier) || tier <= 0)) return null;
-	if (tiers.some((tier, index) => index > 0 && tier <= tiers[index - 1])) return null;
-	return tiers;
 }
 
 export class GoalCreationModal extends Modal {
@@ -48,6 +42,7 @@ export class GoalCreationModal extends Modal {
 	private parentMilestoneTiers = "";
 	private parentMilestoneUnit = "";
 	private parentMilestoneKind: "number" | "boolean" = "number";
+	private parentMilestoneStages: GoalMilestoneStage[] | undefined = undefined;
 	private parentMilestoneVisible = false;
 	private parentExtraMilestones: DraftItemState[] = [];
 	private goals: GoalDefinition[] = [];
@@ -178,6 +173,7 @@ export class GoalCreationModal extends Modal {
 					next.milestoneTiers = old.milestoneTiers;
 					next.milestoneUnit = old.milestoneUnit;
 					next.milestoneKind = old.milestoneKind;
+					next.milestoneStages = old.milestoneStages;
 					next.milestoneVisible = old.milestoneVisible;
 					next.extraMilestones = old.extraMilestones;
 				}
@@ -362,6 +358,7 @@ export class GoalCreationModal extends Modal {
 			kind: state?.milestoneKind ?? this.parentMilestoneKind,
 			tiers: (state?.milestoneTiers ?? this.parentMilestoneTiers).split(/[,，]/u),
 			unit: state?.milestoneUnit ?? this.parentMilestoneUnit,
+			stages: state ? state.milestoneStages : this.parentMilestoneStages,
 		};
 		renderMilestoneDraft(
 			parent,
@@ -372,11 +369,13 @@ export class GoalCreationModal extends Modal {
 					state.milestoneKind = draft.kind;
 					state.milestoneTiers = draft.tiers.join(",");
 					state.milestoneUnit = draft.unit;
+					state.milestoneStages = draft.stages;
 				} else {
 					this.parentMilestoneName = draft.name;
 					this.parentMilestoneKind = draft.kind;
 					this.parentMilestoneTiers = draft.tiers.join(",");
 					this.parentMilestoneUnit = draft.unit;
+					this.parentMilestoneStages = draft.stages;
 				}
 				this.updateCreateButton();
 			},
@@ -451,20 +450,18 @@ export class GoalCreationModal extends Modal {
 			| "milestoneTiers"
 			| "milestoneVisible"
 			| "milestoneUnit"
+			| "milestoneStages"
 		>
 	): GoalDraftMilestone | null | undefined {
 		if (!state.milestoneVisible) return undefined;
 		if (!state.milestoneName.trim()) return null;
-		if (state.milestoneKind === "boolean") {
-			return { name: state.milestoneName.trim(), tiers: [] };
-		}
-		const tiers = parseTiers(state.milestoneTiers);
-		if (!tiers?.length) return null;
-		return {
-			name: state.milestoneName.trim(),
-			tiers,
-			...(state.milestoneUnit?.trim() ? { unit: state.milestoneUnit.trim() } : {}),
-		};
+		return parseMilestoneDraft({
+			name: state.milestoneName,
+			kind: state.milestoneKind ?? "number",
+			tiers: state.milestoneTiers.split(/[,，]/u),
+			unit: state.milestoneUnit,
+			stages: state.milestoneStages,
+		});
 	}
 
 	private extraDrafts(states: DraftItemState[]): GoalDraftMilestone[] | null {
@@ -501,6 +498,7 @@ export class GoalCreationModal extends Modal {
 			milestoneTiers: this.parentMilestoneTiers,
 			milestoneUnit: this.parentMilestoneUnit,
 			milestoneKind: this.parentMilestoneKind,
+			milestoneStages: this.parentMilestoneStages,
 			milestoneVisible: this.parentMilestoneVisible,
 		});
 		const parentExtras = this.extraDrafts(this.parentExtraMilestones);

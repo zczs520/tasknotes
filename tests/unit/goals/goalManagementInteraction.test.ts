@@ -165,7 +165,7 @@ describe("reference goal management interactions", () => {
 			await flush();
 			expect(service.getProgress).toHaveBeenCalledTimes(2);
 			schedule();
-			await view.onClose();
+			view.onunload();
 			jest.advanceTimersByTime(120);
 			await flush();
 			expect(service.getProgress).toHaveBeenCalledTimes(2);
@@ -283,12 +283,13 @@ describe("reference goal management interactions", () => {
 		form.querySelectorAll<HTMLButtonElement>(
 			".tn-goal-modal__milestone-kinds button"
 		)[1].click();
-		expect(form.querySelector(".tn-goal-modal__tier-row")).toBeNull();
+		expect(form.querySelector(".tn-goal-modal__stage-row")).not.toBeNull();
 		form.querySelector<HTMLButtonElement>(".mod-cta")!.click();
 		await flush();
 		expect(service.addMilestone).toHaveBeenCalledWith("造船.md", {
 			name: "发布产品",
 			tiers: [],
+			stages: [{ id: "complete", name: "完成" }],
 		});
 	});
 	it("offers searchable checkbox tag selection and disables tags owned by another goal", async () => {

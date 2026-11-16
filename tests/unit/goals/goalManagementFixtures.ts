@@ -1,7 +1,7 @@
 import type TaskNotesPlugin from "../../../src/main";
 import type { GoalDefinition, GoalProgress } from "../../../src/goals/goalTypes";
 import { GoalDetailModal } from "../../../src/modals/GoalDetailModal";
-import { GoalsView } from "../../../src/views/GoalsView";
+import { GoalManagementPanel } from "../../../src/ui/goals/GoalManagementPanel";
 import { MockObsidian } from "../../helpers/obsidian-runtime";
 import { zh } from "../../../src/i18n/resources/zh";
 import { en } from "../../../src/i18n/resources/en";
@@ -82,6 +82,7 @@ export function managementSetup(
 			items.find((goal) => goal.scope.includes(tag)) ?? null,
 		updateMilestone: jest.fn().mockResolvedValue({ crossedTiers: [] }),
 		updateMilestoneUnit: jest.fn().mockResolvedValue(undefined),
+		updateMilestoneDefinition: jest.fn().mockResolvedValue(undefined),
 		undoMilestoneAchievement: jest.fn().mockResolvedValue(undefined),
 		removeMilestone: jest.fn().mockResolvedValue(undefined),
 		addMilestone: jest.fn().mockResolvedValue(undefined),
@@ -116,14 +117,15 @@ export function managementSetup(
 	} as unknown as TaskNotesPlugin;
 	const contentEl = document.createElement("div");
 	document.body.appendChild(contentEl);
-	const view = Object.assign(Object.create(GoalsView.prototype), {
+	const view = Object.assign(Object.create(GoalManagementPanel.prototype), {
 		plugin,
 		contentEl,
+		initialized: true,
 		filter: "all",
 		range: "week",
 		referenceDate: new Date(),
 		renderVersion: 0,
-	}) as GoalsView;
+	}) as GoalManagementPanel;
 	const renderView = () => (view as unknown as { render: () => Promise<void> }).render();
 	const changed = jest.fn();
 	const modal = new GoalDetailModal(plugin, goals[0].path, changed);

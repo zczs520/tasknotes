@@ -171,6 +171,11 @@ export function renderGeneralTab(
 			defaultPath: "TASKquence/Views/time-statistics.base",
 		},
 		{
+			id: "open-goals-view",
+			nameKey: undefined,
+			defaultPath: "TASKquence/Views/goals.base",
+		},
+		{
 			id: "pomodoro-stats-base",
 			nameKey: "pomodoroStats" as const,
 			defaultPath: "TASKquence/Views/pomodoro-stats.base",
@@ -226,9 +231,11 @@ export function renderGeneralTab(
 			// Command file mappings
 			commandMappings.forEach(({ id, nameKey, defaultPath }) => {
 				group.addSetting((setting) => {
-					const commandName = translate(
-						`settings.integrations.basesIntegration.viewCommands.commands.${nameKey}`
-					);
+					const commandName = nameKey
+						? translate(
+								`settings.integrations.basesIntegration.viewCommands.commands.${nameKey}`
+							)
+						: translate("goals.management");
 					setting.setName(commandName);
 					addViewToggle(setting, id);
 					setting.setDesc(
@@ -293,7 +300,6 @@ export function renderGeneralTab(
 			});
 
 			for (const [id, nameKey] of [
-				["open-goals-view", "commands.openGoalsView"],
 				["open-pomodoro-view", "commands.openPomodoroView"],
 				["open-pomodoro-stats", "commands.openPomodoroStats"],
 			]) {

@@ -3,13 +3,14 @@ import type TaskNotesPlugin from "../../main";
 import type { GoalDefinition, GoalMilestone } from "../../goals/goalTypes";
 import { milestoneProgress } from "../../goals/goalCalculations";
 import { showConfirmationModal } from "../../modals/ConfirmationModal";
+import {
+	completionStages,
+	completionStageDate,
+	isGoalMilestoneComplete as isMilestoneComplete,
+} from "../../goals/milestoneStages";
+import { renderGoalMilestoneEditor } from "./GoalMilestoneEditor";
 
-export function isMilestoneComplete(milestone: GoalMilestone): boolean {
-	if (milestone.kind === "boolean")
-		return typeof milestone.achieved === "string" && Boolean(milestone.achieved);
-	const tiers = milestone.tiers ?? [];
-	return tiers.length > 0 && tiers.every((tier) => Boolean(achievementDate(milestone, tier)));
-}
+export { isMilestoneComplete };
 
 export function formatMilestoneValue(value: number, unit?: string): string {
 	const normalizedUnit = unit?.trim() ?? "";
@@ -85,6 +86,7 @@ export function renderGoalMilestoneCard(
 		const controls = [
 			...card.querySelectorAll<HTMLInputElement | HTMLButtonElement>("button, input"),
 		];
+		const disabledStates = controls.map((control) => control.disabled);
 		controls.forEach((control) => {
 			control.disabled = true;
 		});
@@ -101,8 +103,8 @@ export function renderGoalMilestoneCard(
 			new Notice(String(error), 8000);
 		} finally {
 			busy = false;
-			controls.forEach((control) => {
-				control.disabled = false;
+			controls.forEach((control, controlIndex) => {
+				control.disabled = disabledStates[controlIndex];
 			});
 		}
 	};
@@ -117,7 +119,7 @@ export function renderGoalMilestoneCard(
 		const unit = milestone.unit ?? "";
 		action.createSpan({
 			cls: "tn-goal-stock__value",
-			text: `${formatMilestoneValue(current, unit)} → ${next === undefined ? "全部达成" : formatMilestoneValue(next, unit)}`,
+			text: `${formatMilestoneValue(current, unit)} → ${complete ? "全部达成" : next === undefined ? "待确认达成" : formatMilestoneValue(next, unit)}`,
 		});
 		const entry = options.detail ? card.createDiv({ cls: "tn-goal-stock__entry" }) : action;
 		const input = entry.createEl("input", {
@@ -196,11 +198,12 @@ export function renderGoalMilestoneCard(
 				text: formatMilestoneValue(tier, unit),
 			});
 		}
-		if (options.detail) {
+		if (options.detail && tiers.some((tier) => achievementDate(milestone, tier))) {
 			const labels = card.createDiv({ cls: "tn-goal-stock__tier-labels" });
 			for (const tier of tiers) {
+				const date = achievementDate(milestone, tier);
 				labels.createSpan({
-					text: `${formatMilestoneValue(tier, unit)}${achievementDate(milestone, tier) ? ` · ${achievementDate(milestone, tier)}` : ""}`,
+					text: date ? `${formatMilestoneValue(tier, unit)} · ${date}` : "",
 				});
 			}
 		}
@@ -228,7 +231,10 @@ export function renderGoalMilestoneCard(
 		if (options.detail && achievedTier !== undefined) {
 			const undo = entry.createEl("button", {
 				text: `撤销第 ${tiers.indexOf(achievedTier) + 1} 档`,
-				attr: { type: "button" },
+				attr: {
+					type: "button",
+					title: "回退到上一已达成档位，同时撤销本档及后续档位的达成记录",
+				},
 			});
 			undo.addEventListener(
 				"click",
@@ -238,46 +244,123 @@ export function renderGoalMilestoneCard(
 					)
 			);
 		}
-	} else if (complete) {
-		const date = achievementDate(milestone) ?? "";
+	} else {
+		const stages = completionStages(milestone);
+		const next = stages.find((stage) => !completionStageDate(milestone, stage.id));
+		const achieved = stages.filter((stage) => completionStageDate(milestone, stage.id));
 		action.createSpan({
 			cls: "tn-goal-stock__value",
-			text: `${date} 达成 · 历时 ${elapsedWeeks(goal.created, new Date(`${date}T23:59:59`))} 周`,
+			text: `${achieved.length}/${stages.length} 档${complete ? " · 全部达成" : ` · 已投入 ${hours(invested)}`}`,
 		});
-		card.createDiv({
-			cls: "tn-goal-stock__note",
-			text: `已达成的不隐藏——它是存量的证据${typeof milestone.hours_at === "number" ? ` · 累计投入 ${hours(milestone.hours_at)}` : ""}。撤销只在详情页`,
-		});
-		if (options.detail) {
-			const undo = action.createEl("button", { text: "撤销达成", attr: { type: "button" } });
-			undo.addEventListener(
+		if (next) {
+			const done = action.createEl("button", {
+				text: stages.length > 1 ? `标记「${next.name}」达成` : "标记达成",
+				attr: { type: "button" },
+			});
+			done.addEventListener(
 				"click",
-				() => void run(() => plugin.goalService.undoMilestoneAchievement(goal.path, index))
+				() =>
+					void run(async () => {
+						const confirmed = await showConfirmationModal(plugin.app, {
+							title: `确认达成「${milestone.name} · ${next.name}」？`,
+							message:
+								"确认后记录本档完成日期与从目标创建以来的累计投入；可在详情页撤销。",
+							confirmText: "确认达成",
+						});
+						if (!confirmed) return false;
+						if (milestone.stages?.length)
+							await plugin.goalService.updateMilestone(
+								goal.path,
+								index,
+								true,
+								next.id
+							);
+						else await plugin.goalService.updateMilestone(goal.path, index, true);
+					})
 			);
 		}
-	} else {
-		action.createSpan({ cls: "tn-goal-stock__value", text: `已投入 ${hours(invested)}` });
-		const done = action.createEl("button", { text: "标记达成", attr: { type: "button" } });
-		done.addEventListener(
-			"click",
-			() =>
-				void run(async () => {
-					const confirmed = await showConfirmationModal(plugin.app, {
-						title: `确认达成「${milestone.name}」？`,
-						message:
-							"确认后记录达成日期，并回填从目标创建以来的累计投入；可在详情页撤销。",
-						confirmText: "确认达成",
+		const bar = card.createDiv({
+			cls: "tn-goal-stock__bar",
+			attr: {
+				role: "progressbar",
+				"aria-label": milestone.name,
+				"aria-valuemin": "0",
+				"aria-valuemax": "100",
+				"aria-valuenow": String(Math.round((achieved.length / stages.length) * 100)),
+			},
+		});
+		bar.createDiv({ cls: "tn-goal-stock__fill" }).style.width =
+			`${(achieved.length / stages.length) * 100}%`;
+		for (const [stageIndex, stage] of stages.entries()) {
+			const date = completionStageDate(milestone, stage.id);
+			const dot = bar.createSpan({
+				cls: `tn-goal-stock__tier${date ? " is-achieved" : ""}`,
+				attr: { title: `${stage.name}${date ? ` · ${date} 达成` : " · 未达成"}` },
+			});
+			dot.style.left = `${((stageIndex + 1) / stages.length) * 100}%`;
+			dot.createSpan({ cls: "tn-goal-stock__tier-value", text: stage.name });
+		}
+		if (achieved.length) {
+			const history = card.createDiv({ cls: "tn-goal-stock__stage-history" });
+			for (const stage of achieved) {
+				const entry = history.createDiv({ cls: "tn-goal-stock__stage-record" });
+				const investedAt =
+					typeof milestone.hours_at === "number"
+						? milestone.hours_at
+						: milestone.hours_at?.[stage.id];
+				entry.createSpan({
+					text: `${stage.name} · ${completionStageDate(milestone, stage.id)}${investedAt !== undefined ? ` · 累计投入 ${hours(investedAt)}` : ""}`,
+				});
+				if (options.detail) {
+					const undo = entry.createEl("button", {
+						text: `撤销第 ${stages.indexOf(stage) + 1} 档`,
+						attr: { type: "button" },
 					});
-					if (!confirmed) return false;
-					await plugin.goalService.updateMilestone(goal.path, index, true);
-				})
-		);
+					undo.addEventListener(
+						"click",
+						() =>
+							void run(() =>
+								milestone.stages?.length
+									? plugin.goalService.undoMilestoneAchievement(
+											goal.path,
+											index,
+											stage.id
+										)
+									: plugin.goalService.undoMilestoneAchievement(goal.path, index)
+							)
+					);
+				}
+			}
+		}
 		card.createDiv({
 			cls: "tn-goal-stock__note",
-			text: "完成型 · 做完就算完，标记时会二次确认并回填累计投入",
+			text: next
+				? `完成型 · 下一档：${next.name} · 每档单独确认完成`
+				: "完成型 · 所有档位已达成",
 		});
 	}
 	if (options.detail) {
+		const edit = action.createEl("button", {
+			cls: "tn-goal-stock__edit",
+			text: "编辑",
+			attr: { type: "button", "aria-label": `编辑里程碑${milestone.name}` },
+		});
+		edit.addEventListener("click", () => {
+			if (card.querySelector(".tn-goal-stock__editor")) return;
+			const editor = renderGoalMilestoneEditor(
+				card,
+				milestone,
+				(draft) =>
+					void run(async () => {
+						await plugin.goalService.updateMilestoneDefinition(goal.path, index, draft);
+						editor.remove();
+					}),
+				() => {
+					editor.remove();
+					edit.focus();
+				}
+			);
+		});
 		const remove = action.createEl("button", {
 			cls: "tn-goal-stock__remove",
 			attr: { type: "button", "aria-label": `删除里程碑${milestone.name}` },

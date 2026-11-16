@@ -36,6 +36,10 @@ jest.mock("../../../src/bases/TimeStatisticsView", () => ({
 	buildTimeStatisticsViewFactory: jest.fn(() => jest.fn()),
 }));
 
+jest.mock("../../../src/bases/GoalsView", () => ({
+	buildGoalsViewFactory: jest.fn(() => jest.fn()),
+}));
+
 describe("Bases registration localization", () => {
 	it("registers Kanban configuration labels in Chinese", async () => {
 		const plugin = {
@@ -97,6 +101,9 @@ describe("Bases registration localization", () => {
 			(call) => call[1] === "tasknotesTimeStatistics"
 		);
 		expect(timeStatisticsCall?.[2].name).toBe("TaskNotes Time 时间统计");
+		expect(registerMock.mock.calls.find((call) => call[1] === "tasknotesGoals")?.[2].name).toBe(
+			"目标管理"
+		);
 		const timeStatisticsOptions = timeStatisticsCall?.[2].options?.(config) ?? [];
 		const pendingGroup = timeStatisticsOptions.find(
 			(option) => option.type === "group" && option.displayName === "待更新的里程碑显示位置"

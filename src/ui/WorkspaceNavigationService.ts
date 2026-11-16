@@ -9,6 +9,8 @@ import {
 } from "../types";
 import { RELEASE_NOTES_VIEW_TYPE } from "../views/ReleaseNotesView";
 import { showNotice } from "../ui/notifications";
+import { isBasesPluginAvailable } from "../bases/api";
+import { GoalDetailModal } from "../modals/GoalDetailModal";
 
 type WorkspaceLeafLike = {
 	isDeferred?: boolean;
@@ -104,6 +106,13 @@ export class WorkspaceNavigationService {
 	}
 
 	async activateGoalsView(goalPath?: string): Promise<WorkspaceLeaf> {
+		if (this.plugin.settings.enableBases && isBasesPluginAvailable(this.plugin.app)) {
+			const baseLeaf = await this.openBasesFileForCommand("open-goals-view");
+			if (baseLeaf) {
+				if (goalPath) new GoalDetailModal(this.plugin, goalPath, () => {}).open();
+				return baseLeaf as WorkspaceLeaf;
+			}
+		}
 		const leaf = await this.activateView(GOALS_VIEW_TYPE);
 		if (goalPath) {
 			await leaf.setViewState({
@@ -137,7 +146,7 @@ export class WorkspaceNavigationService {
 		return match;
 	}
 
-	async openBasesFileForCommand(commandId: string): Promise<void> {
+	async openBasesFileForCommand(commandId: string): Promise<WorkspaceLeafLike | undefined> {
 		const filePath = this.plugin.settings.commandFileMapping[commandId];
 		if (!filePath) {
 			showNotice(`No file configured for command: ${commandId}`);
@@ -174,10 +183,11 @@ export class WorkspaceNavigationService {
 		const existingLeaf = this.findLeafForFile(normalizedPath);
 		if (existingLeaf) {
 			await this.revealLeafReady(existingLeaf);
-			return;
+			return existingLeaf;
 		}
 
 		const leaf = this.plugin.app.workspace.getLeaf("tab");
 		await leaf.openFile(file);
+		return leaf;
 	}
 }

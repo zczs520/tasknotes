@@ -18,6 +18,7 @@ import { GoalCreationModal } from "../../modals/GoalCreationModal";
 import { showConfirmationModal } from "../../modals/ConfirmationModal";
 import { getStatisticsColor } from "../../utils/statisticsColors";
 import { formatMilestoneValue, isMilestoneComplete } from "./GoalMilestoneCard";
+import { completionStages, completionStageDate } from "../../goals/milestoneStages";
 import {
 	buildTimeStatisticsSegments,
 	shiftTimeStatisticsReference,
@@ -184,8 +185,11 @@ async function updateBooleanMilestone(
 	onRefresh: () => void | Promise<void>
 ): Promise<void> {
 	const milestone = goal.milestones[index];
+	const stage = completionStages(milestone).find(
+		(item) => !completionStageDate(milestone, item.id)
+	);
 	const confirmed = await showConfirmationModal(plugin.app, {
-		title: `${goalCopy(plugin, "confirmAchievement")}「${milestone.name}」？`,
+		title: `${goalCopy(plugin, "confirmAchievement")}「${milestone.name}${milestone.stages?.length && stage ? ` · ${stage.name}` : ""}」？`,
 		message: goalCopy(plugin, "confirmAchievementDescription"),
 		confirmText: goalCopy(plugin, "confirmAchievement"),
 		isDestructive: false,
@@ -195,12 +199,18 @@ async function updateBooleanMilestone(
 		await plugin.goalService.updateMilestone(goal.path, index, true);
 		const updated = await plugin.goalService.getGoal(goal.path);
 		const achieved = updated?.milestones[index];
+		const invested =
+			typeof achieved?.hours_at === "number"
+				? achieved.hours_at
+				: stage
+					? achieved?.hours_at?.[stage.id]
+					: undefined;
 		new MilestoneAchievementModal(
 			plugin,
 			goal,
 			milestone.name,
-			"✓",
-			typeof achieved?.hours_at === "number" ? achieved.hours_at : null,
+			stage?.name ?? "✓",
+			invested ?? null,
 			1
 		).open();
 		await onRefresh();
@@ -291,23 +301,32 @@ function renderPendingMilestone(
 			text: updateAge,
 		});
 	if (milestone.kind === "boolean") {
+		const stages = completionStages(milestone);
+		const nextStage = stages.find((stage) => !completionStageDate(milestone, stage.id));
 		const hours = typeof milestone.hours_at === "number" ? milestone.hours_at : investedHours;
 		if (card) {
 			body.createDiv({
 				cls: "tn-goal-pending__boolean-meta",
 				text:
 					hours !== undefined
-						? `${chinese ? "当前已投入" : "Invested"} ${Number(hours.toFixed(1))}h · ${chinese ? "阶段目标：完成" : "Stage: complete"}`
+						? `${chinese ? "当前已投入" : "Invested"} ${Number(hours.toFixed(1))}h · ${chinese ? "阶段目标：" : "Stage: "}${nextStage?.name ?? "完成"}`
 						: chinese
-							? "当前未完成 · 阶段目标：完成"
-							: "Open · Stage: complete",
+							? `当前未完成 · 阶段目标：${nextStage?.name ?? "完成"}`
+							: `Open · Stage: ${nextStage?.name ?? "complete"}`,
 			});
 		}
 		if (!readOnly) {
 			const check = row.createEl("button", {
 				cls: "tn-goal-pending__check",
 				attr: { type: "button", "aria-label": goalCopy(plugin, "confirmAchievement") },
-				text: compact && !card ? "" : chinese ? "标记达成" : "Mark achieved",
+				text:
+					compact && !card
+						? ""
+						: chinese
+							? stages.length > 1
+								? `达成「${nextStage?.name ?? "完成"}」`
+								: "标记达成"
+							: "Mark achieved",
 			});
 			check.addEventListener("click", (event) => {
 				event.stopPropagation();
@@ -533,8 +552,18 @@ function milestoneEventCopy(
 	if (event.kind === "achievement") {
 		if (event.milestone.kind === "boolean") {
 			return {
-				primary: chinese ? `${date}达成全部目标` : `${date} · Completed`,
-				secondary: chinese ? "里程碑全部完成" : "Milestone completed",
+				primary: event.achievedStages?.length
+					? `${date}${chinese ? "达成" : " · Completed "}${event.achievedStages.join("、")}`
+					: chinese
+						? `${date}达成全部目标`
+						: `${date} · Completed`,
+				secondary: event.completed
+					? chinese
+						? "里程碑全部完成"
+						: "Milestone completed"
+					: chinese
+						? "阶段已完成"
+						: "Stage completed",
 			};
 		}
 		const achieved = event.achievedTiers.map((tier) =>
@@ -1044,7 +1073,7 @@ export async function renderGoalProgressPanel(
 				({ goal, milestone }) =>
 					goal.status === "active" &&
 					(milestone.kind === "boolean"
-						? typeof milestone.achieved !== "string"
+						? !isMilestoneComplete(milestone)
 						: (milestone.tiers ?? []).some((tier) => tier > (milestone.current ?? 0)))
 			);
 		if (pending.length) {

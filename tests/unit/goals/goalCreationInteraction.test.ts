@@ -28,6 +28,50 @@ function setup(tags = ["工作", "创作"]) {
 }
 
 describe("goal creation interaction", () => {
+	it("creates named completion tiers and preserves them through goal type switches", async () => {
+		const { modal, plugin, resolveBaseline } = setup();
+		await modal.onOpen();
+		resolveBaseline(4);
+		await Promise.resolve();
+		modal.contentEl.querySelector<HTMLButtonElement>(".tn-goal-modal__add-milestone")!.click();
+		const enter = (selector: string, value: string) => {
+			const input = modal.contentEl.querySelector<HTMLInputElement>(selector)!;
+			input.value = value;
+			input.dispatchEvent(new Event("input"));
+		};
+		enter('input[aria-label="里程碑名称"]', "发布产品");
+		modal.contentEl
+			.querySelectorAll<HTMLButtonElement>(".tn-goal-modal__milestone-kinds button")[1]
+			.click();
+		enter('input[aria-label="第 1 档阶段名称"]', "初稿");
+		modal.contentEl.querySelector<HTMLButtonElement>(".tn-goal-modal__add-tier")!.click();
+		enter('input[aria-label="第 2 档阶段名称"]', "发布");
+		modal.contentEl.querySelectorAll<HTMLButtonElement>(".tn-goal-modal__mode")[1].click();
+		expect(
+			modal.contentEl.querySelector<HTMLInputElement>('input[aria-label="第 2 档阶段名称"]')!
+				.value
+		).toBe("发布");
+		modal.contentEl.querySelector<HTMLButtonElement>(".mod-cta")!.click();
+		await Promise.resolve();
+		expect(plugin.goalService.createGoalGroup).toHaveBeenCalledWith(
+			expect.objectContaining({
+				items: [
+					expect.objectContaining({
+						milestones: [
+							{
+								name: "发布产品",
+								tiers: [],
+								stages: [
+									{ id: "complete", name: "初稿" },
+									{ id: "stage-1", name: "发布" },
+								],
+							},
+						],
+					}),
+				],
+			})
+		);
+	});
 	afterEach(() => document.body.replaceChildren());
 	it("keeps the active input and typed value when a baseline arrives", async () => {
 		const { modal, resolveBaseline } = setup();

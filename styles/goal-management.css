@@ -2008,6 +2008,35 @@ body.theme-dark :is(.tn-goal-modal, .tn-goal-detail-modal, .tn-goals-view, .tn-g
 	overflow-wrap: anywhere;
 }
 
+.tn-goal-stock__editor {
+	margin-block: 12px;
+}
+
+.tn-goal-detail-modal .tn-goal-stock__editor .tn-goal-modal__milestone-header > input {
+	width: 100%;
+	min-width: 120px;
+}
+
+.tn-goal-stock__stage-history {
+	display: grid;
+	gap: 8px;
+	color: var(--tn-goal-faint);
+	font-size: 11px;
+}
+
+.tn-goal-stock__stage-record {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+}
+
+:is(.tn-goal-modal, .tn-goal-detail-modal) .tn-goal-modal__stage-chip input {
+	width: 150px;
+	max-width: 100%;
+}
+
 .tn-goal-detail-modal button.tn-goal-stock__remove {
 	padding: 3px;
 	border: 0;

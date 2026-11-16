@@ -23,7 +23,28 @@ The examples below assume:
 - **Priorities**: `none`, `low`, `normal`, `high` (sorted by weight)
 - **Visible properties**: `status`, `priority`, `due`, `scheduled`, `projects`, `contexts`, `tags`, `blocked`, `blocking`
 
-Kanban and time statistics start enabled. Other views must be enabled under General → Views & base files before their files and shortcuts are generated. New Kanban boards use `swimLane: note.tags`, `enableSearch: true`, `explodeListColumns: true` and `consolidateStatusIcon: true`. Newly discovered swimlanes are shown automatically; explicit hidden-lane choices are preserved.
+Kanban, time statistics and goal management start enabled. Other views must be enabled under General → Views & base files before their files and shortcuts are generated. New Kanban boards use `swimLane: note.tags`, `enableSearch: true`, `explodeListColumns: true` and `consolidateStatusIcon: true`. Newly discovered swimlanes are shown automatically; explicit hidden-lane choices are preserved.
+
+## Goal management
+
+`TASKquence/Views/goals.base` is a linkable entry point for the live goal dashboard. Use `[[TASKquence/Views/goals.base|Goals]]` to link it or `![[TASKquence/Views/goals.base]]` to embed it. Its default template is:
+
+```yaml
+# Goal management
+# Goals are read live from the configured goals folder, not copied into this file.
+
+filters:
+  and:
+    - note.type == "goal"
+
+views:
+  - type: tasknotesGoals
+    name: "Goal management"
+```
+
+The view name follows the plugin language when the file is created. The dashboard shows all goals from the configured goals folder using its own status and period controls; Bases query filters, grouping and sorting do not change this dashboard. Goal notes remain the source of truth. Creating, editing, deleting or renaming a goal, updating a milestone, or changing the goals-folder setting refreshes open goal dashboards. The file contains no goal snapshot or duplicate goal records.
+
+New installations create this Base by default. Existing users get the missing file on startup when automatic Base creation and goal management are enabled. Existing files, custom command paths and goal notes are retained; users who disabled automatic creation can open goal management or use **Create files** to create a missing Base. With Bases disabled, the goal command still opens the standalone dashboard.
 
 ## Included formulas
 

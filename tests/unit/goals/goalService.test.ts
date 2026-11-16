@@ -2,6 +2,9 @@ import type TaskNotesPlugin from "../../../src/main";
 import type { TaskInfo } from "../../../src/types";
 import { GoalService } from "../../../src/services/GoalService";
 import { createMockApp } from "../../helpers/obsidian-runtime";
+import { milestoneProgress } from "../../../src/goals/goalCalculations";
+import { isGoalMilestoneComplete } from "../../../src/goals/milestoneStages";
+import { collectGoalMilestoneEvents } from "../../../src/goals/goalMilestoneEvents";
 
 const content = `---
 type: goal
@@ -43,6 +46,207 @@ function setup(goalContent = content) {
 }
 
 describe("goal service historical attribution and cached reads", () => {
+	it("rolls numeric progress back one achieved tier at a time and reaches zero after all undos", async () => {
+		jest.useFakeTimers().setSystemTime(new Date("2026-11-16T12:00:00"));
+		try {
+			const { service } = setup(content.replace("tiers: [10, 100]", "tiers: [10, 50, 100]"));
+			const path = "Goals/Developer.md";
+			await service.updateMilestone(path, 0, 200);
+			for (const [tier, expected, keys] of [
+				[100, 50, ["10", "50"]],
+				[50, 10, ["10"]],
+				[10, 0, []],
+			] as const) {
+				await service.undoMilestoneAchievement(path, 0, tier);
+				const goal = (await service.getGoal(path))!;
+				const milestone = goal.milestones[0];
+				expect(milestone.current).toBe(expected);
+				expect(Object.keys(milestone.achieved!)).toEqual(keys);
+				expect(Object.keys(milestone.hours_at!)).toEqual(keys);
+				expect(milestoneProgress(milestone)).toBe(
+					expected === 50 ? 2 / 3 : expected === 10 ? 1 / 3 : 0
+				);
+				expect(isGoalMilestoneComplete(milestone)).toBe(false);
+				expect(milestone.progressHistory).toEqual([
+					{ date: "2026-11-16", value: expected },
+				]);
+				const events = collectGoalMilestoneEvents([goal], {
+					start: new Date("2026-11-16"),
+					end: new Date("2026-11-17"),
+				});
+				expect(events.some((event) => event.value === 200 || event.completed)).toBe(false);
+			}
+			await service.updateMilestone(path, 0, 60);
+			expect((await service.getGoal(path))!.milestones[0].achieved).toEqual({
+				"10": "2026-11-16",
+				"50": "2026-11-16",
+			});
+		} finally {
+			jest.useRealTimers();
+		}
+	});
+
+	it("cascades numeric undo to later tiers, keeps earlier history and does not reapply a repeated undo", async () => {
+		jest.useFakeTimers().setSystemTime(new Date("2026-11-15T12:00:00"));
+		try {
+			const { app, service } = setup(
+				content.replace("tiers: [10, 100]", "tiers: [10, 50, 100]")
+			);
+			const path = "Goals/Developer.md";
+			await service.updateMilestone(path, 0, 200);
+			jest.setSystemTime(new Date("2026-11-16T12:00:00"));
+			await service.undoMilestoneAchievement(path, 0, 50);
+			let milestone = (await service.getGoal(path))!.milestones[0];
+			expect(milestone.current).toBe(10);
+			expect(milestone.achieved).toEqual({ "10": "2026-11-15" });
+			expect(milestone.progressHistory).toEqual([
+				{ date: "2026-11-15", value: 200 },
+				{ date: "2026-11-16", value: 10 },
+			]);
+			await service.updateMilestone(path, 0, 20);
+			const file = app.vault.getFileByPath(path)!;
+			const before = await app.vault.read(file);
+			await service.undoMilestoneAchievement(path, 0, 50);
+			expect(await app.vault.read(file)).toBe(before);
+			milestone = (await service.getGoal(path))!.milestones[0];
+			expect(milestone.current).toBe(20);
+		} finally {
+			jest.useRealTimers();
+		}
+	});
+
+	it("can clear residual numeric progress left after all records were undone by older versions", async () => {
+		const { service } = setup(content.replace("current: 0", "current: 200"));
+		const path = "Goals/Developer.md";
+		await service.undoMilestoneAchievement(path, 0);
+		const milestone = (await service.getGoal(path))!.milestones[0];
+		expect(milestone.current).toBe(0);
+		expect(milestoneProgress(milestone)).toBe(0);
+		expect(milestone.achieved).toEqual({});
+	});
+	it("records, edits and undoes named completion stages without losing other stage history", async () => {
+		jest.useFakeTimers().setSystemTime(new Date("2026-11-15T12:00:00"));
+		try {
+			const { service } = setup();
+			const path = "Goals/Developer.md";
+			await service.addMilestone(path, {
+				name: "Launch",
+				tiers: [],
+				stages: [
+					{ id: "draft", name: "Draft" },
+					{ id: "launch", name: "Launch" },
+				],
+			});
+			expect(milestoneProgress((await service.getGoal(path))!.milestones[1])).toBe(0);
+			await service.updateMilestone(path, 1, true, "draft");
+			let milestone = (await service.getGoal(path))!.milestones[1];
+			expect(milestone.achieved).toEqual({ draft: "2026-11-15" });
+			expect(milestoneProgress(milestone)).toBe(0.5);
+			expect(isGoalMilestoneComplete(milestone)).toBe(false);
+			jest.setSystemTime(new Date("2026-11-16T12:00:00"));
+			await service.updateMilestone(path, 1, true);
+			await service.updateMilestoneDefinition(path, 1, {
+				name: "Ship",
+				tiers: [],
+				stages: [
+					{ id: "draft", name: "First draft" },
+					{ id: "launch", name: "Published" },
+					{ id: "review", name: "Review" },
+				],
+			});
+			milestone = (await service.getGoal(path))!.milestones[1];
+			expect(milestone.name).toBe("Ship");
+			expect(milestone.achieved).toEqual({ draft: "2026-11-15", launch: "2026-11-16" });
+			expect(milestone.hours_at).toEqual({ draft: 0, launch: 0 });
+			milestone.stages![0].name = "Do not leak mutation";
+			expect((await service.getGoal(path))!.milestones[1].stages![0].name).toBe(
+				"First draft"
+			);
+			await service.updateMilestone(path, 1, true, "review");
+			expect(isGoalMilestoneComplete((await service.getGoal(path))!.milestones[1])).toBe(
+				true
+			);
+			await service.undoMilestoneAchievement(path, 1, "launch");
+			milestone = (await service.getGoal(path))!.milestones[1];
+			expect(milestone.achieved).toEqual({ draft: "2026-11-15", review: "2026-11-16" });
+			expect(isGoalMilestoneComplete(milestone)).toBe(false);
+		} finally {
+			jest.useRealTimers();
+		}
+	});
+
+	it("adopts a legacy completed milestone as the first stage without fabricating dates for new stages", async () => {
+		const { service } = setup();
+		const path = "Goals/Developer.md";
+		await service.addMilestone(path, { name: "Legacy", tiers: [] });
+		await service.updateMilestone(path, 1, true);
+		const original = (await service.getGoal(path))!.milestones[1];
+		expect(typeof original.achieved).toBe("string");
+		await service.updateMilestoneDefinition(path, 1, {
+			name: "Extended",
+			tiers: [],
+			stages: [
+				{ id: "complete", name: "Original stage" },
+				{ id: "followup", name: "Follow up" },
+			],
+		});
+		let milestone = (await service.getGoal(path))!.milestones[1];
+		expect(milestone.achieved).toEqual({ complete: original.achieved });
+		expect(milestoneProgress(milestone)).toBe(0.5);
+		await service.updateMilestone(path, 1, true);
+		milestone = (await service.getGoal(path))!.milestones[1];
+		expect(isGoalMilestoneComplete(milestone)).toBe(true);
+		await service.updateMilestoneDefinition(path, 1, {
+			name: "Extended",
+			tiers: [],
+			stages: [{ id: "followup", name: "Follow up" }],
+		});
+		milestone = (await service.getGoal(path))!.milestones[1];
+		expect(milestone.achieved).toEqual({ followup: expect.any(String) });
+		expect(milestone.hours_at).toEqual({ followup: 0 });
+	});
+
+	it("preserves numeric values and retained tier dates when editing while not completing newly lowered tiers", async () => {
+		const { service } = setup();
+		const path = "Goals/Developer.md";
+		await service.updateMilestone(path, 0, 12);
+		const original = (await service.getGoal(path))!.milestones[0];
+		await service.updateMilestoneDefinition(path, 0, {
+			name: "Revenue",
+			tiers: [10, 50, 200],
+			unit: "美元",
+		});
+		let milestone = (await service.getGoal(path))!.milestones[0];
+		expect(milestone).toMatchObject({
+			name: "Revenue",
+			unit: "美元",
+			tiers: [10, 50, 200],
+			current: 12,
+			achieved: original.achieved,
+			progressHistory: original.progressHistory,
+		});
+		await service.updateMilestoneDefinition(path, 0, { name: "Revenue", tiers: [5, 50] });
+		milestone = (await service.getGoal(path))!.milestones[0];
+		expect(milestone.achieved).toEqual({});
+		expect(milestone.hours_at).toEqual({});
+		expect(milestone.current).toBe(12);
+	});
+
+	it("rejects invalid edits and type changes without modifying goal notes", async () => {
+		const { app, service } = setup();
+		const path = "Goals/Developer.md";
+		const file = app.vault.getFileByPath(path)!;
+		const before = await app.vault.read(file);
+		for (const draft of [
+			{ name: "", tiers: [10] },
+			{ name: "Invalid", tiers: [100, 10] },
+			{ name: "Invalid", tiers: [NaN] },
+			{ name: "Type switch", tiers: [], stages: [{ id: "s1", name: "Done" }] },
+			{ name: "Invalid", tiers: [], stages: [{ id: "s1", name: "" }] },
+		])
+			await expect(service.updateMilestoneDefinition(path, 0, draft)).rejects.toThrow();
+		expect(await app.vault.read(file)).toBe(before);
+	});
 	it("reads only the configured folder and switches away from cached old goals", async () => {
 		const { app, plugin, service } = setup();
 		await service.listGoals();
@@ -113,7 +317,11 @@ describe("goal service historical attribution and cached reads", () => {
 					target: 5,
 				});
 				expect(current.progress[0].target).toBe(5);
-				const previous = await service.getProgress([], "week", new Date("2026-10-20T12:00:00"));
+				const previous = await service.getProgress(
+					[],
+					"week",
+					new Date("2026-10-20T12:00:00")
+				);
 				expect(previous.progress[0].target).toBe(10);
 				await service.updateGoalSettings("Goals/Developer.md", { target: 6 });
 				const revised = await service.getProgress([], "week");

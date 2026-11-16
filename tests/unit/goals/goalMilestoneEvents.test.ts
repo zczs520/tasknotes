@@ -18,6 +18,39 @@ function goal(overrides: Partial<GoalDefinition>): GoalDefinition {
 
 describe("goal milestone period events", () => {
 	const june = { start: new Date("2026-06-01T00:00:00"), end: new Date("2026-07-01T00:00:00") };
+	it("reports only completed named stages on their actual dates", () => {
+		const events = collectGoalMilestoneEvents(
+			[
+				goal({
+					milestones: [
+						{
+							name: "Publish",
+							kind: "boolean",
+							stages: [
+								{ id: "draft", name: "Draft" },
+								{ id: "launch", name: "Launch" },
+								{ id: "review", name: "Review" },
+							],
+							achieved: { draft: "2026-06-10", launch: "2026-06-20" },
+							hours_at: {},
+						},
+					],
+				}),
+			],
+			june
+		);
+		expect(events).toHaveLength(2);
+		expect(events[0]).toMatchObject({
+			date: "2026-06-20",
+			achievedStages: ["Launch"],
+			completed: false,
+		});
+		expect(events[1]).toMatchObject({
+			date: "2026-06-10",
+			achievedStages: ["Draft"],
+			completed: false,
+		});
+	});
 
 	it("combines same-day tiers and includes progress that did not reach a stage", () => {
 		const events = collectGoalMilestoneEvents(

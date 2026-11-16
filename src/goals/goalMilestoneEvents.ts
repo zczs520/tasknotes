@@ -1,5 +1,6 @@
 import type { TimeStatisticsRange } from "../utils/timeStatistics";
 import type { GoalDefinition, GoalMilestone } from "./goalTypes";
+import { completionStages, completionStageDate } from "./milestoneStages";
 
 export interface GoalMilestoneEvent {
 	goal: GoalDefinition;
@@ -8,6 +9,7 @@ export interface GoalMilestoneEvent {
 	date: string;
 	kind: "achievement" | "progress";
 	achievedTiers: number[];
+	achievedStages?: string[];
 	value?: number;
 	completed: boolean;
 	nextTier?: number;
@@ -79,6 +81,28 @@ export function collectGoalMilestoneEvents(
 		goal.milestones.flatMap((milestone, milestoneIndex) => {
 			if (milestone.kind === "number") {
 				return numericEvents(goal, milestone, milestoneIndex, range);
+			}
+			if (milestone.stages?.length) {
+				const stages = completionStages(milestone);
+				const byDate = new Map<string, string[]>();
+				for (const stage of stages) {
+					const date = completionStageDate(milestone, stage.id);
+					if (date && dateInRange(date, range))
+						byDate.set(date, [...(byDate.get(date) ?? []), stage.name]);
+				}
+				return [...byDate].map(([date, achievedStages]) => ({
+					goal,
+					milestone,
+					milestoneIndex,
+					date,
+					kind: "achievement" as const,
+					achievedTiers: [],
+					achievedStages,
+					completed: stages.every((stage) => {
+						const completedAt = completionStageDate(milestone, stage.id);
+						return completedAt !== undefined && completedAt <= date;
+					}),
+				}));
 			}
 			if (typeof milestone.achieved !== "string" || !dateInRange(milestone.achieved, range))
 				return [];

@@ -624,6 +624,19 @@ views:
  * Generate a Bases file template for a specific command with user settings
  */
 export function generateBasesFileTemplate(commandId: string, plugin: TaskNotesPlugin): string {
+	if (commandId === "open-goals-view") {
+		return `# Goal management
+# Goals are read live from the configured goals folder, not copied into this file.
+
+filters:
+  and:
+    - note.type == "goal"
+
+views:
+  - type: tasknotesGoals
+    name: "${escapeBasesStringLiteral(plugin.i18n.translate("goals.management"))}"
+`;
+	}
 	const settings = plugin.settings;
 	const taskFilterConditions = generateTaskFilterConditions(
 		commandId === "open-kanban-view" || commandId === "open-statistics"
