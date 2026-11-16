@@ -26,6 +26,47 @@ function createPlugin(sortOrderField = "sort_order") {
 }
 
 describe("Bases TaskInfo assembly", () => {
+	it("keeps the Bases status and stopped timer when the task cache still contains the active task", () => {
+		const plugin = createPlugin();
+		const path = "Tasks/Stopped.md";
+		plugin.cacheManager.getCachedTaskInfoSync.mockReturnValue({
+			path,
+			title: "Stopped",
+			status: "in-progress",
+			priority: "normal",
+			archived: false,
+			timeEntries: [{ startTime: "2026-11-16T09:00:00Z" }],
+			recurrence_parent: "[[Tasks/Parent]]",
+		});
+		const timeEntries = [
+			{ startTime: "2026-11-16T09:00:00Z", endTime: "2026-11-16T09:30:00Z" },
+		];
+		const task = createTaskInfoFromBasesData(
+			{ path, properties: { status: "open", timeEntries } },
+			plugin as unknown as TaskNotesPlugin
+		);
+		expect(task).toMatchObject({
+			status: "open",
+			timeEntries,
+			totalTrackedTime: 30,
+			recurrence_parent: "[[Tasks/Parent]]",
+		});
+	});
+
+	it("uses the configured status field from Bases even with an older cached status", () => {
+		const plugin = createPlugin();
+		plugin.fieldMapper.updateMapping({ ...DEFAULT_FIELD_MAPPING, status: "任务状态" });
+		plugin.cacheManager.getCachedTaskInfoSync.mockReturnValue({
+			path: "Tasks/task.md",
+			status: "in-progress",
+		});
+		const task = createTaskInfoFromBasesData(
+			{ path: "Tasks/task.md", properties: { 任务状态: "open" } },
+			plugin as unknown as TaskNotesPlugin
+		);
+		expect(task?.status).toBe("open");
+	});
+
 	it("preserves mapped manual-order values on TaskInfo", () => {
 		const task = createTaskInfoFromBasesData(
 			{

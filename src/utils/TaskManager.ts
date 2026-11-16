@@ -308,6 +308,11 @@ export class TaskManager extends Events {
 		}
 
 		if (pendingTaskInfo.dateModified) {
+			const pendingTime = Date.parse(pendingTaskInfo.dateModified);
+			const metadataTime = Date.parse(metadataTaskInfo.dateModified ?? "");
+			if (Number.isFinite(pendingTime) && Number.isFinite(metadataTime)) {
+				return metadataTime < pendingTime;
+			}
 			return metadataTaskInfo.dateModified !== pendingTaskInfo.dateModified;
 		}
 
@@ -469,8 +474,10 @@ export class TaskManager extends Events {
 			normalizeStatusConfigValue(frontmatter[statusField], this.settings.customStatuses) ??
 			undefined;
 		const priority =
-			normalizePriorityConfigValue(frontmatter[priorityField], this.settings.customPriorities) ??
-			undefined;
+			normalizePriorityConfigValue(
+				frontmatter[priorityField],
+				this.settings.customPriorities
+			) ?? undefined;
 		const dueDate = this.normalizeDateValue(frontmatter[dueField]);
 		const scheduledDate = this.normalizeDateValue(frontmatter[scheduledField]);
 		const tags = this.normalizeStringValues(frontmatter.tags, false);
@@ -478,7 +485,9 @@ export class TaskManager extends Events {
 		const projects = this.normalizeStringValues(frontmatter[projectField], true);
 		const rawTimeEstimate = frontmatter[timeEstimateField];
 		const timeEstimate =
-			typeof rawTimeEstimate === "number" && rawTimeEstimate > 0 ? rawTimeEstimate : undefined;
+			typeof rawTimeEstimate === "number" && rawTimeEstimate > 0
+				? rawTimeEstimate
+				: undefined;
 
 		const isCompleted =
 			this.settings.customStatuses?.some((s) => s.value === status && s.isCompleted) || false;
@@ -973,12 +982,15 @@ export class TaskManager extends Events {
 			return parsed as Record<string, unknown>;
 		} catch (error) {
 			const fileContext = path ? ` for ${path}` : "";
-			tasknotesLogger.warn(`TaskManager: Failed to parse frontmatter fallback${fileContext}`, {
-				category: "validation",
-				operation: "taskmanager-parse-frontmatter-fallback",
-				details: path ? { path } : undefined,
-				error: error,
-			});
+			tasknotesLogger.warn(
+				`TaskManager: Failed to parse frontmatter fallback${fileContext}`,
+				{
+					category: "validation",
+					operation: "taskmanager-parse-frontmatter-fallback",
+					details: path ? { path } : undefined,
+					error: error,
+				}
+			);
 			return null;
 		}
 	}

@@ -1084,6 +1084,14 @@ describe('TaskService', () => {
       expect(result.timeEntries).toHaveLength(existingCount + 1);
     });
 
+    it('starts from the latest task instead of publishing a stale card status', async () => {
+      const freshTask = { ...task, title: 'Renamed task', status: 'open', timeEntries: [] };
+      mockPlugin.cacheManager.getTaskInfo.mockResolvedValue(freshTask);
+      const result = await taskService.startTimeTracking({ ...task, status: 'in-progress' });
+      expect(result).toMatchObject({ title: 'Renamed task', status: 'open' });
+      expect(mockPlugin.cacheManager.updateTaskInfoInCache).toHaveBeenCalledWith(task.path, result);
+    });
+
     it('should prevent starting when already tracking', async () => {
       const activeSession = { startTime: '2025-01-01T11:00:00Z' };
       mockPlugin.getActiveTimeSession.mockReturnValue(activeSession);
@@ -1135,6 +1143,14 @@ describe('TaskService', () => {
         endTime: '2025-01-01T12:00:00.000Z',
         description: 'Active session'
       });
+    });
+
+    it('stops from the latest task instead of restoring the floating control stale status', async () => {
+      const freshTask = { ...task, title: 'Renamed task', status: 'open' };
+      mockPlugin.cacheManager.getTaskInfo.mockResolvedValue(freshTask);
+      const result = await taskService.stopTimeTracking({ ...task, status: 'in-progress' });
+      expect(result).toMatchObject({ title: 'Renamed task', status: 'open' });
+      expect(mockPlugin.cacheManager.updateTaskInfoInCache).toHaveBeenCalledWith(task.path, result);
     });
 
     it('should prevent stopping when not tracking', async () => {

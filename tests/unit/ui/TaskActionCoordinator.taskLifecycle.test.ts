@@ -96,12 +96,9 @@ describe("TaskActionCoordinator task lifecycle", () => {
 		const result = await coordinator.endTask(task);
 
 		expect(plugin.taskService.stopTimeTracking).toHaveBeenCalledWith(task);
-		expect(plugin.updateTaskProperty).toHaveBeenCalledWith(
-			stoppedTask,
-			"status",
-			"done",
-			{ silent: true }
-		);
+		expect(plugin.updateTaskProperty).toHaveBeenCalledWith(stoppedTask, "status", "done", {
+			silent: true,
+		});
 		expect(plugin.taskService.stopTimeTracking.mock.invocationCallOrder[0]).toBeLessThan(
 			plugin.updateTaskProperty.mock.invocationCallOrder[0]
 		);
@@ -156,12 +153,30 @@ describe("TaskActionCoordinator task lifecycle", () => {
 		const result = await coordinator.stopTask(task);
 
 		expect(plugin.taskService.stopTimeTracking).toHaveBeenCalledWith(task);
-		expect(plugin.updateTaskProperty).toHaveBeenCalledWith(
-			stoppedTask,
-			"status",
-			"open",
-			{ silent: true }
-		);
+		expect(plugin.updateTaskProperty).toHaveBeenCalledWith(stoppedTask, "status", "open", {
+			silent: true,
+		});
 		expect(result).toBe(pendingTask);
+	});
+
+	it("chooses a pending status when the creation default is in-progress", async () => {
+		const task = createTask();
+		const plugin = {
+			settings: { defaultTaskStatus: "in-progress" },
+			getActiveTimeSession: jest.fn(() => null),
+			statusManager: {
+				getAllStatuses: () => [
+					{ id: "in-progress", value: "in-progress", order: 0 },
+					{ id: "open", value: "open", order: 1 },
+				],
+				normalizeStatusValue: (value: string) => value,
+			},
+			updateTaskProperty: jest.fn(async () => ({ ...task, status: "open" })),
+			i18n: { translate: (key: string) => key },
+		};
+		await new TaskActionCoordinator(plugin as never).stopTask(task);
+		expect(plugin.updateTaskProperty).toHaveBeenCalledWith(task, "status", "open", {
+			silent: true,
+		});
 	});
 });

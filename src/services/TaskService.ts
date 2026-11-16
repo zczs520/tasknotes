@@ -371,10 +371,7 @@ export class TaskService {
 		}
 
 		const defaults = this.plugin.settings.taskCreationDefaults;
-		if (
-			defaults.useOccurrenceBodyTemplate &&
-			defaults.occurrenceBodyTemplate?.trim()
-		) {
+		if (defaults.useOccurrenceBodyTemplate && defaults.occurrenceBodyTemplate?.trim()) {
 			return defaults.occurrenceBodyTemplate.trim();
 		}
 
@@ -453,9 +450,7 @@ export class TaskService {
 		return Object.keys(customFrontmatter).length > 0 ? customFrontmatter : undefined;
 	}
 
-	private buildOccurrenceTemplateTask(
-		processedTemplate: ProcessedTemplate
-	): {
+	private buildOccurrenceTemplateTask(processedTemplate: ProcessedTemplate): {
 		templateTask: Partial<TaskInfo>;
 		customFrontmatter?: Record<string, unknown>;
 	} {
@@ -473,9 +468,7 @@ export class TaskService {
 
 		return {
 			templateTask,
-			customFrontmatter: this.extractTemplateCustomFrontmatter(
-				processedTemplate.frontmatter
-			),
+			customFrontmatter: this.extractTemplateCustomFrontmatter(processedTemplate.frontmatter),
 		};
 	}
 
@@ -1301,6 +1294,9 @@ export class TaskService {
 			throw new Error(`Cannot find task file: ${task.path}`);
 		}
 
+		// Floating controls, menus, and cards may retain a pre-status-change task.
+		// Never publish that captured status back into the shared cache.
+		task = (await this.plugin.cacheManager.getTaskInfo(task.path)) ?? task;
 		// Check if already tracking
 		const activeSession = this.plugin.getActiveTimeSession(task);
 		if (activeSession) {
@@ -1379,6 +1375,7 @@ export class TaskService {
 			throw new Error(`Cannot find task file: ${task.path}`);
 		}
 
+		task = (await this.plugin.cacheManager.getTaskInfo(task.path)) ?? task;
 		const activeSession = this.plugin.getActiveTimeSession(task);
 		if (!activeSession) {
 			throw new Error("No active time tracking session for this task");

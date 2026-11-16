@@ -284,6 +284,15 @@ export class SettingsLifecycleService {
 			.catch(() => undefined)
 			.then(async () => {
 				try {
+					// A later transition can arrive while an earlier operation is queued.
+					// Do not restart a stopped task (or stop a newly restarted task).
+					const latestStatus = this.taskStatusSnapshots.get(path);
+					if (
+						latestStatus !== undefined &&
+						(normalizeStatus(latestStatus) === inProgressValue) !== isInProgress
+					) {
+						return;
+					}
 					// Explicit service events already carry the authoritative post-write task.
 					// Metadata can still expose the previous status for a short window after a
 					// Kanban drop, so consulting it here can incorrectly cancel timer startup.

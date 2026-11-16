@@ -111,6 +111,32 @@ describe("Issue #1820: API-created task cache fallback", () => {
 		});
 	});
 
+	it("accepts newer native status and timer data instead of retaining an old pending write", async () => {
+		const path = "TaskNotes/Tasks/api-created.md";
+		MockObsidian.createTestFile(path, "---\ntaskType: task\n---\n");
+		manager.updateTaskInfoInCache(
+			path,
+			createTask({
+				status: "in-progress",
+				dateModified: "2026-11-16T09:00:00Z",
+				timeEntries: [{ startTime: "2026-11-16T09:00:00Z" }],
+			})
+		);
+		app.metadataCache.setCache(path, {
+			frontmatter: {
+				taskType: "task",
+				tags: ["task"],
+				status: "open",
+				dateModified: "2026-11-16T09:30:00Z",
+				timeEntries: [
+					{ startTime: "2026-11-16T09:00:00Z", endTime: "2026-11-16T09:30:00Z" },
+				],
+			},
+		});
+		expect(manager.getCachedTaskInfoSync(path)?.status).toBe("open");
+		await expect(manager.getTaskInfo(path)).resolves.toMatchObject({ status: "open" });
+	});
+
 	it("keeps just-written task data for synchronous cache reads while native metadata is stale", () => {
 		const path = "TaskNotes/Tasks/api-created.md";
 		MockObsidian.createTestFile(

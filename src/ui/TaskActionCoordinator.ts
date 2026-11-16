@@ -156,7 +156,9 @@ export class TaskActionCoordinator {
 
 		const statuses = this.plugin.statusManager
 			.getAllStatuses()
-			.filter((status) => !status.isCompleted && !status.isSkipped)
+			.filter(
+				(status) => !status.isCompleted && !status.isSkipped && status.id !== "in-progress"
+			)
 			.sort((first, second) => first.order - second.order);
 		const normalize = (value: string): string =>
 			this.plugin.statusManager.normalizeStatusValue(value);
@@ -205,12 +207,9 @@ export class TaskActionCoordinator {
 			return updatedTask;
 		}
 
-		return this.plugin.updateTaskProperty(
-			updatedTask,
-			"status",
-			completedStatus.value,
-			{ silent: true }
-		);
+		return this.plugin.updateTaskProperty(updatedTask, "status", completedStatus.value, {
+			silent: true,
+		});
 	}
 
 	async openTaskSelectorForTimeTracking(): Promise<void> {

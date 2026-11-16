@@ -282,13 +282,17 @@ function mergeCustomProperties(
 	return Object.keys(merged).length > 0 ? merged : undefined;
 }
 
-function enrichTaskInfoFromCache(taskInfo: TaskInfo, plugin?: TaskNotesPlugin): TaskInfo {
+function enrichTaskInfoFromCache(
+	taskInfo: TaskInfo,
+	props: Record<string, unknown>,
+	plugin?: TaskNotesPlugin
+): TaskInfo {
 	const cachedTask = plugin?.cacheManager?.getCachedTaskInfoSync?.(taskInfo.path);
 	if (!cachedTask) {
 		return taskInfo;
 	}
 
-	return {
+	const enriched = {
 		...cachedTask,
 		basesData: taskInfo.basesData,
 		customProperties: mergeCustomProperties(
@@ -296,6 +300,18 @@ function enrichTaskInfoFromCache(taskInfo: TaskInfo, plugin?: TaskNotesPlugin): 
 			taskInfo.customProperties
 		),
 	};
+	// Bases owns the displayed grouping. A cached task may still describe the
+	// previous column or timer, so only use it to fill missing lifecycle fields.
+	for (const field of ["status", "timeEntries", "completedDate", "dateModified"] as const) {
+		const property = plugin?.fieldMapper?.toUserField(field) ?? field;
+		if (Object.prototype.hasOwnProperty.call(props, property)) {
+			Object.assign(enriched, { [field]: taskInfo[field] });
+			if (field === "timeEntries") {
+				enriched.totalTrackedTime = taskInfo.totalTrackedTime;
+			}
+		}
+	}
+	return enriched;
 }
 
 export function createTaskInfoFromBasesData(
@@ -332,11 +348,13 @@ export function createTaskInfoFromBasesData(
 					...fileProperties,
 				},
 			},
+			props,
 			plugin
 		);
 	} else {
 		return enrichTaskInfoFromCache(
 			createTaskInfoFromProperties(props, basesItem, plugin),
+			props,
 			plugin
 		);
 	}

@@ -238,6 +238,18 @@ describe("status and time tracking linkage", () => {
 		expect(plugin.startTimeTracking).not.toHaveBeenCalled();
 	});
 
+	it("ignores a superseded explicit start when stopping before the queued transition runs", async () => {
+		const originalTask = createTask({ status: "open" });
+		const { plugin, listener, reconciliation } = createHarness({ tasks: [originalTask] });
+		await reconciliation;
+		const activeTask = createTask({ status: "in-progress" });
+		const enter = listener({ originalTask, updatedTask: activeTask });
+		const leave = listener({ originalTask: activeTask, updatedTask: originalTask });
+		await Promise.all([enter, leave]);
+		expect(plugin.startTimeTracking).not.toHaveBeenCalled();
+		expect(plugin.stopTimeTracking).not.toHaveBeenCalled();
+	});
+
 	it("detects a metadata-cache-only transition out of in-progress", async () => {
 		const timeEntries = [{ startTime: "2026-07-29T10:00:00+08:00" }];
 		const originalTask = createTask({ status: "in-progress", timeEntries });
